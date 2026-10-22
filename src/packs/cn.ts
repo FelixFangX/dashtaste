@@ -1,0 +1,6 @@
+import type { Pack } from './index.js';
+export const cn: Pack = {
+    name: 'cn', deltaColors: 'red-up', typography: { body: 14, minimum: 12 }, spacing: [4, 8, 12, 16, 24, 32],
+    light: { page: '#F6F7F9', card: '#FFFFFF', hairline: '#E6E8EC', ink: '#1D2433', muted: '#5F6B7E', brand: '#2A62D9', other: '#B9B7AE', up: '#D93A3A', down: '#167D4F', flat: '#5F6B7E', categorical: ['#2A62D9', '#36B3C2', '#F0A33C', '#2E3F66', '#B9CFF5', '#A8673A'] },
+    dark: { bg: '#0B1220', panel: '#111A2B', hairline: '#1F2A3D', ink: '#E6EBF5', muted: '#8C99B0', brand: '#4F8CFF', other: '#5E5C55', up: '#FF6B6B', down: '#3CCB86', flat: '#8C99B0', categorical: ['#4F8CFF', '#3FD0D4', '#FFD27A', '#2D4E8F', '#E38A5D'] }
+};
