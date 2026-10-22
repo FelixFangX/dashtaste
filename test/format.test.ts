@@ -3,16 +3,19 @@ import { formatCompact, formatPercent, formatDelta, formatDate } from '../src/fo
 import { score } from '../src/engine.js';
 it('compact global', () => {
   expect([1200, 3400000, 5600000000].map((n) => formatCompact(n, 'global'))).toEqual([
-    '1.2K',
+    '1,200',
     '3.4M',
     '5.6B',
   ]);
-  expect(formatCompact(-1200, 'global')).toBe('-1.2K');
+  expect(formatCompact(-1200, 'global')).toBe('-1,200');
+});
+it('groups counts below 10,000 in both packs', () => {
+  for (const pack of ['global', 'cn'] as const) expect(formatCompact(2007, pack)).toBe('2,007');
 });
 it('compact cn', () => {
   expect(formatCompact(12300, 'cn')).toBe('1.23万');
   expect(formatCompact(456000000, 'cn')).toBe('4.56亿');
-  expect(formatCompact(9999, 'cn')).toBe('9999');
+  expect(formatCompact(9999, 'cn')).toBe('9,999');
 });
 it('invalid formatting', () => {
   expect(formatCompact(Infinity, 'cn')).toBe('–');

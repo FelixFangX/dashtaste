@@ -2,7 +2,7 @@
 
 ## Compact amounts
 
-Use K at 1,000, M at 1,000,000, and B at 1,000,000,000.
+Keep counts below 10,000 grouped in full. Use K from 10,000, M at 1,000,000, and B at 1,000,000,000.
 Auto examples: 12,300 → 12.3K; 2,300,000 → 2.3M.
 Fix one display unit across a comparison table or shared axis.
 Keep exact values in details when compact rounding hides a meaningful difference.

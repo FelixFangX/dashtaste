@@ -86,7 +86,11 @@ export function hasUnit(axis: Option): boolean {
     axis.unit ||
     axis.unitMetadata ||
     axis.meta?.unit ||
-    axis.axisLabel?.formatter
+    axis.axisLabel?.formatter ||
+    (Array.isArray(axis.renderedTickLabels) &&
+      axis.renderedTickLabels.some((text) =>
+        /[$¥€£%万亿]|\d\s*[KMB]\b|\d\s*(?:元|人|件|次|ms|s|kg|days|months)\b/i.test(String(text)),
+      ))
   );
 }
 

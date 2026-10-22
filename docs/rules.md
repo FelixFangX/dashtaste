@@ -250,9 +250,9 @@ Severity: warn. Packs: global, cn.
 
 Why: A value without a unit is ambiguous.
 
-Triggers: Value axes need a name, formatter, or unit metadata.
+Triggers: Value axes need a name, formatter, unit metadata, or units in rendered ticks.
 
-Fix: put units in axis names or formatter metadata.
+Fix: put units in axis names, rendered ticks, or formatter metadata.
 
 Minimal failing input:
 

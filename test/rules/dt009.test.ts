@@ -13,6 +13,17 @@ describe('DT009', () => {
   it('passes a named value axis', () => {
     expect(check(passing, { pack: 'global', only: ['DT009'] })).toEqual([]);
   });
+  it('accepts units in rendered ticks and rejects bare numbers', () => {
+    for (const tick of ['$400K', '12万', '25%', '300ms', '2M'])
+      expect(
+        check(chart({ yAxis: { type: 'value', renderedTickLabels: [tick] } }), { only: ['DT009'] }),
+      ).toEqual([]);
+    expect(
+      check(chart({ yAxis: { type: 'value', renderedTickLabels: ['400', '200'] } }), {
+        only: ['DT009'],
+      }),
+    ).toHaveLength(1);
+  });
   for (const pack of ['global', 'cn'] as const) {
     it('passes an empty option for ' + pack, () => {
       expect(check({}, { pack, only: ['DT009'] })).toEqual([]);

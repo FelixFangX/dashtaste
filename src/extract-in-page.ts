@@ -122,6 +122,12 @@ export function extractInPage(): PageFacts {
         getInstanceByDom: (el: Element) =>
           | {
               getOption: () => Record<string, unknown>;
+              getModel?: () => {
+                getComponent: (
+                  type: string,
+                  index: number,
+                ) => { axis?: { getViewLabels: () => { formattedLabel: string }[] } } | undefined;
+              };
             }
           | undefined;
       };
@@ -138,6 +144,18 @@ export function extractInPage(): PageFacts {
             typeof value === 'function' ? '[function]' : value,
           ),
         );
+        for (const type of ['xAxis', 'yAxis']) {
+          const axes = option[type];
+          if (Array.isArray(axes))
+            axes.forEach((axis, index) => {
+              axis.renderedTickLabels =
+                instance
+                  .getModel?.()
+                  .getComponent(type, index)
+                  ?.axis?.getViewLabels()
+                  .map((label) => label.formattedLabel) ?? [];
+            });
+        }
         // ECharts 6 returns singleton components as arrays, including tooltip.
         if (Array.isArray(option.tooltip)) option.tooltip = option.tooltip[0];
         facts.charts.push({ id: el.id || selector(el), option });

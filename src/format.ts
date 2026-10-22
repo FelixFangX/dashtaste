@@ -23,7 +23,7 @@ export function formatCompact(
           [1e6, 'M'],
           [1e3, 'K'],
         ];
-  const unit = units.find(([n]) => Math.abs(value) >= Math.max(n, options.compactFrom ?? 0));
+  const unit = units.find(([n]) => Math.abs(value) >= Math.max(n, options.compactFrom ?? 10000));
   const minimumFractionDigits = options.minimumFractionDigits ?? 0;
   return unit
     ? `${(value / unit[0]).toLocaleString('en-US', { minimumFractionDigits, maximumFractionDigits: Math.max(minimumFractionDigits, pack === 'cn' ? 2 : 1), useGrouping: false })}${unit[1]}`
@@ -32,7 +32,7 @@ export function formatCompact(
           minimumFractionDigits,
           maximumFractionDigits: Math.max(minimumFractionDigits, 2),
         })
-      : String(value);
+      : value.toLocaleString('en-US', { maximumFractionDigits: 2 });
 }
 export function formatPercent(value: number, digits = 1): string {
   return Number.isFinite(value) ? `${(value * 100).toFixed(digits)}%` : '–';

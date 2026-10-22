@@ -170,7 +170,10 @@ data.store.previousRanks = data.store.ranks.map((v) => Math.round(v / (1.03 + ra
 data.live.previousRanks = data.live.ranks.map((v) => Math.round(v / (1.03 + random() * 0.15)));
 data.store.channels = allocate(data.store.parts, sum(data.store.revenue));
 data.live.regionHourly = data.live.regions.map((v) => {
-  const increments = trend(19, 100, 18),
+  const peak = 3 + random() * 13;
+  const increments = Array.from({ length: 19 }, (_, hour) =>
+      Math.round(30 + random() * 180 + 260 * Math.exp(-((hour - peak) ** 2) / 10)),
+    ),
     total = sum(increments);
   let cumulative = 0;
   return increments.map((n) => {

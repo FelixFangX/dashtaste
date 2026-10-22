@@ -45,8 +45,8 @@ Replace it: use one value axis or aligned small multiples.
 
 ## DT009: missing-unit
 
-Value axes need a name, formatter, or unit metadata.
-Replace it: put units in axis names or formatter metadata.
+Value axes need a name, formatter, unit metadata, or units in rendered ticks.
+Replace it: put units in axis names, rendered ticks, or formatter metadata.
 
 ## DT010: bar-baseline
 
