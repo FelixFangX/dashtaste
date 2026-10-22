@@ -82,6 +82,15 @@ async function verifyLayout(page, name) {
     }
     if (name === 'saas') {
       const c = echarts.getInstanceByDom(document.getElementById('bridge'));
+      const bars = c
+        .getZr()
+        .storage.getDisplayList()
+        .filter((item) => item.type === 'rect');
+      if (!bars.length || bars[0].shape.height < 56) issues.push('New bridge bar below 56px');
+      if (bars.some((bar) => bar.shape.width > 16)) issues.push('Bridge bars wider than 16px');
+      const hero = document.querySelector('.top > section').getBoundingClientRect();
+      const bridgeBox = document.getElementById('bridge').getBoundingClientRect();
+      if (bridgeBox.bottom > hero.bottom) issues.push('Bridge overflows hero');
       const labels = c
         .getZr()
         .storage.getDisplayList()
@@ -163,14 +172,27 @@ try {
       if (errors.length) throw new Error(errors.join('\n'));
       if (variant === 'after') {
         await verifyLayout(page, dashboard.name);
-        boundaries[dashboard.name] = await page.evaluate((name) => {
-          const main = document.querySelector('.top > section').getBoundingClientRect();
-          const lower = document.querySelector('.bottom');
-          const edge = lower
-            ? Math.max(main.right, lower.getBoundingClientRect().right)
-            : main.right;
-          return Math.min(innerWidth, edge + 24);
-        }, dashboard.name);
+        boundaries[dashboard.name] = await page.evaluate(() => {
+          const hero = document.querySelector('.top > section').getBoundingClientRect();
+          const crop = { x: 0, y: 0, width: hero.right + 16, height: hero.bottom };
+          for (const el of document.querySelectorAll('[data-section]')) {
+            const b = el.getBoundingClientRect();
+            const intersects =
+              b.left < crop.width - 0.5 &&
+              b.right > 0.5 &&
+              b.top < crop.height - 0.5 &&
+              b.bottom > 0.5;
+            if (
+              intersects &&
+              (b.left < -0.5 ||
+                b.top < -0.5 ||
+                b.right > crop.width + 0.5 ||
+                b.bottom > crop.height + 0.5)
+            )
+              throw new Error('Comparison crop cuts section: ' + el.dataset.section);
+          }
+          return crop;
+        });
       }
       const facts = await page.evaluate(extractInPage);
       if (!facts.charts.length) throw new Error('No charts rendered');
@@ -203,24 +225,19 @@ try {
       ),
     );
     for (const format of ['wide', 'tall']) {
-      const wide = format === 'wide',
-        width = wide
-          ? Math.max(
-              1600,
-              Math.ceil(2 * boundaries[d.name] * (d.name === 'live' ? 765 / 1080 : 0.85) + 64),
-            )
-          : 1080;
-      const height = wide ? 900 : 1440;
+      const wide = format === 'wide';
+      const crop = boundaries[d.name];
       const gap = 16,
         caption = 32;
-      const scale = wide ? (d.name === 'live' ? 765 / 1080 : 0.85) : 1032 / d.width;
-      const cropSize = boundaries[d.name];
-      const boardWidth = wide ? cropSize * scale : 1032;
-      const boardHeight = d.height * scale;
+      const minScale = d.name === 'live' ? 0.6 : 0.75;
+      const scale = wide ? (d.name === 'live' ? 0.6 : 0.8) : 1032 / d.width;
+      const boardWidth = wide ? crop.width * scale : 1032;
+      const boardHeight = (wide ? crop.height : d.height) * scale;
+      const width = wide ? Math.max(1600, Math.ceil(2 * boardWidth + gap + 48)) : 1080;
+      const height = wide ? Math.max(520, Math.ceil(caption + boardHeight + 48)) : 1440;
       const groupHeight = wide ? caption + boardHeight : 2 * (caption + boardHeight) + gap;
       const top = (height - groupHeight) / 2;
       const left = wide ? (width - 2 * boardWidth - gap) / 2 : 24;
-      const minScale = d.name === 'live' ? 0.7 : 0.85;
       if (wide && scale < minScale) throw new Error('Comparison crop scale too small');
       const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 2 });
       await page.setContent(
