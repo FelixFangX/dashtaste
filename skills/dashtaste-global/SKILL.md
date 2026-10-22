@@ -29,7 +29,7 @@ For a Chinese-market audience use dashtaste-cn.
 - DT007: Use flat two-dimensional marks.
 - DT009: Put units in value-axis names.
 - DT010: Start bar value axes at zero and disable scale.
-- DT013: Use green-up and red-down deltas throughout the page.
+- DT013: Use green for improvement and red for deterioration; set lower-is-better polarity for churn and expenses.
 - DT015: Meet 4.5:1 text contrast, or 3:1 for large text.
 
 ## Layout explains itself

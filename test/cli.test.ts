@@ -103,3 +103,23 @@ for (const command of ['check', 'rules', 'tokens']) {
 it('prints top-level help', () => {
   expect(cli('--help').status).toBe(0);
 });
+
+it('pluralises each summary count independently', () => {
+  expect(cli('check', 'test/fixtures/bad.json', '--only', 'DT010,DT003').stdout).toContain(
+    '1 error, 1 warning · score 87/100',
+  );
+  expect(
+    cli('check', 'test/fixtures/bad.json', 'test/fixtures/bad.json', '--only', 'DT010,DT003')
+      .stdout,
+  ).toContain('2 errors, 2 warnings · score 74/100');
+  expect(
+    cli(
+      'check',
+      'test/fixtures/bad.json',
+      'test/fixtures/bad.json',
+      'test/fixtures/bad.json',
+      '--only',
+      'DT003',
+    ).stdout,
+  ).toContain('0 errors, 3 warnings · score 91/100');
+});

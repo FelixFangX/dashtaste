@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { check } from '../../src/index.js';
-import { chart, text } from './helpers.js';
+import { getTokens } from '../../src/packs/index.js';
 
 describe('DT013', () => {
   const [flagged, passing] = [
@@ -27,3 +27,33 @@ describe('DT013', () => {
     });
   }
 });
+
+for (const pack of ['global', 'cn'] as const) {
+  for (const mode of ['light', 'dark'] as const) {
+    for (const convention of [undefined, 'by-polarity'] as const) {
+      it(`validates lower-is-better deltas for ${pack}/${mode}/${convention}`, () => {
+        const tokens = getTokens(pack, mode);
+        for (const direction of ['up', 'down'] as const) {
+          const red = pack === 'cn' ? tokens.up : tokens.down;
+          const green = pack === 'cn' ? tokens.down : tokens.up;
+          const expected = direction === 'up' ? red : green;
+          const facts = {
+            charts: [],
+            page: { deltaColors: convention },
+            deltas: [
+              {
+                selector: '#churn',
+                text: direction === 'up' ? '▲ 4.3%' : '▼ 4.3%',
+                color: expected,
+                polarity: 'lower-is-better' as const,
+              },
+            ],
+          };
+          expect(check(facts, { pack, mode, only: ['DT013'] })).toEqual([]);
+          facts.deltas[0].color = expected === red ? green : red;
+          expect(check(facts, { pack, mode, only: ['DT013'] })).toHaveLength(1);
+        }
+      });
+    }
+  }
+}

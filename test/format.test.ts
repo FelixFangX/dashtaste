@@ -53,3 +53,36 @@ it('score floors at zero', () => {
   expect(score([])).toBe(100);
   expect(score(Array(11).fill({ severity: 'error' }))).toBe(0);
 });
+
+it('keeps fixed decimals and full grouped counts when requested', () => {
+  expect(formatCompact(147000, 'cn', { minimumFractionDigits: 2 })).toBe('14.70万');
+  expect(formatCompact(299.6, 'cn', { minimumFractionDigits: 2 })).toBe('299.60');
+  expect(formatCompact(1998, 'global', { compactFrom: 10000 })).toBe('1,998');
+  expect(formatCompact(10000, 'global', { compactFrom: 10000 })).toBe('10K');
+});
+
+for (const pack of ['global', 'cn'] as const) {
+  for (const mode of ['light', 'dark'] as const) {
+    it(`applies metric polarity with the ${pack}/${mode} convention`, () => {
+      for (const [current, direction] of [
+        [110, 'up'],
+        [90, 'down'],
+      ] as const) {
+        const normal = formatDelta(current, 100, pack, { mode });
+        const lower = formatDelta(current, 100, pack, { mode, polarity: 'lower-is-better' });
+        expect(lower.direction).toBe(direction);
+        expect(lower.text).toBe(normal.text);
+        expect(lower.color === normal.color).toBe(pack === 'cn');
+        const semantic = formatDelta(current, 100, pack, {
+          mode,
+          polarity: 'lower-is-better',
+          deltaColors: 'by-polarity',
+        });
+        expect(semantic.color).toBe(
+          formatDelta(current === 110 ? 90 : 110, 100, pack, { mode, deltaColors: 'green-up' })
+            .color,
+        );
+      }
+    });
+  }
+}

@@ -12,10 +12,11 @@ const t = getTokens(pack, mode),
   d = data[name];
 const bg = t.page || t.bg || t.paper,
   surface = t.card || t.panel || t.paper;
-const compact = (v) => formatCompact(Number(Number(v).toFixed(2)), pack);
+const compact = (v) => formatCompact(Number(Number(v).toFixed(2)), pack, { compactFrom: 10000 });
 const num = (v) => (before ? String(v) : compact(v));
 const pct = (v) => (before ? String(v * 100) : formatPercent(v));
-const money = (v) => `${cn ? '¥' : '$'}${num(v)}`;
+const money = (v) =>
+  `${cn ? '¥' : '$'}${before ? num(v) : formatCompact(v, pack, { minimumFractionDigits: 2, compactFrom: 10000 })}`;
 const date = formatDate('2026-09-30T12:00:00', pack);
 const titles = {
   saas: 'Subscription revenue',
@@ -46,12 +47,16 @@ body[data-dashboard=saas] .chart,body[data-dashboard=finance] .chart{flex:1;heig
 `;
 document.head.append(css);
 const root = document.querySelector('main');
-const delta = (v, previous, label, i) => {
-  const f = formatDelta(v, previous, pack, { mode });
-  return `<div class="comparison">${!before && global ? '' : `<span>${label}</span>`}<span data-delta data-direction="${f.direction}" style="color:${before ? (i % 2 ? '#39d58a' : '#ed5e70') : f.color}">${before ? `${i % 2 ? '+' : '▲ '}${(((v - previous) / previous) * 100).toFixed(2)}%` : f.text}</span>${!before && global ? `<span class="period">vs ${name === 'saas' ? 'Oct' : 'Sep'}</span>` : ''}</div>`;
+const delta = (v, previous, label, i, polarity) => {
+  const f = formatDelta(v, previous, pack, { mode, polarity });
+  return `<div class="comparison">${!before && global ? '' : `<span>${label}</span>`}<span data-delta data-polarity="${polarity}" data-direction="${f.direction}" style="color:${before ? (i % 2 ? '#39d58a' : '#ed5e70') : f.color}">${before ? `${i % 2 ? '+' : '▲ '}${(((v - previous) / previous) * 100).toFixed(2)}%` : f.text}</span>${!before && global ? `<span class="period">vs ${name === 'saas' ? 'Oct' : 'Sep'}</span>` : ''}</div>`;
 };
 const kpis = kpisFor(name);
-root.innerHTML = `<header><div><div class="identity">${cn ? '示例店铺' : 'Example workspace'}</div><h1>${before ? '✨ ' : ''}${titles[name]}</h1></div><div class="date">${live ? `${date}　18:00` : cn ? `${formatDate('2026-09-01', pack)} 至 ${date}` : name === 'saas' ? 'Jun 1, 2025 – Nov 30, 2026' : 'Nov 1, 2025 – Oct 31, 2026'}</div></header>${name === 'store' ? `<div class="controls"><div class="segments" aria-label="日期范围">${['今天', '昨天', '近7天', '近30天', '本月'].map((s) => `<button class="${s === '近30天' ? 'active' : ''}" aria-pressed="${s === '近30天'}">${s}</button>`).join('')}</div></div>` : ''}<section class="kpis">${kpis.map(([label, v, type, previous, yearAgo], i) => `<div class="kpi"><label data-kpi-label>${before ? ['💰', '📈', '🎯', '👥', '⚡', '💎'][i] + ' ' : ''}${label}</label><div class="value" data-kpi>${type === 'money' ? money(v) : type === 'percent' ? pct(v) : type === 'months' && !before ? v.toFixed(1) : num(v)}${type === 'months' ? ' <small>months</small>' : ''}</div>${delta(v, previous, cn ? (live ? '日环比' : '环比') : 'Prior month', i)}${cn && !live ? delta(v, yearAgo, '同比', i + 1) : ''}</div>`).join('')}</section><div class="board ${name === 'store' ? 'store-layout' : live ? 'live-layout' : ''}"></div>`;
+const polarityFor = (label) =>
+  ['Churn', 'Operating expense', '退款金额'].includes(label)
+    ? 'lower-is-better'
+    : 'higher-is-better';
+root.innerHTML = `<header><div><div class="identity">${cn ? '示例店铺' : 'Example workspace'}</div><h1>${before ? '✨ ' : ''}${titles[name]}</h1></div><div class="date">${live ? `${date}　18:00` : cn ? `${formatDate('2026-09-01', pack)} 至 ${date}` : name === 'saas' ? 'Jun 1, 2025 – Nov 30, 2026' : 'Nov 1, 2025 – Oct 31, 2026'}</div></header>${name === 'store' ? `<div class="controls"><div class="segments" aria-label="日期范围">${['今天', '昨天', '近7天', '近30天', '本月'].map((s) => `<button class="${s === '近30天' ? 'active' : ''}" aria-pressed="${s === '近30天'}">${s}</button>`).join('')}</div></div>` : ''}<section class="kpis">${kpis.map(([label, v, type, previous, yearAgo], i) => `<div class="kpi"><label data-kpi-label>${before ? ['💰', '📈', '🎯', '👥', '⚡', '💎'][i] + ' ' : ''}${label}</label><div class="value" data-kpi>${type === 'money' ? money(v) : type === 'percent' ? pct(v) : type === 'months' && !before ? v.toFixed(1) : num(v)}${type === 'months' ? ' <small>months</small>' : ''}</div>${delta(v, previous, cn ? (live ? '日环比' : '环比') : 'Prior month', i, polarityFor(label))}${cn && !live ? delta(v, yearAgo, '同比', i + 1, polarityFor(label)) : ''}</div>`).join('')}</section><div class="board ${name === 'store' ? 'store-layout' : live ? 'live-layout' : ''}"></div>`;
 const board = root.querySelector('.board');
 function panel(title, cls = '') {
   const el = document.createElement('section');

@@ -21,6 +21,8 @@ it.skipIf(!available)(
     expect(f.texts?.some((t) => t.text === '销量' && t.fontSize === 11)).toBe(true);
     expect(f.kpis).toHaveLength(1);
     expect(f.deltas?.[0].text).toBe('▲ 7.2%');
+    expect(f.deltas?.[0].polarity).toBe('lower-is-better');
+    expect(f.page?.deltaColors).toBe('by-polarity');
     expect(f.gradients).toHaveLength(1);
     expect(f.shadows).toHaveLength(1);
   },

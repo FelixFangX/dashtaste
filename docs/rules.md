@@ -364,7 +364,7 @@ Severity: error. Packs: global, cn.
 
 Why: Changing colour conventions reverses the apparent meaning of a delta.
 
-Triggers: Directional deltas must follow one page convention: global green-up; cn red-up by default.
+Triggers: Directional deltas must follow the page convention and metric polarity: global by polarity; cn red-up by default.
 
 Fix: apply one deltaColors convention to the whole page.
 

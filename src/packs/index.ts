@@ -2,7 +2,18 @@ import { global } from './global.js';
 import { cn } from './cn.js';
 export type PackName = 'global' | 'cn';
 export type Mode = 'light' | 'dark';
-export type DeltaColors = 'red-up' | 'green-up';
+export type DeltaColors = 'red-up' | 'green-up' | 'by-polarity';
+export type Polarity = 'higher-is-better' | 'lower-is-better';
+export function deltaSwapped(
+  pack: PackName,
+  convention?: DeltaColors,
+  polarity?: Polarity,
+): boolean {
+  const byPolarity =
+    convention === 'by-polarity' || (pack === 'global' && convention === undefined);
+  if (byPolarity) return (pack === 'cn') !== (polarity === 'lower-is-better');
+  return (convention ?? packs[pack].deltaColors) !== packs[pack].deltaColors;
+}
 export interface Tokens {
   [key: string]: string | readonly string[];
   ink: string;

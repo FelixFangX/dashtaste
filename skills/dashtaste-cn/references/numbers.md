@@ -11,7 +11,8 @@ Auto examples: 12,300 → 1.23万; 230,000,000 → 2.3亿.
 The formatter API uses auto units; fixed 万 is a local display calculation.
 
 Use at most two decimals for Chinese compact units and one for global units.
-Omit trailing zeroes on compact amounts.
+Omit trailing zeroes on isolated compact amounts; use consistent decimals within a list or column.
+Use `minimumFractionDigits: 2` for monetary lists and `compactFrom: 10000` for grouped full counts below 10,000.
 Use integers for counts unless the measure is an average.
 Use two decimals for monetary detail when required by the measure.
 Use tabular numerals and right alignment for numeric columns.
@@ -37,7 +38,13 @@ Zero is flat: `0.0%`, muted colour, no arrow.
 Invalid values and a zero previous value display `–`.
 Do not infer good or bad solely from direction; name the measure clearly.
 Apply one page-wide delta convention, including tables and tooltips.
-Default: red up, green down. A deliberate green-up override must cover the page.
+Default: red up, green down regardless of metric polarity, preserving the market
+涨跌 convention. A deliberate green-up override must cover the page.
+Set page `deltaColors: 'by-polarity'` (HTML `data-delta-colors="by-polarity"`)
+to use green for improvement and red for deterioration. `polarity` defaults to
+`higher-is-better`; `lower-is-better` makes rising churn, expenses, or refunds red
+and falling values green. Arrows always follow the sign. Mark delta elements or
+ancestors with `data-polarity="lower-is-better"` for extraction and DT013.
 同比 compares the same period in the previous year.
 环比 compares the immediately preceding period of the same length.
 日环比 compares today with yesterday at the same elapsed cutoff.

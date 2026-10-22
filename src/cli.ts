@@ -131,7 +131,7 @@ async function main() {
       }
     }
     console.log(
-      `${summary.errors} errors, ${summary.warnings} warnings · score ${summary.score}/100`,
+      `${summary.errors} error${summary.errors === 1 ? '' : 's'}, ${summary.warnings} warning${summary.warnings === 1 ? '' : 's'} · score ${summary.score}/100`,
     );
   }
   process.exitCode = summary.errors > 0 || summary.warnings > max ? 1 : 0;

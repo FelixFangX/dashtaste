@@ -51,9 +51,25 @@ for (const name of ['saas', 'finance', 'store', 'live']) {
               mode: ['finance', 'live'].includes(name) ? 'dark' : 'light',
             }),
           );
-          if (variant === 'after')
+          if (variant === 'after') {
             expect(result).toMatchObject({ score: 100, errors: 0, warnings: 0 });
-          else expect(result.score).toBeLessThan(60);
+            const amounts = await page.locator('.ranking .amount').allTextContents();
+            if (name === 'store' || name === 'live') expect(amounts.length).toBeGreaterThan(0);
+            expect(amounts.every((amount) => /^[¥$][\d,]+\.\d{2}[KMB万亿]?$/.test(amount))).toBe(
+              true,
+            );
+            if (name === 'saas' || name === 'live') {
+              expect(facts.deltas?.some((delta) => delta.polarity === 'lower-is-better')).toBe(
+                true,
+              );
+            }
+            if (name === 'store' || name === 'live') {
+              const average = page
+                .locator('.kpi')
+                .filter({ has: page.locator('label', { hasText: '客单价' }) });
+              expect(await average.locator('.value').textContent()).toMatch(/^¥[\d,]+\.\d{2}$/);
+            }
+          } else expect(result.score).toBeLessThan(60);
           expect(
             await page.evaluate(
               () =>

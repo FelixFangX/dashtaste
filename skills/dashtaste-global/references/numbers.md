@@ -9,7 +9,8 @@ Keep exact values in details when compact rounding hides a meaningful difference
 The formatter API uses auto units; fixed units are a local display calculation.
 
 Use at most two decimals for Chinese compact units and one for global units.
-Omit trailing zeroes on compact amounts.
+Omit trailing zeroes on isolated compact amounts; use consistent decimals within a list or column.
+Use `minimumFractionDigits: 2` for monetary lists and `compactFrom: 10000` for grouped full counts below 10,000.
 Use integers for counts unless the measure is an average.
 Use two decimals for monetary detail when required by the measure.
 Use tabular numerals and right alignment for numeric columns.
@@ -35,7 +36,11 @@ Zero is flat: `0.0%`, muted colour, no arrow.
 Invalid values and a zero previous value display `–`.
 Do not infer good or bad solely from direction; name the measure clearly.
 Apply one page-wide delta convention, including tables and tooltips.
-Default: green up, red down. A deliberate red-up override must cover the page.
+Default: green for improvement, red for deterioration. `polarity` defaults to
+`higher-is-better`; set `lower-is-better` for churn, expenses, and refunds.
+Arrows always follow the sign; rising churn is red. Mark deltas or ancestors with
+`data-polarity="lower-is-better"` for extraction and DT013.
+Explicit red-up or green-up conventions are page-wide directional overrides.
 Label comparisons as prior period or prior year, with equal time coverage.
 For incomplete periods compare equal elapsed durations.
 

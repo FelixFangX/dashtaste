@@ -1,5 +1,16 @@
-import { packs, getTokens, type PackName, type DeltaColors, type Mode } from './packs/index.js';
-export function formatCompact(value: number, pack: PackName): string {
+import {
+  deltaSwapped,
+  getTokens,
+  type Polarity,
+  type PackName,
+  type DeltaColors,
+  type Mode,
+} from './packs/index.js';
+export function formatCompact(
+  value: number,
+  pack: PackName,
+  options: { minimumFractionDigits?: number; compactFrom?: number } = {},
+): string {
   if (!Number.isFinite(value)) return '–';
   const units: [number, string][] =
     pack === 'cn'
@@ -12,10 +23,16 @@ export function formatCompact(value: number, pack: PackName): string {
           [1e6, 'M'],
           [1e3, 'K'],
         ];
-  const unit = units.find(([n]) => Math.abs(value) >= n);
+  const unit = units.find(([n]) => Math.abs(value) >= Math.max(n, options.compactFrom ?? 0));
+  const minimumFractionDigits = options.minimumFractionDigits ?? 0;
   return unit
-    ? `${Number((value / unit[0]).toFixed(pack === 'cn' ? 2 : 1))}${unit[1]}`
-    : String(value);
+    ? `${(value / unit[0]).toLocaleString('en-US', { minimumFractionDigits, maximumFractionDigits: Math.max(minimumFractionDigits, pack === 'cn' ? 2 : 1), useGrouping: false })}${unit[1]}`
+    : options.compactFrom !== undefined || options.minimumFractionDigits !== undefined
+      ? value.toLocaleString('en-US', {
+          minimumFractionDigits,
+          maximumFractionDigits: Math.max(minimumFractionDigits, 2),
+        })
+      : String(value);
 }
 export function formatPercent(value: number, digits = 1): string {
   return Number.isFinite(value) ? `${(value * 100).toFixed(digits)}%` : '–';
@@ -26,6 +43,7 @@ export function formatDelta(
   pack: PackName,
   options: {
     label?: string;
+    polarity?: Polarity;
     deltaColors?: DeltaColors;
     mode?: Mode;
   } = {},
@@ -40,7 +58,7 @@ export function formatDelta(
         : delta > 0
           ? 'up'
           : 'down';
-  const swapped = (options.deltaColors ?? packs[pack].deltaColors) !== packs[pack].deltaColors;
+  const swapped = deltaSwapped(pack, options.deltaColors, options.polarity);
   const color =
     direction === 'up'
       ? swapped

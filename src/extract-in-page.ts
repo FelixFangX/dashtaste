@@ -92,10 +92,12 @@ export function extractInPage(): PageFacts {
       });
     if (el.hasAttribute('data-delta') || /[▲▼↑↓]|[+\-]\s*\d+(?:\.\d+)?%/.test(text)) {
       const direction = el.getAttribute('data-direction');
+      const polarity = el.closest('[data-polarity]')?.getAttribute('data-polarity');
       facts.deltas!.push({
         selector: path,
         text: text || el.textContent?.trim() || '',
         color: style.color,
+        ...(polarity === 'higher-is-better' || polarity === 'lower-is-better' ? { polarity } : {}),
         ...(['up', 'down', 'flat'].includes(direction ?? '')
           ? { direction: direction as 'up' | 'down' | 'flat' }
           : {}),
@@ -140,7 +142,8 @@ export function extractInPage(): PageFacts {
   facts.page = {
     background: compositeBackground(document.body),
     ...(document.documentElement.dataset.deltaColors === 'red-up' ||
-    document.documentElement.dataset.deltaColors === 'green-up'
+    document.documentElement.dataset.deltaColors === 'green-up' ||
+    document.documentElement.dataset.deltaColors === 'by-polarity'
       ? { deltaColors: document.documentElement.dataset.deltaColors }
       : {}),
   };

@@ -43,7 +43,7 @@ gallery/pages/store/before.html
   warn  DT003  charts[0].series[1]  smooth line  → use straight segments: smooth: false
   warn  DT005  charts[1].series[0]  pie slices  → use horizontal bars or combine small parts into Other
   error  DT010  charts[0].yAxis[0]  bar baseline  → set min: 0 and scale: false
-1 errors, 2 warnings · score 84/100
+1 error, 2 warnings · score 84/100
 ```
 
 Exit codes: `0` passes, `1` means errors or warnings above the limit, and `2` means invalid input or unavailable extraction. Warnings have no limit by default; use `--max-warnings 0` to require none. Use `--mode dark` for dark pages. JSON output includes findings, paths, fixes, and scores. Every rule can be disabled with `--disable` and comma-separated IDs.
