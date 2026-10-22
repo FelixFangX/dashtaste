@@ -1,31 +1,126 @@
-# Local usage
+# Usage
 
-Use Node 20 or later and pnpm 10. Run `pnpm install`, `pnpm build`, then `node dist/cli.js rules`. From this folder, `npx --no-install dashtaste rules` resolves the local executable.
+Build with Node 20.19 or newer and pnpm:
 
 ```sh
-node dist/cli.js check test/fixtures/good.json --pack cn
-node dist/cli.js check test/fixtures/bad.json --pack cn --format json
-node dist/cli.js tokens --pack global --mode dark --format css
-node dist/cli.js rules --pack cn
+pnpm install
+pnpm build
+npx dashtaste --help
 ```
 
-JSON input accepts a single ECharts option, an array of options, or `{ "charts": [{ "id": "sales", "option": {} }], "page": { "deltaColors": "red-up", "background": "#FFFFFF" } }`. The rules API also accepts PageFacts for rendered text, deltas, KPIs, gradients and shadows. ECharts options alone cannot reveal rendered text or KPI tiles.
+## Check options
 
-```js
-import { check, score, packs } from 'dashtaste';
-import { formatCompact, formatDelta } from 'dashtaste/format';
-const findings = check({ series: [] }, { pack: 'cn' });
-console.log(score(findings), formatCompact(12300, 'cn'));
+```sh
+npx dashtaste check options.json --pack global
+npx dashtaste check first.json second.json --pack cn --format json
+npx dashtaste check options.json --pack cn --mode dark --max-warnings 0
 ```
 
-The CLI accepts multiple inputs. `--only DT001,DT003` selects rules; `--disable DT003` excludes rules even when selected. `--background '#FFFFFF'` overrides the chart background for chart contrast checks. `NO_COLOR` disables terminal colour.
+Input may be one ECharts option, an array of options, or a page facts envelope:
 
-Exit 0 means no errors and warnings within `--max-warnings` (unlimited by default); info findings do not fail. Exit 1 means errors or excess warnings. Exit 2 means invalid usage, unreadable input, or failed extraction. JSON output includes version, pack, per-input findings and scores, and aggregate counts and score. Score is max(0, 100 − 10 × errors − 3 × warnings − info).
+```json
+{
+  "charts": [{ "id": "orders", "option": { "series": [] } }],
+  "page": { "background": "#FFFFFF", "deltaColors": "red-up" }
+}
+```
 
-HTML/URL mode uses the optional playwright-core dependency. Set `CHROME_PATH` to an installed Chromium executable; otherwise `/usr/bin/google-chrome` is tried, then the browser path managed by Playwright. No browser is downloaded by this package. The browser loads the supplied page, waits for network idle and 500ms, then extracts facts. Page scripts and resources run as they normally do in a browser. ECharts instances must be reachable through `window.echarts`. Browser launch and extraction errors exit 2. No telemetry or network calls occur outside browser mode.
+Page facts may also contain texts, gradients, shadows, kpis, deltas, and emojis.
+An option-only input cannot test computed page typography or CSS decoration.
+See the exported types for each fact shape.
 
-Delta formatting uses `(current - previous) / abs(previous)`. Previous zero and nonfinite numbers are invalid. `formatPercent` takes a ratio. `formatDate` uses local calendar fields. Compact formatting rounds to one decimal globally and two decimals for cn, trimming trailing zeros. `deltaColors` can switch one whole page to red-up or green-up.
+Defaults are the global pack, light mode, text output, and unlimited warnings.
+Errors always fail. `--max-warnings 0` also fails on any warning.
+Informational findings lower the score but do not fail a check.
 
-Body text tokens are ink and muted on the pack's page/card surfaces. Accent and semantic colours need a separate contrast check if used as text. CSS extraction composites transparent ancestor backgrounds over white; background images, pseudo-elements, canvas text and cross-frame text are outside the text extractor. Text rules use computed CSS values. Emoji checks target titles, labels and rankings. Extracted facts are serializable and the rule engine can run without a browser.
+## Check rendered pages
 
-Skills are under `skills/dashtaste-global` and `skills/dashtaste-cn`. Install the chosen folder into the agent's skills directory, or use `npx skills add <repo> --skill dashtaste-cn` once a repository location is available. No remote is needed for local folder installation.
+```sh
+CHROME_PATH=/path/to/chromium npx dashtaste check dashboard.html --pack cn
+CHROME_PATH=/path/to/chromium npx dashtaste check http://localhost:3000 --pack global
+```
+
+HTML mode needs Playwright's core package and a Chromium executable.
+It reads mounted ECharts instances through `window.echarts` after network idle
+and a 500ms settling interval. Render charts before that point.
+It collects visible text, composited backgrounds, decoration, KPIs, and deltas.
+Use `data-kpi`, `data-delta`, and `data-direction="up|down|flat"` for explicit facts.
+Set `data-delta-colors="red-up|green-up"` on the document element to override
+one page's comparison convention. Keep every directional delta consistent.
+The extractor inspects visible DOM text; canvas text is checked through options.
+
+## Flags and exit codes
+
+| Flag             | Commands      | Values                         |
+| ---------------- | ------------- | ------------------------------ |
+| `--pack`         | all           | `global`, `cn`                 |
+| `--mode`         | check, tokens | `light`, `dark`                |
+| `--format`       | check, rules  | `text`, `json`                 |
+| `--format`       | tokens        | `json`, `css`                  |
+| `--max-warnings` | check         | non-negative integer           |
+| `--only`         | check         | comma-separated rule IDs       |
+| `--disable`      | check         | comma-separated rule IDs       |
+| `--background`   | check         | three- or six-digit hex colour |
+| `--help`         | all           | command-specific usage         |
+
+`--disable` takes precedence over `--only`. Unknown rule IDs are input errors.
+`--background` overrides chart, page, and pack backgrounds for contrast checks.
+`tokens` requires an explicit `--pack`.
+
+Exit 0 means no errors and warnings within the selected limit.
+Exit 1 means errors or too many warnings.
+Exit 2 means invalid arguments, unreadable input, or unavailable extraction.
+Set `NO_COLOR` to suppress ANSI colour in text output.
+JSON output contains version, pack, per-input findings and scores, and summary.
+Each finding contains ruleId, severity, message, path, and fix.
+Score starts at 100: subtract 10 per error, 3 per warning, and 1 per info.
+The minimum score is zero.
+
+## Inspect metadata and tokens
+
+```sh
+npx dashtaste rules --pack cn --format json
+npx dashtaste tokens --pack global --mode light
+npx dashtaste tokens --pack cn --mode dark --format css
+```
+
+The cn pack includes screen composition settings for a 1920×1080 artboard.
+Screen composition uses dark tokens and `--mode dark`; it is not a third CLI mode.
+Pack objects also expose numberSystem, limits, typography, and spacing.
+Token output contains only colours for the selected light or dark mode.
+
+## Library and formatting
+
+```ts
+import { check, summarize } from 'dashtaste';
+import { formatCompact, formatPercent, formatDelta, formatDate } from 'dashtaste/format';
+
+const findings = check({ series: [] }, { pack: 'cn', mode: 'light' });
+const summary = summarize(findings);
+const amount = formatCompact(12300, 'cn'); // 1.23万
+const percent = formatPercent(0.125); // 12.5%
+const delta = formatDelta(110, 100, 'cn'); // render text and color together
+const date = formatDate(new Date(2026, 9, 21), 'cn'); // 2026-10-21
+```
+
+The date helper returns local calendar dates in YYYY-MM-DD form for both packs.
+Use an explicit display adapter for global long dates such as Oct 21, 2026.
+See each skill's numbers reference for exact comparison and rounding rules.
+
+## Skills and development
+
+Choose skills/dashtaste-global or skills/dashtaste-cn for the intended audience.
+Each skill links tokens, chart examples, numbers, layout, and patterns to avoid.
+Use the matching pack when checking the examples or a generated dashboard.
+Layout and copy still need visual review; the rule checker does not prove usability.
+
+```sh
+pnpm format
+pnpm format:check
+pnpm typecheck
+pnpm build
+pnpm test
+```
+
+The tests cover rule contracts, pack differences, colour contrast and vision,
+CLI behavior, formatting, skill consistency, every chart JSON example, and browser extraction.
