@@ -4,15 +4,16 @@ const { root, t, tick, money, compact, delta, metric, line, chart, spark, table,
 const d = data.saas,
   k = kpisFor('saas');
 const rail = k.slice(1);
-root.innerHTML += `<div class="top"><section><div style="display:flex;justify-content:space-between;align-items:end">${metric('MRR', money(k[0][1]), delta(k[0][1], k[0][3]), true)}<div class="target"><span class="muted">Target $400K</span><span class="track"><i style="width:94%"></i></span><span>94%</span></div></div><div id="mrr" class="chart" style="height:254px"></div></section><aside class="rail">${rail.map(([label, v, type, p], i) => `<div style="position:relative">${metric(label, type === 'money' ? money(v) : type === 'percent' ? (v * 100).toFixed(2) + '%' : compact(v), delta(v, p, 'vs Oct', label === 'Churn' ? 'lower-is-better' : 'higher-is-better'))}<div class="spark" id="s${i}"></div></div>`).join('')}</aside></div><div class="bottom"><section><h2>MRR movement</h2><div id="movement" class="chart" style="height:210px"></div></section><section><h2>Plans</h2><table><thead><tr><th>Plan</th><th>Accounts</th><th>MRR</th><th>Share</th><th>Δ vs Oct</th></tr></thead><tbody>${d.plans.map((v, i) => `<tr><td>${d.planNames[i]}</td><td>${Math.round((last(d.accounts) * v) / last(d.revenue)).toLocaleString('en-US')}</td><td>${'$' + (v >= 10000 ? (v / 1000).toFixed(1) + 'K' : v.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }))}</td><td class="share"><span class="share-inline"><span class="track"><i style="width:${(v / Math.max(...d.plans)) * 100}%;background:#C9D2FF"></i></span><span>${((v / last(d.revenue)) * 100).toFixed(1)}%</span></span></td><td>${delta(v, d.previousPlans[i], '')}</td></tr>`).join('')}</tbody></table></section></div>`;
+root.innerHTML += `<div class="top"><section><div style="display:flex;justify-content:space-between;align-items:end">${metric('MRR', money(k[0][1]), delta(k[0][1], k[0][3]), true)}</div><div id="mrr" class="chart" style="height:254px"></div></section><aside class="rail">${rail.map(([label, v, type, p], i) => `<div style="position:relative">${metric(label, type === 'money' ? money(v) : type === 'percent' ? (v * 100).toFixed(2) + '%' : compact(v), delta(v, p, 'vs Oct', label === 'Churn' ? 'lower-is-better' : 'higher-is-better'))}<div class="spark" id="s${i}"></div></div>`).join('')}</aside></div><div class="bottom"><section><h2>MRR movement</h2><div id="movement" class="chart" style="height:210px"></div></section><section><h2>Plans</h2><table><thead><tr><th>Plan</th><th>Accounts</th><th>MRR</th><th>Share</th><th>Δ vs Oct</th></tr></thead><tbody>${d.plans.map((v, i) => `<tr><td>${d.planNames[i]}</td><td>${Math.round((last(d.accounts) * v) / last(d.revenue)).toLocaleString('en-US')}</td><td>${'$' + ((v / 1000).toFixed(1) + 'K')}</td><td class="share"><span class="share-inline"><span class="track"><i style="width:${(v / Math.max(...d.plans)) * 100}%"></i></span><span>${((v / last(d.revenue)) * 100).toFixed(1)}%</span></span></td><td>${delta(v, d.previousPlans[i], '')}</td></tr>`).join('')}</tbody></table></section></div>`;
 const main = line('MRR', d.revenue);
+main.markPoint.label.position = 'bottom';
 main.markLine = {
   symbol: 'none',
-  lineStyle: { color: t.muted, type: 'dashed', width: 1.5 },
-  label: { formatter: 'Target $400K', position: 'insideEndTop', color: t.muted },
+  lineStyle: { color: t.muted, type: 'dashed', width: 1 },
+  label: { show: false },
   data: [{ yAxis: 400000 }],
 };
-chart('mrr', d.months, [main], {
+const mrr = chart('mrr', d.months, [main], {
   yAxis: {
     type: 'value',
     min: 100000,
@@ -24,6 +25,36 @@ chart('mrr', d.months, [main], {
     axisLine: { show: false },
     splitLine: { lineStyle: { color: t.grid } },
   },
+});
+const [targetX, targetY] = mrr.convertToPixel({ gridIndex: 0 }, [12, 400000]);
+mrr.setOption({
+  graphic: [
+    {
+      id: 'target-leader',
+      type: 'polyline',
+      shape: {
+        points: [
+          [targetX, targetY],
+          [targetX - 12, targetY - 12],
+          [targetX - 40, targetY - 12],
+        ],
+      },
+      style: { stroke: t.muted, lineWidth: 1, fill: 'none' },
+    },
+    {
+      id: 'target-label',
+      type: 'text',
+      x: targetX - 46,
+      y: targetY - 12,
+      style: {
+        text: 'Target $400K',
+        fill: t.muted,
+        font: '12px Inter',
+        align: 'right',
+        verticalAlign: 'middle',
+      },
+    },
+  ],
 });
 rail.forEach((r, i) =>
   spark('s' + i, [d.netNew, d.churn, d.accounts, d.revenue.map((v, j) => v / d.accounts[j])][i]),
@@ -43,7 +74,7 @@ chart(
             : v,
         ),
       barMaxWidth: 12,
-      itemStyle: { color: (p) => (p.dataIndex === 11 ? t.brand : '#C9D2FF') },
+      itemStyle: { color: (p) => (p.dataIndex === 11 ? t.brand : t.ink) },
       label: {
         show: false,
         position: 'top',
@@ -64,7 +95,7 @@ chart(
           : -v,
       ),
       barMaxWidth: 12,
-      itemStyle: { color: '#D4D4D8' },
+      itemStyle: { color: t.muted },
       label: {
         show: false,
         position: 'bottom',

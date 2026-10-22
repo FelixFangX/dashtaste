@@ -1,6 +1,7 @@
 import type { PackName, Mode, DeltaColors, Polarity } from './packs/index.js';
 /** JSON-compatible ECharts options; unknown extension fields are retained. */
 export interface ChartStyle {
+  type?: string;
   color?: string | Option;
   formatter?: string | ((...args: unknown[]) => unknown);
   width?: number;

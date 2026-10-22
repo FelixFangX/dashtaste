@@ -72,6 +72,8 @@ async function verifyLayout(page, name) {
               issues.push('Canvas CJK below 16px: ' + text);
           }
       }
+      if (parseFloat(getComputedStyle(document.querySelector('.hero')).fontSize) < 112)
+        issues.push('Live hero below 112px');
       const c = echarts.getInstanceByDom(document.getElementById('cumulative'));
       if (c.getModel().getComponent('grid').coordinateSystem.getRect().height < 300)
         issues.push('Cumulative plot below 300px');

@@ -11,7 +11,7 @@ const ordered = d.regions
 d.regions = ordered.map((r) => r.v);
 d.regionHourly = ordered.map((r) => r.hourly);
 const k = kpisFor('live');
-root.innerHTML += `<div class="top" style="grid-template-columns:2.2fr 1fr"><section>${metric('实时成交额', money(k[0][1]), delta(k[0][1], k[0][3], '较昨日同时段'), true)}<div class="row" style="margin-top:8px"><span class="muted">目标达成</span><span>63.7%　${money(k[0][1])} <span class="muted">/ ¥2亿</span></span></div><div class="progress"><i style="width:${(k[0][1] / 2000000) * 100}%"></i></div><div id="cumulative" class="chart" style="height:352px"></div></section><aside class="rail"><h2>商品 TOP 8</h2>${table(['轻量通勤包', '棉质衬衫', '城市运动鞋', '保温随行杯', '便携收纳盒', '针织开衫', '桌面阅读灯', '休闲长裤'], d.ranks, true, d.previousRanks, 'higher-is-better', k[0][1])}</aside></div><div class="strip" style="margin-top:24px">${k
+root.innerHTML += `<div class="top" style="grid-template-columns:2.2fr 1fr"><section>${metric('实时成交额', money(k[0][1]), delta(k[0][1], k[0][3], '较昨日同时段'), true)}<div class="row" style="margin-top:8px"><span class="muted">目标达成</span><span>63.7%　${money(k[0][1])} <span class="muted">/ ¥200万</span></span></div><div class="progress"><i style="width:${(k[0][1] / 2000000) * 100}%"></i></div><div id="cumulative" class="chart" style="height:352px"></div></section><aside class="rail"><h2>商品 TOP 8</h2>${table(['轻量通勤包', '棉质衬衫', '城市运动鞋', '保温随行杯', '便携收纳盒', '针织开衫', '桌面阅读灯', '休闲长裤'], d.ranks, true, d.previousRanks, 'higher-is-better', k[0][1])}</aside></div><div class="strip" style="margin-top:24px">${k
   .slice(1)
   .map(([label, v, type, p]) =>
     metric(
@@ -46,7 +46,11 @@ chart(
       min: 0,
       max: 1500000,
       interval: 500000,
-      axisLabel: { fontSize: 16, color: t.muted, formatter: (v) => v / 10000 + '万' },
+      axisLabel: {
+        fontSize: 16,
+        color: t.muted,
+        formatter: (v) => (v === 0 ? '0' : v / 10000 + '万'),
+      },
       splitLine: { lineStyle: { color: t.grid } },
     },
   },

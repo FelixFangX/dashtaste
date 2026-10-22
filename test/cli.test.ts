@@ -75,7 +75,7 @@ it('rules lists every id', () => {
 it('tokens output', () => {
   expect(JSON.parse(cli('tokens', '--pack', 'cn', '--mode', 'dark').stdout).bg).toBe('#121212');
   expect(cli('tokens', '--pack', 'global', '--format', 'css').stdout).toContain(
-    '--dt-paper: #FFFFFF',
+    '--dt-paper: #F4F2EE',
   );
 });
 it('multiple inputs', () => {

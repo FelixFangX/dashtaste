@@ -35,7 +35,7 @@ Avoid empty quadrants and decorative whitespace.
 ## Tables
 
 Use semantic tables with 13px text and 36px rows.
-Use 12px muted column headers.
+Use 11px muted mono column headers for Latin; CJK headers stay at least 12px.
 Right-align numbers with tabular figures.
 Use hairline row separators.
 Do not use zebra stripes or vertical rules.
@@ -67,3 +67,8 @@ Render at a device scale factor of two.
 Keep tooltips out of the captured state.
 Check contrast on every surface.
 Keep at most three font weights, never above 600.
+
+Header: a 20px, weight 500 title left and date range right.
+Omit breadcrumbs, identity lines, helper lines and footer captions.
+Use at most one hairline below the header.
+Create breathing room with margins; avoid half-empty panels.

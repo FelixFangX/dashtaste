@@ -45,6 +45,9 @@ export interface Pack {
   light: Tokens;
   dark: Tokens;
   typography: {
+    monoFontFamily: string;
+    axisSize: number;
+    tracking: string;
     fontFamily: string;
     fontFeatureSettings: string;
     headingWeight: number;

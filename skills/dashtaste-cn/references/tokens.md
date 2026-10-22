@@ -61,3 +61,8 @@ Ink and muted are text colours. Subtle and hairlines are decorative.
 
 Use the numeral face with tabular figures. Headings use weight 500; body uses 400.
 One hero anchors the page; all other numbers remain subordinate.
+
+Use the mono face for Latin ticks and table headers: 11px, 0.06em tracking.
+Keep CJK in the CJK face at 12px or larger, 16px on screens.
+The brand token is a chart accent reserved for exactly one mark and its value label.
+Paper and ink define the main surfaces and data strokes.

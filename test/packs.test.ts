@@ -24,3 +24,12 @@ for (const [name, pack] of Object.entries(packs))
             ).toBeGreaterThanOrEqual(0.08);
       });
   }
+
+for (const mode of ['light', 'dark'] as const)
+  for (const [vision, matrix] of Object.entries(matrices))
+    it(`global ${mode} ${vision} accent differs from down`, () => {
+      const t = packs.global[mode];
+      expect(
+        distance(simulatedLab(t.brand, matrix), simulatedLab(t.down, matrix)),
+      ).toBeGreaterThanOrEqual(0.08);
+    });

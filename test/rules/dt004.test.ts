@@ -27,3 +27,48 @@ describe('DT004', () => {
     });
   }
 });
+
+it('allows explicit short ink dots and hollow dashed comparisons', () => {
+  expect(
+    check(
+      chart({
+        series: [
+          { type: 'line', data: Array(31).fill(1), symbol: 'circle', symbolSize: 4 },
+          {
+            type: 'line',
+            data: Array(31).fill(2),
+            symbol: 'emptyCircle',
+            symbolSize: 4,
+            lineStyle: { type: 'dashed' },
+          },
+        ],
+      }),
+      { only: ['DT004'] },
+    ),
+  ).toEqual([]);
+});
+it('rejects large, default hollow, long and repeated filled symbols', () => {
+  for (const overrides of [
+    { symbol: 'circle', symbolSize: 6 },
+    { symbol: 'emptyCircle', symbolSize: 4 },
+    { symbol: 'circle', symbolSize: 4, data: Array(32).fill(1) },
+  ])
+    expect(
+      check(chart({ series: [{ type: 'line', data: Array(12).fill(1), ...overrides }] }), {
+        only: ['DT004'],
+      }),
+    ).toHaveLength(1);
+  expect(
+    check(
+      chart({
+        series: Array(2).fill({
+          type: 'line',
+          data: Array(12).fill(1),
+          symbol: 'circle',
+          symbolSize: 4,
+        }),
+      }),
+      { only: ['DT004'] },
+    ),
+  ).toHaveLength(2);
+});

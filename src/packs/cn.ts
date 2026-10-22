@@ -5,6 +5,9 @@ export const cn: Pack = {
   limits: { maxPieSlices: 5, maxRoseSlices: 8, maxKpis: 8, cjkMinFontSize: 12 },
   deltaColors: 'red-up',
   typography: {
+    monoFontFamily: 'Geist Mono',
+    axisSize: 12,
+    tracking: '0.06em',
     body: 14,
     minimum: 12,
     fontFamily: 'Instrument Sans',

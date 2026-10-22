@@ -26,11 +26,11 @@ chart(
   [
     {
       type: 'bar',
-      barMaxWidth: 18,
+      barMaxWidth: 12,
       data: d.expense.map((v, i) => ({
         value: v * 0.34,
         label: { show: i === 11 },
-        itemStyle: { color: i === 11 ? t.brand : '#3A3A40' },
+        itemStyle: { color: i === 11 ? t.brand : t.ink },
       })),
       label: {
         show: true,
@@ -70,6 +70,7 @@ const [, lower] = flow.convertToPixel({ gridIndex: 0 }, [11, last(d.expense)]);
 flow.setOption({
   graphic: [
     {
+      id: 'gap-bracket',
       type: 'polyline',
       shape: {
         points: [
@@ -82,8 +83,9 @@ flow.setOption({
       style: { stroke: t.muted, lineWidth: 1, fill: 'none' },
     },
     {
+      id: 'gap-label',
       type: 'text',
-      x: x - 10,
+      x: x - 18,
       y: (upper + lower) / 2,
       style: {
         text: money(last(d.revenue) - last(d.expense)),
