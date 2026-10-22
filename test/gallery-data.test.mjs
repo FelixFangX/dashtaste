@@ -61,3 +61,19 @@ it('event periods, burn and hourly regional values reconcile', () => {
     expect(l.regionHourly.reduce((a, r) => a + r[h], 0)).toBe(v - (h ? l.revenue[h - 1] : 0)),
   );
 });
+
+it('November changes reconcile to the MRR rail', () => {
+  const d = data.saas;
+  expect(d.added.at(-1) + d.expansion.at(-1) - d.churned.at(-1)).toBe(d.netNew.at(-1));
+  expect(kpisFor('saas')[1][1]).toBe(d.netNew.at(-1));
+});
+
+it('calendar weekly totals include each daily observation exactly once', () => {
+  const weeks = Array.from({ length: 5 }, (_, week) =>
+    Array.from(
+      { length: 7 },
+      (_, weekday) => data.store.revenue[week * 7 + weekday - 1] || 0,
+    ).reduce((sum, value) => sum + value, 0),
+  );
+  expect(weeks.reduce((sum, value) => sum + value, 0)).toBe(kpisFor('store')[0][1]);
+});

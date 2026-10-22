@@ -13,6 +13,7 @@ const browser = await chromium.launch({
   args: ['--allow-file-access-from-files'],
 });
 const results = [];
+const boundaries = {};
 async function verifyLayout(page, name) {
   const issues = await page.evaluate((name) => {
     const issues = [],
@@ -71,6 +72,14 @@ async function verifyLayout(page, name) {
         )
           issues.push('Text within 6px of row divider: ' + t.text);
     }
+    if (name === 'store') {
+      const table = document.querySelector('.bottom table').getBoundingClientRect();
+      const calendar = document.querySelector('.calendar').getBoundingClientRect();
+      if (Math.abs(table.top - calendar.top) > 1 || Math.abs(table.bottom - calendar.bottom) > 1)
+        issues.push('Calendar must align with table edges');
+      if (Math.abs(calendar.width - (document.querySelector('.bottom .rail').clientWidth - 28)) > 1)
+        issues.push('Calendar must fill column');
+    }
     if (name === 'saas') {
       const c = echarts.getInstanceByDom(document.getElementById('bridge'));
       const labels = c
@@ -118,11 +127,11 @@ async function verifyLayout(page, name) {
         if (option.series[0].lineStyle.width < 1.5)
           issues.push('Region sparkline line below 1.5px');
         if (
-          option.xAxis[0].data.length !== 18 ||
-          option.xAxis[0].data[0] !== '01:00' ||
+          option.xAxis[0].data.length !== 17 ||
+          option.xAxis[0].data[0] !== '02:00' ||
           option.xAxis[0].data.at(-1) !== '18:00'
         )
-          issues.push('Region sparkline must plot 01:00–18:00');
+          issues.push('Region sparkline must plot 02:00–18:00');
         regionMaxima.push(option.yAxis[0].max);
       }
       if (regionMaxima.length !== 12 || new Set(regionMaxima).size !== 1)
@@ -152,7 +161,17 @@ try {
       await page.waitForFunction(() => window.galleryReady === true);
       await page.waitForTimeout(100);
       if (errors.length) throw new Error(errors.join('\n'));
-      if (variant === 'after') await verifyLayout(page, dashboard.name);
+      if (variant === 'after') {
+        await verifyLayout(page, dashboard.name);
+        boundaries[dashboard.name] = await page.evaluate((name) => {
+          const main = document.querySelector('.top > section').getBoundingClientRect();
+          const lower = document.querySelector('.bottom');
+          const edge = lower
+            ? Math.max(main.right, lower.getBoundingClientRect().right)
+            : main.right;
+          return Math.min(innerWidth, edge + 24);
+        }, dashboard.name);
+      }
       const facts = await page.evaluate(extractInPage);
       if (!facts.charts.length) throw new Error('No charts rendered');
       const findings = check(facts, dashboard);
@@ -185,14 +204,19 @@ try {
     );
     for (const format of ['wide', 'tall']) {
       const wide = format === 'wide',
-        width = wide ? 1600 : 1080;
+        width = wide
+          ? Math.max(
+              1600,
+              Math.ceil(2 * boundaries[d.name] * (d.name === 'live' ? 765 / 1080 : 0.85) + 64),
+            )
+          : 1080;
       const height = wide ? 900 : 1440;
       const gap = 16,
         caption = 32;
       const scale = wide ? (d.name === 'live' ? 765 / 1080 : 0.85) : 1032 / d.width;
-      const cropSize = d.name === 'live' ? 1080 : 900;
+      const cropSize = boundaries[d.name];
       const boardWidth = wide ? cropSize * scale : 1032;
-      const boardHeight = wide ? cropSize * scale : d.height * scale;
+      const boardHeight = d.height * scale;
       const groupHeight = wide ? caption + boardHeight : 2 * (caption + boardHeight) + gap;
       const top = (height - groupHeight) / 2;
       const left = wide ? (width - 2 * boardWidth - gap) / 2 : 24;
@@ -200,7 +224,7 @@ try {
       if (wide && scale < minScale) throw new Error('Comparison crop scale too small');
       const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 2 });
       await page.setContent(
-        `<style>*{box-sizing:border-box}body{margin:0;background:${d.name === 'live' ? '#0B0B0C' : '#EDEDEA'};font:14px sans-serif;color:${d.name === 'live' ? '#959590' : '#636261'}}main{position:absolute;top:${top}px;left:${left}px;display:flex;flex-direction:${wide ? 'row' : 'column'};gap:${gap}px}section{width:${boardWidth}px;flex-shrink:0}p{margin:0;height:${caption}px;line-height:18px}.crop{overflow:hidden;width:${boardWidth}px;height:${boardHeight}px}img{display:block;max-width:none;width:${d.width * scale}px;height:${d.height * scale}px}</style><main>${shots.map((shot, i) => `<section><p>${i ? 'Redesigned · ' + d.pack : 'Default'}</p><div class="crop"><img src="data:image/png;base64,${shot}"></div></section>`).join('')}</main>`,
+        `<style>*{box-sizing:border-box}body{margin:0;background:${d.name === 'live' ? '#0B0B0C' : '#EDEDEA'};font:14px sans-serif;color:${d.name === 'live' ? '#959590' : '#636261'}}main{position:absolute;top:${top}px;left:${left}px;display:flex;flex-direction:${wide ? 'row' : 'column'};gap:${gap}px}section{width:${boardWidth}px;flex-shrink:0}p{margin:0;height:${caption}px;line-height:18px}.crop{overflow:hidden;width:${boardWidth}px;height:${boardHeight}px}img{display:block;max-width:none;width:${d.width * scale}px;height:${d.height * scale}px}</style><main>${shots.map((shot, i) => `<section><p>${i ? 'Dashtaste' : d.pack === 'cn' ? '默认' : 'Default'}</p><div class="crop"><img src="data:image/png;base64,${shot}"></div></section>`).join('')}</main>`,
       );
       await page.locator('img').evaluateAll(async (images) => {
         await Promise.all(images.map((img) => img.decode()));

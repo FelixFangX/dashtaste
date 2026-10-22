@@ -112,6 +112,8 @@ pnpm gallery
 
 This builds the CLI, copies local ECharts into the ignored `gallery/vendor/` folder, renders eight PNGs, and writes [results.json](gallery/results.json). No CDN or network fonts are used. Set `CHROME_PATH` to your local Chromium executable; the default is `/usr/bin/google-chrome`. The browser test extracts each live page again instead of trusting saved scores.
 
+Comparison captions: “Default” / “Dashtaste” (global), “默认” / “Dashtaste” (cn). Wide images preserve full board height and use measured column boundaries.
+
 - saas: [wide](gallery/compare/saas-wide.png) · [tall](gallery/compare/saas-tall.png)
 - finance: [wide](gallery/compare/finance-wide.png) · [tall](gallery/compare/finance-tall.png)
 - store: [wide](gallery/compare/store-wide.png) · [tall](gallery/compare/store-tall.png)

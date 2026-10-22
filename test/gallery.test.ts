@@ -230,6 +230,19 @@ for (const name of ['saas', 'finance', 'store', 'live']) {
               );
             }
             if (name === 'store') {
+              const totals = await page
+                .locator('.week-total')
+                .evaluateAll((cells) =>
+                  cells.map((cell) => Number((cell as HTMLElement).dataset.total)),
+                );
+              expect(totals).toEqual(
+                Array.from({ length: 5 }, (_, week) =>
+                  Array.from(
+                    { length: 7 },
+                    (_, day) => data.store.revenue[week * 7 + day - 1] || 0,
+                  ).reduce((a, b) => a + b, 0),
+                ),
+              );
               const sum = (a: number[]) => a.reduce((a, b) => a + b, 0);
               const change = sum(data.store.revenue) / sum(data.store.previous.revenue) - 1;
               expect(await page.locator('.top>section [data-delta]').nth(1).textContent()).toBe(

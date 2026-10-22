@@ -4,94 +4,65 @@ const { root, t, tick, money, compact, delta, metric, line, chart, spark, table,
 const d = data.saas,
   k = kpisFor('saas');
 const rail = k.slice(1);
-root.innerHTML += `<div class="top"><section><div style="display:flex;justify-content:space-between;align-items:end">${metric('MRR', money(k[0][1]), delta(k[0][1], k[0][3]), true)}</div><div class="bridge"><h2>November</h2><div id="bridge" style="height:108px;width:100%"></div></div><div id="mrr" class="chart" style="height:165px"></div></section><aside class="rail">${rail.map(([label, v, type, p], i) => `<div class="rail-row">${metric(label, type === 'money' ? money(v) : type === 'percent' ? (v * 100).toFixed(2) + '%' : compact(v), delta(v, p, 'vs Oct', label === 'Churn' ? 'lower-is-better' : 'higher-is-better'))}<div class="spark" id="s${i}"></div></div>`).join('')}</aside></div><div class="bottom"><section><h2>MRR movement</h2><div id="movement" class="chart" style="height:165px"></div></section><section><h2>Plans</h2><table><thead><tr><th>Plan</th><th>Accounts</th><th>MRR</th><th>Share</th><th>Δ vs Oct</th></tr></thead><tbody>${d.plans.map((v, i) => `<tr><td>${d.planNames[i]}</td><td>${d.planAccounts[i].toLocaleString('en-US')}</td><td>${'$' + ((v / 1000).toFixed(1) + 'K')}</td><td class="share"><span class="share-inline"><span class="track"><i style="width:${(v / Math.max(...d.plans)) * 100}%"></i></span><span>${((v / last(d.revenue)) * 100).toFixed(1)}%</span></span></td><td>${delta(v, d.previousPlans[i], '')}</td></tr>`).join('')}</tbody></table></section></div>`;
-// A zoomed value axis with explicit floating interval geometry, never zero-based bars.
-const start = d.revenue.at(-2),
-  end = last(d.revenue);
+root.innerHTML += `<div class="top"><section><div style="display:flex;justify-content:space-between;align-items:end">${metric('MRR', money(k[0][1]), delta(k[0][1], k[0][3]), true)}</div><div class="bridge"><h2>November</h2><div class="bridge-ends"><span class="muted">Start <b>${money(d.revenue.at(-2))}</b></span><span class="muted">End <b>${money(last(d.revenue))}</b></span></div><div id="bridge" style="height:70px;width:100%"></div></div><div id="mrr" class="chart" style="height:165px"></div></section><aside class="rail">${rail.map(([label, v, type, p], i) => `<div class="rail-row">${metric(label, type === 'money' ? money(v) : type === 'percent' ? (v * 100).toFixed(2) + '%' : compact(v), delta(v, p, 'vs Oct', label === 'Churn' ? 'lower-is-better' : 'higher-is-better'))}<div class="spark" id="s${i}"></div></div>`).join('')}</aside></div><div class="bottom"><section><h2>MRR movement</h2><div id="movement" class="chart" style="height:165px"></div></section><section><h2>Plans</h2><table><thead><tr><th>Plan</th><th>Accounts</th><th>MRR</th><th>Share</th><th>Δ vs Oct</th></tr></thead><tbody>${d.plans.map((v, i) => `<tr><td>${d.planNames[i]}</td><td>${d.planAccounts[i].toLocaleString('en-US')}</td><td>${'$' + ((v / 1000).toFixed(1) + 'K')}</td><td class="share"><span class="share-inline"><span class="track"><i style="width:${(v / Math.max(...d.plans)) * 100}%"></i></span><span>${((v / last(d.revenue)) * 100).toFixed(1)}%</span></span></td><td>${delta(v, d.previousPlans[i], '')}</td></tr>`).join('')}</tbody></table></section></div>`;
+const net = last(d.added) + last(d.expansion) - last(d.churned);
 const segments = [
-  ['New', start, start + last(d.added), t.ink, last(d.added)],
-  ['Expansion', start + last(d.added), end + last(d.churned), t.muted, last(d.expansion)],
-  ['Churn', end + last(d.churned), end, '#C9C5BD', -last(d.churned)],
+  ['+New', 0, last(d.added), last(d.added), t.ink],
+  ['+Expansion', last(d.added), last(d.added) + last(d.expansion), last(d.expansion), t.muted],
+  ['−Churn', last(d.added) + last(d.expansion), net, -last(d.churned), '#C9C5BD'],
+  ['= Net new', 0, net, net, t.brand],
 ];
-const bridgeTicks = [];
-for (let v = Math.ceil((start - 1000) / 5000) * 5000; v < end + 2000; v += 5000)
-  bridgeTicks.push(v);
 const bridge = echarts.init(document.getElementById('bridge'));
 bridge.setOption({
   animation: false,
-  color: [t.ink, t.muted],
-  grid: { left: 100, right: 240, top: 30, bottom: 42 },
+  color: [t.ink, t.muted, t.brand],
+  grid: { left: 0, right: 0, top: 20, bottom: 22 },
   xAxis: {
-    type: 'value',
-    min: start - 1000,
-    max: end + 2000,
-    interval: 5000,
-    axisLine: { show: true, lineStyle: { color: t.hairline, width: 1 } },
-    axisTick: { show: true, customValues: bridgeTicks, lineStyle: { color: t.hairline } },
-    axisLabel: {
-      customValues: bridgeTicks,
-      color: t.muted,
-      fontFamily: 'Geist Mono',
-      fontSize: 10,
-      formatter: (v) => '$' + (v / 1000).toFixed(0) + 'K',
-    },
-    splitLine: { show: false },
+    type: 'category',
+    data: segments.map((s) => s[0]),
+    axisTick: { show: false },
+    axisLine: { onZero: true, lineStyle: { color: t.ink, width: 1 } },
+    axisLabel: { color: t.ink, fontFamily: 'Inter', fontSize: 12 },
   },
-  yAxis: { type: 'category', data: ['MRR'], show: false },
+  yAxis: {
+    type: 'value',
+    min: 0,
+    axisLabel: { formatter: tick },
+    max: Math.max(...segments.map((s) => s[1]), ...segments.map((s) => s[2])) * 1.3,
+    show: false,
+  },
   series: [
     {
       type: 'custom',
-      data: segments.map((s, i) => [s[1], s[2], i]),
+      data: segments.map((s, i) => [i, s[1], s[2]]),
       renderItem: (params, api) => {
-        const segment = segments[api.value(2)],
-          a = api.coord([api.value(0), 0]),
-          b = api.coord([api.value(1), 0]);
+        const i = api.value(0),
+          s = segments[i],
+          a = api.coord([i, s[1]]),
+          b = api.coord([i, s[2]]);
         return {
           type: 'group',
           children: [
             {
               type: 'rect',
               shape: {
-                x: Math.min(a[0], b[0]),
-                y: a[1] + (api.value(2) === 2 ? 2 : -6),
-                width: Math.abs(b[0] - a[0]),
-                height: api.value(2) === 2 ? 4 : 8,
+                x: a[0] - 7,
+                y: Math.min(a[1], b[1]),
+                width: 14,
+                height: Math.abs(b[1] - a[1]),
               },
-              style: { fill: segment[3] },
+              style: { fill: s[4] },
             },
-            ...(api.value(2) === 0
-              ? []
-              : [
-                  {
-                    type: 'line',
-                    shape: {
-                      x1: (a[0] + b[0]) / 2,
-                      y1: a[1] + (api.value(2) === 2 ? 7 : -7),
-                      x2: api.value(2) === 2 ? Math.max(a[0], b[0]) + 12 : (a[0] + b[0]) / 2 + 10,
-                      y2: a[1] + (api.value(2) === 2 ? 4 : -18),
-                    },
-                    style: { stroke: t.muted, lineWidth: 1 },
-                  },
-                ]),
             {
               type: 'text',
-              x:
-                api.value(2) === 2
-                  ? Math.max(a[0], b[0]) + 16
-                  : (a[0] + b[0]) / 2 + (api.value(2) === 1 ? 10 : 0),
-              y: a[1] + (api.value(2) === 2 ? 4 : -20),
+              x: b[0] + (i === 2 ? 12 : 0),
+              y: b[1] + (i === 2 ? 0 : -7),
               style: {
-                text:
-                  segment[0] +
-                  ' ' +
-                  (segment[4] < 0 ? '−' : '+') +
-                  '$' +
-                  (Math.abs(segment[4]) / 1000).toFixed(1) +
-                  'K',
+                text: (s[3] < 0 ? '−' : '+') + '$' + (Math.abs(s[3]) / 1000).toFixed(1) + 'K',
                 fill: t.ink,
-                font: '12px Inter',
-                align: api.value(2) === 0 ? 'center' : 'left',
-                verticalAlign: api.value(2) === 2 ? 'middle' : 'bottom',
+                font: '12px "Geist Mono"',
+                align: i === 2 ? 'left' : 'center',
+                verticalAlign: i === 2 ? 'middle' : 'bottom',
               },
             },
           ],
@@ -99,29 +70,6 @@ bridge.setOption({
       },
     },
   ],
-});
-bridge.setOption({
-  graphic: [start, end].flatMap((v, i) => {
-    const [x, y] = bridge.convertToPixel({ gridIndex: 0 }, [v, 0]);
-    return [
-      {
-        type: 'line',
-        shape: { x1: x, y1: y - 9, x2: x, y2: y + 9 },
-        style: { stroke: i ? t.brand : t.ink, lineWidth: 1 },
-      },
-      {
-        type: 'text',
-        x,
-        y: y + 44,
-        style: {
-          text: (i ? 'End ' : 'Start ') + money(v),
-          fill: i ? t.brand : t.ink,
-          font: '12px Inter',
-          align: i ? 'left' : 'right',
-        },
-      },
-    ];
-  }),
 });
 const main = line('MRR', d.revenue);
 main.markPoint.label.position = 'bottom';
