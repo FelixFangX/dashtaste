@@ -1,1 +1,17 @@
-{"charts":[{"id":"sales","option":{"yAxis":{"type":"value","min":100},"xAxis":{"type":"category","data":["A","B"]},"series":[{"type":"bar","data":[20000,24000]},{"type":"line","smooth":true,"data":[12000,14000]}],"legend":{"show":true},"tooltip":{}}}]}
+{
+  "charts": [
+    {
+      "id": "sales",
+      "option": {
+        "yAxis": { "type": "value", "min": 100 },
+        "xAxis": { "type": "category", "data": ["A", "B"] },
+        "series": [
+          { "type": "bar", "data": [20000, 24000] },
+          { "type": "line", "smooth": true, "data": [12000, 14000] }
+        ],
+        "legend": { "show": true },
+        "tooltip": {}
+      }
+    }
+  ]
+}

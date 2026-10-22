@@ -1,1 +1,8 @@
-{"backgroundColor":"#FFFFFF","color":["#2A62D9"],"xAxis":{"type":"category","data":["A","B"]},"yAxis":{"type":"value","name":"Count","min":0},"series":[{"type":"bar","data":[120,180]}],"legend":{"show":false}}
+{
+  "backgroundColor": "#FFFFFF",
+  "color": ["#2A62D9"],
+  "xAxis": { "type": "category", "data": ["A", "B"] },
+  "yAxis": { "type": "value", "name": "Count", "min": 0 },
+  "series": [{ "type": "bar", "data": [120, 180] }],
+  "legend": { "show": false }
+}

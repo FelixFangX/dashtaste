@@ -1,5 +1,45 @@
 <!doctype html>
-<html data-delta-colors="red-up"><meta charset="utf-8"><title>Dashboard fixture</title><style>
-body {background:#ffffff;color:#111111;font:14px sans-serif} .kpi{font-size:24px} .delta{color:#D93A3A} .wash{background:linear-gradient(#fff,#eee)} .glow{box-shadow:0 0 14px #0000ff} .small{font-size:11px}
-</style><body><h1>Sales</h1><div class="kpi" data-kpi>12300</div><span class="delta" data-delta>▲ 7.2%</span><span class="small">销量</span><div class="wash">Total</div><div class="glow">Rate</div><div id="chart" _echarts_instance_="fixture">Chart</div>
-<script>window.echarts={getInstanceByDom:function(){return {getOption:function(){return {series:[{type:'line',smooth:true,data:[1,2]}]}}}}};</script></body></html>
+<html data-delta-colors="red-up">
+  <meta charset="utf-8" /><title>Dashboard fixture</title
+  ><style>
+    body {
+      background: #ffffff;
+      color: #111111;
+      font: 14px sans-serif;
+    }
+    .kpi {
+      font-size: 24px;
+    }
+    .delta {
+      color: #d93a3a;
+    }
+    .wash {
+      background: linear-gradient(#fff, #eee);
+    }
+    .glow {
+      box-shadow: 0 0 14px #0000ff;
+    }
+    .small {
+      font-size: 11px;
+    }
+  </style>
+  <body>
+    <h1>Sales</h1>
+    <div class="kpi" data-kpi>12300</div>
+    <span class="delta" data-delta>▲ 7.2%</span><span class="small">销量</span>
+    <div class="wash">Total</div>
+    <div class="glow">Rate</div>
+    <div id="chart" _echarts_instance_="fixture">Chart</div>
+    <script>
+      window.echarts = {
+        getInstanceByDom: function () {
+          return {
+            getOption: function () {
+              return { series: [{ type: 'line', smooth: true, data: [1, 2] }] };
+            },
+          };
+        },
+      };
+    </script>
+  </body>
+</html>
