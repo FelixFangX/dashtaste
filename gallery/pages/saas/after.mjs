@@ -9,19 +9,19 @@ root.innerHTML += `<div class="top"><section><div style="display:flex;justify-co
 const start = d.revenue.at(-2),
   end = last(d.revenue);
 const segments = [
-  ['+New', start, start + last(d.added), t.ink, last(d.added)],
-  ['+Expansion', start + last(d.added), end + last(d.churned), t.muted, last(d.expansion)],
-  ['−Churn', end + last(d.churned), end, '#C9C5BD', -last(d.churned)],
+  ['New', start, start + last(d.added), t.ink, last(d.added)],
+  ['Expansion', start + last(d.added), end + last(d.churned), t.muted, last(d.expansion)],
+  ['Churn', end + last(d.churned), end, '#C9C5BD', -last(d.churned)],
 ];
 const bridge = echarts.init(document.getElementById('bridge'));
 bridge.setOption({
   animation: false,
   color: [t.ink, t.muted],
-  grid: { left: 46, right: 46, top: 38, bottom: 24 },
+  grid: { left: 100, right: 160, top: 30, bottom: 42 },
   xAxis: {
     type: 'value',
-    min: start - 2000,
-    max: end + last(d.churned) + 2000,
+    min: start - 1000,
+    max: end + 2000,
     interval: 5000,
     axisLine: { show: true, lineStyle: { color: t.hairline, width: 1 } },
     axisTick: { show: true, lineStyle: { color: t.hairline } },
@@ -55,21 +55,36 @@ bridge.setOption({
               },
               style: { fill: segment[3] },
             },
+            ...(api.value(2) === 0
+              ? []
+              : [
+                  {
+                    type: 'line',
+                    shape: {
+                      x1: (a[0] + b[0]) / 2,
+                      y1: a[1] + (api.value(2) === 2 ? 7 : -7),
+                      x2: (a[0] + b[0]) / 2 + (api.value(2) === 1 ? 10 : -24),
+                      y2: a[1] + (api.value(2) === 2 ? 10 : -18),
+                    },
+                    style: { stroke: t.muted, lineWidth: 1 },
+                  },
+                ]),
             {
               type: 'text',
-              x: (a[0] + b[0]) / 2,
-              y: a[1] - (api.value(2) === 1 ? 30 : 14),
+              x: (a[0] + b[0]) / 2 + (api.value(2) === 1 ? 10 : api.value(2) === 2 ? -24 : 0),
+              y: a[1] + (api.value(2) === 2 ? 12 : -20),
               style: {
                 text:
-                  (api.value(2) === 2 ? '← ' : '') +
                   segment[0] +
                   ' ' +
                   (segment[4] < 0 ? '−' : '+') +
-                  money(Math.abs(segment[4])),
+                  '$' +
+                  (Math.abs(segment[4]) / 1000).toFixed(1) +
+                  'K',
                 fill: t.ink,
-                font: "10px 'Geist Mono'",
-                align: 'center',
-                verticalAlign: 'bottom',
+                font: '12px Inter',
+                align: api.value(2) === 1 ? 'left' : api.value(2) === 2 ? 'right' : 'center',
+                verticalAlign: api.value(2) === 2 ? 'top' : 'bottom',
               },
             },
           ],
@@ -90,11 +105,11 @@ bridge.setOption({
       {
         type: 'text',
         x,
-        y: y + 14,
+        y: y + 44,
         style: {
           text: (i ? 'End ' : 'Start ') + money(v),
           fill: i ? t.brand : t.ink,
-          font: "11px 'Geist Mono'",
+          font: '12px Inter',
           align: i ? 'left' : 'right',
         },
       },

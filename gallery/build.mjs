@@ -71,6 +71,28 @@ async function verifyLayout(page, name) {
         )
           issues.push('Text within 6px of row divider: ' + t.text);
     }
+    if (name === 'saas') {
+      const c = echarts.getInstanceByDom(document.getElementById('bridge'));
+      const labels = c
+        .getZr()
+        .storage.getDisplayList()
+        .filter((item) => item.type === 'tspan')
+        .map((item) => {
+          const box = item.getBoundingRect().clone();
+          box.applyTransform(item.getComputedTransform());
+          return {
+            text: item.style.text,
+            box: { left: box.x, top: box.y, right: box.x + box.width, bottom: box.y + box.height },
+          };
+        });
+      for (let i = 0; i < labels.length; i++)
+        for (let j = i + 1; j < labels.length; j++)
+          if (overlap(labels[i].box, labels[j].box))
+            issues.push('Bridge label overlap: ' + labels[i].text + ' / ' + labels[j].text);
+      for (const { text, box } of labels)
+        if (box.left < 0 || box.right > c.getWidth() || box.top < 0 || box.bottom > c.getHeight())
+          issues.push('Bridge label outside canvas: ' + text);
+    }
     if (name === 'live') {
       for (const el of document.querySelectorAll('[_echarts_instance_]')) {
         const c = echarts.getInstanceByDom(el);
@@ -87,12 +109,24 @@ async function verifyLayout(page, name) {
         issues.push('Live hero below 112px');
       if (innerHeight - document.querySelector('.regions').getBoundingClientRect().bottom < 24)
         issues.push('Region bottom margin below 24px');
-      for (const el of document.querySelectorAll('.region .spark'))
-        if (
-          echarts.getInstanceByDom(el).getModel().getComponent('grid').coordinateSystem.getRect()
-            .height < 36
-        )
+      const regionMaxima = [];
+      for (const el of document.querySelectorAll('.region .spark')) {
+        const c = echarts.getInstanceByDom(el),
+          option = c.getOption();
+        if (c.getModel().getComponent('grid').coordinateSystem.getRect().height < 36)
           issues.push('Region sparkline plot below 36px');
+        if (option.series[0].lineStyle.width < 1.5)
+          issues.push('Region sparkline line below 1.5px');
+        if (
+          option.xAxis[0].data.length !== 18 ||
+          option.xAxis[0].data[0] !== '01:00' ||
+          option.xAxis[0].data.at(-1) !== '18:00'
+        )
+          issues.push('Region sparkline must plot 01:00–18:00');
+        regionMaxima.push(option.yAxis[0].max);
+      }
+      if (regionMaxima.length !== 12 || new Set(regionMaxima).size !== 1)
+        issues.push('All 12 regions must share one y-scale');
       const c = echarts.getInstanceByDom(document.getElementById('cumulative'));
       if (c.getModel().getComponent('grid').coordinateSystem.getRect().height < 320)
         issues.push('Cumulative plot below 320px');
