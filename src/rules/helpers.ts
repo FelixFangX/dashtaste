@@ -91,6 +91,16 @@ export function hasUnit(axis: Option): boolean {
 }
 
 export const defaultColors = new Set([
+  // ECharts 6 default theme, alongside the ECharts 5 palette below.
+  '#5070dd',
+  '#b6d634',
+  '#505372',
+  '#ff994d',
+  '#0ca8df',
+  '#ffd10a',
+  '#fb628b',
+  '#785db0',
+  '#3fbe95',
   '#5470c6',
   '#91cc75',
   '#fac858',

@@ -19,7 +19,11 @@ export async function extractPage(input: string): Promise<PageFacts> {
     (existsSync('/usr/bin/google-chrome') ? '/usr/bin/google-chrome' : undefined);
   let browser;
   try {
-    browser = await chromium.launch({ headless: true, executablePath });
+    browser = await chromium.launch({
+      headless: true,
+      executablePath,
+      args: /^https?:\/\//i.test(input) ? [] : ['--allow-file-access-from-files'],
+    });
   } catch {
     throw new Error('browser unavailable; set CHROME_PATH to a Chromium executable');
   }

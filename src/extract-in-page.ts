@@ -123,7 +123,18 @@ export function extractInPage(): PageFacts {
   if (echarts)
     for (const el of document.querySelectorAll('[_echarts_instance_]')) {
       const instance = echarts.getInstanceByDom(el);
-      if (instance) facts.charts.push({ id: el.id || selector(el), option: instance.getOption() });
+      if (instance) {
+        // Browser transports discard functions. Preserve formatter presence without executing
+        // user callbacks or sending executable code across the extraction boundary.
+        const option = JSON.parse(
+          JSON.stringify(instance.getOption(), (_key, value: unknown) =>
+            typeof value === 'function' ? '[function]' : value,
+          ),
+        );
+        // ECharts 6 returns singleton components as arrays, including tooltip.
+        if (Array.isArray(option.tooltip)) option.tooltip = option.tooltip[0];
+        facts.charts.push({ id: el.id || selector(el), option });
+      }
     }
   // Page facts provide the background and optional delta convention.
   facts.page = {

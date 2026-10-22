@@ -27,3 +27,18 @@ describe('DT001', () => {
     });
   }
 });
+
+// Read the installed tool's palette so upstream defaults cannot silently escape detection.
+it('flags the rendered ECharts 6 default palette in both packs', async () => {
+  const { init } = await import('echarts');
+  const instance = init(null, undefined, { ssr: true, renderer: 'svg', width: 320, height: 200 });
+  try {
+    instance.setOption({ xAxis: { data: ['A'] }, yAxis: {}, series: [{ type: 'bar', data: [1] }] });
+    const option = instance.getOption();
+    for (const pack of ['global', 'cn'] as const) {
+      expect(check(option, { pack, only: ['DT001'] })).toHaveLength(1);
+    }
+  } finally {
+    instance.dispose();
+  }
+});

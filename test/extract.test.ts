@@ -1,5 +1,6 @@
 import { it, expect } from 'vitest';
 import { existsSync } from 'node:fs';
+import { check } from '../src/engine.js';
 import { extractPage } from '../src/extract.js';
 let available = false;
 try {
@@ -15,6 +16,8 @@ it.skipIf(!available)(
     const f = await extractPage('test/fixtures/dashboard.html');
     expect(f.charts).toHaveLength(1);
     expect(f.charts[0].option.series[0].smooth).toBe(true);
+    expect(f.charts[0].option.tooltip?.valueFormatter).toBe('[function]');
+    expect(check(f, { only: ['DT011'] })).toEqual([]);
     expect(f.texts?.some((t) => t.text === '销量' && t.fontSize === 11)).toBe(true);
     expect(f.kpis).toHaveLength(1);
     expect(f.deltas?.[0].text).toBe('▲ 7.2%');
