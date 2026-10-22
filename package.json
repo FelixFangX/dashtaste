@@ -26,10 +26,12 @@
     "test": "vitest run",
     "lint-skills": "vitest run test/skills.test.ts",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "gallery": "pnpm build && node gallery/build.mjs"
   },
   "devDependencies": {
     "@types/node": "^20.19.0",
+    "echarts": "^6.1.0",
     "prettier": "^3.9.10",
     "typescript": "~5.9.3",
     "vitest": "~3.2.4"
