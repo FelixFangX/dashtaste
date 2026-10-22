@@ -1,5 +1,3 @@
-English | [简体中文](README.zh-CN.md)
-
 # dashtaste
 
 Two style-pack skills for coding agents, plus a `dashtaste check` CLI for chart configs and rendered dashboards.
@@ -28,7 +26,9 @@ npx dashtaste check dashboard.json --pack cn --format json
 npx dashtaste check dashboard.json --pack cn --disable DT003,DT005
 ```
 
-The package is not published yet. To run this checkout, use Node 20.19 or newer and pnpm:
+Requires Node 20.19 or newer. Checking a URL or HTML file also needs a local Chromium (set `CHROME_PATH`) and the optional `playwright-core` dependency; JSON configs need neither.
+
+To run from a checkout instead, use pnpm:
 
 ```sh
 pnpm install
@@ -55,8 +55,8 @@ Scores start at 100, subtract 10 per error, 3 per warning, and 1 per information
 | Choice        | global                           | cn                                                        |
 | ------------- | -------------------------------- | --------------------------------------------------------- |
 | Deltas        | Green up, red down; arrows       | Red up, green down; arrows                                |
-| Units         | K / M / B                        | 万 / 亿                                                   |
-| KPI layout    | One strip with dividers          | Flat cards; 环比 and 同比 rows                            |
+| Units         | K / M / B                        | wan / yi (10⁴ / 10⁸)                                      |
+| KPI layout    | One strip with dividers          | Flat cards; period-over-period and year-over-year rows    |
 | Legend        | Omit for one series              | Omit for one series; direct category labels work for pies |
 | Pie           | At most five slices; prefer bars | At most five slices; rose charts allow eight              |
 | Dark / screen | Paper and ink dark tokens        | Navy panels; 1920×1080 screen composition                 |
@@ -112,7 +112,7 @@ pnpm gallery
 
 This builds the CLI, copies local ECharts into the ignored `gallery/vendor/` folder, renders eight PNGs, and writes [results.json](gallery/results.json). No CDN or network fonts are used. Set `CHROME_PATH` to your local Chromium executable; the default is `/usr/bin/google-chrome`. The browser test extracts each live page again instead of trusting saved scores.
 
-Comparison captions: “Default” / “Dashtaste” (global), “默认” / “Dashtaste” (cn). Wide images preserve full board height and use measured column boundaries.
+Comparison captions: “Default” / “Dashtaste” (global and cn; the cn caption for “Default” is written in Chinese). Wide images preserve full board height and use measured column boundaries.
 
 - saas: [wide](gallery/compare/saas-wide.png) · [tall](gallery/compare/saas-tall.png)
 - finance: [wide](gallery/compare/finance-wide.png) · [tall](gallery/compare/finance-tall.png)
@@ -121,7 +121,7 @@ Comparison captions: “Default” / “Dashtaste” (global), “默认” / �
 
 ## Status
 
-Early. Not published to npm yet.
+Early (0.x). Expect rule changes between minor versions.
 
 ECharts only for now. Vega-Lite and Recharts are planned. HTML mode needs a local Chromium. Rules are opinions with reasons; every rule can be disabled.
 

@@ -1,12 +1,42 @@
 {
   "name": "dashtaste",
   "version": "0.0.1",
-  "private": true,
+  "description": "Dashboard taste for coding agents: two style-pack skills (global and cn) plus a dashtaste check linter for ECharts configs and rendered dashboards.",
+  "keywords": [
+    "dashboard",
+    "echarts",
+    "chart",
+    "lint",
+    "linter",
+    "data-visualization",
+    "dataviz",
+    "design",
+    "agent-skills",
+    "skills",
+    "ai-agents",
+    "cli"
+  ],
+  "author": "Felix Fang (https://github.com/FelixFangX)",
+  "homepage": "https://github.com/FelixFangX/dashtaste#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FelixFangX/dashtaste.git"
+  },
+  "bugs": {
+    "url": "https://github.com/FelixFangX/dashtaste/issues"
+  },
   "license": "MIT",
   "type": "module",
   "bin": {
     "dashtaste": "dist/cli.js"
   },
+  "files": [
+    "dist",
+    "skills",
+    "docs",
+    "README.md",
+    "LICENSE"
+  ],
   "engines": {
     "node": ">=20"
   },
@@ -27,7 +57,8 @@
     "lint-skills": "vitest run test/skills.test.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "gallery": "pnpm build && node gallery/build.mjs"
+    "gallery": "pnpm build && node gallery/build.mjs",
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "@fontsource-variable/geist-mono": "^5.3.0",
