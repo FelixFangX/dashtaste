@@ -73,8 +73,8 @@ chart(
             ? { value: v, label: { show: true, formatter: 'New $' + (v / 1000).toFixed(1) + 'K' } }
             : v,
         ),
-      barMaxWidth: 12,
-      itemStyle: { color: (p) => (p.dataIndex === 11 ? t.brand : t.ink) },
+      barMaxWidth: 8,
+      itemStyle: { color: (p) => (p.dataIndex === 11 ? t.brand : '#B9B5AC') },
       label: {
         show: false,
         position: 'top',
@@ -94,8 +94,8 @@ chart(
             }
           : -v,
       ),
-      barMaxWidth: 12,
-      itemStyle: { color: t.muted },
+      barMaxWidth: 8,
+      itemStyle: { color: '#D6D2CA' },
       label: {
         show: false,
         position: 'bottom',

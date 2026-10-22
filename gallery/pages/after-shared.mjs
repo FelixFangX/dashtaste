@@ -21,6 +21,7 @@ export async function setup(name, title, date) {
   style.textContent += `body[data-dashboard=saas] .bottom td{height:32px}body[data-dashboard=store] header{height:70px}body[data-dashboard=store] .hero{font-size:52px}body[data-dashboard=store] td{height:32px}body[data-dashboard=store] .top>.rail{align-content:start}body[data-dashboard=store] .bottom .rail{display:block}body[data-dashboard=store] .ranking .product{width:auto}body[data-dashboard=store] .ranking{table-layout:fixed}body[data-dashboard=store] .ranking th:first-child{width:36px}body[data-dashboard=store] .ranking th:nth-child(3){width:100px}body[data-dashboard=store] .ranking th:nth-child(4){width:150px}body[data-dashboard=store] .ranking th:nth-child(5){width:72px}body[data-dashboard=finance] #burn{margin-top:10px}body[data-dashboard=finance] .bottom .rail .kpi{height:98px}body[data-dashboard=live] .hero{font-size:64px}body[data-dashboard=live] .strip{padding:8px 0;margin-top:12px!important}body[data-dashboard=live] .strip .kpi{padding:0;min-height:94px;height:94px}body[data-dashboard=live] .strip .value{font-size:30px;line-height:1.15;margin:4px 0}body[data-dashboard=live] .progress{margin:8px 0}body[data-dashboard=live] .region{height:85px}body[data-dashboard=live] .region .spark{height:45px}`;
   style.textContent += `.period:empty{display:none}td:last-child{padding-left:10px}th:not(:first-child){padding-left:12px}.target{padding-bottom:48px}body[data-dashboard=finance] .top{grid-template-columns:minmax(0,1.85fr) minmax(0,1fr)}body[data-dashboard=finance] .share{padding-left:8px}body[data-dashboard=store] .bottom{grid-template-columns:1.4fr 1fr!important}`;
   style.textContent += `header{height:48px;margin-bottom:20px}body[data-dashboard=store] header{height:48px}th{font-family:${cn ? face : mono};font-size:${screen ? 16 : cn ? 12 : 11}px;letter-spacing:${cn ? 0 : '.06em'};text-transform:${cn ? 'none' : 'uppercase'}}${!cn ? `label{font:400 11px '${mono}';letter-spacing:.06em;text-transform:uppercase}` : ''}.track i{background:${t.ink};opacity:.2}tr:first-child .track i,.channels>div:first-child .track i{opacity:1}.progress i{background:${t.ink}}body[data-dashboard=live] .hero{font-size:112px;line-height:1.15;margin-top:12px}body[data-dashboard=live] header{height:44px;margin-bottom:12px}body[data-dashboard=live] .kpi{min-height:0}body[data-dashboard=live] .chart{margin-top:8px}body[data-dashboard=live] .region{height:75px}body[data-dashboard=live] .region .spark{height:38px}`;
+  style.textContent += `body[data-dashboard=store] .top>.rail{display:block}body[data-dashboard=store] .top>.rail .kpi{height:82px;min-height:0;padding:8px 136px 8px 0}body[data-dashboard=store] .top>.rail label{font-size:13px}body[data-dashboard=store] .top>.rail .value{font-size:24px;line-height:28px;margin:3px 0}body[data-dashboard=store] .top>.rail .spark{width:120px;height:32px;top:24px;bottom:auto}body[data-dashboard=store] .channels .track,body[data-dashboard=store] .channels .track i{height:4px}body[data-dashboard=store] .channels .track i{background:${t.muted};opacity:1}body[data-dashboard=store] .channels>div:first-child .track i{background:${t.ink}}`;
   document.head.append(style);
   const root = document.querySelector('main');
   root.innerHTML = `<header><div><h1>${title}</h1></div><div class="date">${date}</div></header>`;
@@ -72,29 +73,29 @@ export async function setup(name, title, date) {
     type: 'line',
     name,
     data: values,
-    showSymbol: values.length <= 31,
+    showSymbol: !cn && values.length <= 31,
     symbol: comparison ? 'emptyCircle' : 'circle',
     symbolSize: 3.5,
     smooth: false,
     lineStyle: {
       width: comparison ? 1 : 1.5,
       type: comparison ? 'dashed' : 'solid',
-      color: comparison ? t.muted : t.ink,
+      color: comparison ? t.muted : cn && !dark ? t.brand : t.ink,
     },
-    itemStyle: { color: comparison ? t.muted : t.ink },
+    itemStyle: { color: comparison ? t.muted : cn && !dark ? t.brand : t.ink },
     endLabel: { show: false },
     markPoint: comparison
       ? undefined
       : {
           symbol: 'circle',
           symbolSize: 7,
-          itemStyle: { color: t.brand },
+          itemStyle: { color: cn ? t.accent : t.brand },
           label: {
             show: !!name,
             formatter: () => money(last(values)),
             position: 'top',
             distance: 10,
-            color: t.brand,
+            color: cn ? t.ink : t.brand,
             fontSize: screen ? 16 : 11,
           },
           data: [{ coord: [values.length - 1, last(values)] }],
@@ -200,8 +201,16 @@ export async function setup(name, title, date) {
       series: [
         {
           ...line('', values),
+          showSymbol: false,
           endLabel: { show: false },
-          lineStyle: { width: 1.5, color: t.ink },
+          lineStyle: { width: 1.5, color: cn && !dark ? t.brand : t.ink },
+          markPoint: {
+            symbol: 'circle',
+            symbolSize: 4,
+            itemStyle: { color: cn ? t.accent : t.brand },
+            label: { show: false },
+            data: [{ coord: [values.length - 1, last(values)] }],
+          },
         },
       ],
     });

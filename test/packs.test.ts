@@ -33,3 +33,13 @@ for (const mode of ['light', 'dark'] as const)
         distance(simulatedLab(t.brand, matrix), simulatedLab(t.down, matrix)),
       ).toBeGreaterThanOrEqual(0.08);
     });
+
+for (const mode of ['light', 'dark'] as const)
+  for (const [vision, matrix] of Object.entries(matrices))
+    it(`cn ${mode} ${vision} accent differs from delta colours`, () => {
+      const t = packs.cn[mode];
+      for (const delta of [t.up, t.down])
+        expect(
+          distance(simulatedLab(t.accent as string, matrix), simulatedLab(delta, matrix)),
+        ).toBeGreaterThanOrEqual(0.08);
+    });

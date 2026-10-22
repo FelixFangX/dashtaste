@@ -16,6 +16,7 @@ Ink and muted are text colours. Subtle and hairlines are decorative.
 | light.strong        | #DDDDDD |
 | light.primary       | #141414 |
 | light.brand         | #3E6A88 |
+| light.accent        | #C68A1C |
 | light.up            | #C8372F |
 | light.down          | #167D4F |
 | light.flat          | #636261 |
@@ -44,6 +45,7 @@ Ink and muted are text colours. Subtle and hairlines are decorative.
 | dark.hairline      | #2A2926 |
 | dark.strong        | #484843 |
 | dark.brand         | #74ABD0 |
+| dark.accent        | #E8B657 |
 | dark.up            | #DB655C |
 | dark.down          | #73B78E |
 | dark.flat          | #959590 |
@@ -64,5 +66,7 @@ One hero anchors the page; all other numbers remain subordinate.
 
 Use the mono face for Latin ticks and table headers: 11px, 0.06em tracking.
 Keep CJK in the CJK face at 12px or larger, 16px on screens.
-The brand token is a chart accent reserved for exactly one mark and its value label.
+The accent token marks only the latest point of the main trend and sparkline end dots.
+Its value label stays ink. The brand token supplies steel data strokes in light mode.
+Red and green are reserved for deltas.
 Paper and ink define the main surfaces and data strokes.

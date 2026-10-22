@@ -26,11 +26,11 @@ chart(
   [
     {
       type: 'bar',
-      barMaxWidth: 12,
+      barMaxWidth: 8,
       data: d.expense.map((v, i) => ({
         value: v * 0.34,
         label: { show: i === 11 },
-        itemStyle: { color: i === 11 ? t.brand : t.ink },
+        itemStyle: { color: i === 11 ? t.brand : '#5A5850' },
       })),
       label: {
         show: true,
