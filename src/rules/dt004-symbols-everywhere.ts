@@ -7,7 +7,7 @@ export const dt004: Rule = rule(
   'symbols-everywhere',
   'warn',
   'Use small explicit dots only on short series; avoid default symbols everywhere.',
-  'use dots at most 5px on at most 31 points, or use dots at most 5px on at most 31 points, or set showSymbol: false',
+  'use dots at most 5px on at most 31 points, or set showSymbol: false',
   function check(facts, context, emit) {
     charts(facts, (option, path) =>
       series(option).forEach((item, index) => {

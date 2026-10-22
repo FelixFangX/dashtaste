@@ -10,6 +10,10 @@ describe('DT004', () => {
   it('flags symbols above twelve observations', () => {
     expect(check(flagged, { pack: 'global', only: ['DT004'] }).length).toBeGreaterThan(0);
   });
+  it('states the fix hint once', () => {
+    const [finding] = check(flagged, { pack: 'global', only: ['DT004'] });
+    expect(finding.fix).toBe('use dots at most 5px on at most 31 points, or set showSymbol: false');
+  });
   it('passes hidden line symbols', () => {
     expect(check(passing, { pack: 'global', only: ['DT004'] })).toEqual([]);
   });

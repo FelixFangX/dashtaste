@@ -95,7 +95,7 @@ Why: Repeated symbols obscure the line on longer time series.
 
 Triggers: Use small explicit dots only on short series; avoid default symbols everywhere.
 
-Fix: use dots at most 5px on at most 31 points, or use dots at most 5px on at most 31 points, or set showSymbol: false.
+Fix: use dots at most 5px on at most 31 points, or set showSymbol: false.
 
 Minimal failing input:
 
