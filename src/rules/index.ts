@@ -1,3 +1,8 @@
+import { dt028 } from './dt028-hero-metric.js';
+import { dt027 } from './dt027-tabular-numerals.js';
+import { dt026 } from './dt026-line-weight.js';
+import { dt025 } from './dt025-legend-not-direct-label.js';
+import { dt024 } from './dt024-bar-width.js';
 import type { Rule } from '../types.js';
 import { dt001 } from './dt001-default-palette.js';
 import { dt002 } from './dt002-rainbow-palette.js';
@@ -47,4 +52,9 @@ export const rules: Rule[] = [
   dt021,
   dt022,
   dt023,
+  dt024,
+  dt025,
+  dt026,
+  dt027,
+  dt028,
 ];

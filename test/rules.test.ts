@@ -27,7 +27,7 @@ for (const pack of ['global', 'cn'] as const)
           pack,
           only: ['DT008'],
         }),
-      ).toHaveLength(pack === 'cn' ? 0 : 1));
+      ).toHaveLength(1));
     it('unit templates', () => {
       for (const [formatter, fail] of [
         ['{value}K', pack === 'cn'],

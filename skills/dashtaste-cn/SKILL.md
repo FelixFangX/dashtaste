@@ -22,10 +22,10 @@ For a global audience use dashtaste-global.
 ## Ten rules to apply first
 
 - DT001: Set explicit series colours from the selected pack.
-- DT002: Keep at most six categorical colours; group the tail as Other.
+- DT002: Keep at most five categorical colours; group the tail as Other.
 - DT003: Draw straight line segments; smoothing invents intermediate values.
 - DT004: Hide line symbols above 12 points.
-- DT005: Keep pies to five slices; prefer bars for close comparisons.
+- DT005: Use ranked bars for shares; no donuts in KPI boards.
 - DT007: Use flat two-dimensional marks.
 - DT009: Put units in value-axis names.
 - DT010: Start bar value axes at zero and disable scale.
@@ -44,5 +44,8 @@ Keep definitions in an accessible detail view when needed, outside chart caption
 Use full-width punctuation in Chinese prose. Add a space between Hanzi and
 Latin text or digits in prose; keep `1.23万` and `12%` intact.
 Use no uppercase or tracked labels and no serif page title.
-Keep CJK text at least 12px. Use `system-ui, sans-serif` with the system CJK
-fallback; do not name proprietary fonts.
+Keep CJK text at least 12px, or 16px on screens. Use the numeral face
+and CJK fallback specified in references/numbers.md.
+
+Use one hero metric, one sheet, hairlines, and direct labels.
+Use the measured defaults in the references for all KPI boards.

@@ -22,10 +22,10 @@ For a Chinese-market audience use dashtaste-cn.
 ## Ten rules to apply first
 
 - DT001: Set explicit series colours from the selected pack.
-- DT002: Keep at most six categorical colours; group the tail as Other.
+- DT002: Keep at most five categorical colours; group the tail as Other.
 - DT003: Draw straight line segments; smoothing invents intermediate values.
 - DT004: Hide line symbols above 12 points.
-- DT005: Keep pies to five slices; prefer bars for close comparisons.
+- DT005: Use ranked bars for shares; no donuts in KPI boards.
 - DT007: Use flat two-dimensional marks.
 - DT009: Put units in value-axis names.
 - DT010: Start bar value axes at zero and disable scale.
@@ -38,3 +38,6 @@ Use no helper labels, explanatory captions, or “this chart shows” text.
 Put units in axis names. Titles may state the finding, such as
 “Returns fell for three weeks”. Labels identify data and controls directly.
 Keep definitions in an accessible detail view when needed, outside chart captions.
+
+Use one hero metric, one sheet, hairlines, and direct labels.
+Use the measured defaults in the references for all KPI boards.

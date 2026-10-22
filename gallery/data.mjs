@@ -102,7 +102,7 @@ export const kpisFor = (name) => {
   if (name === 'saas' || name === 'finance') {
     const series =
       name === 'saas'
-        ? [data.saas.revenue, data.saas.netNew, data.saas.churn, data.saas.accounts]
+        ? [data.saas.revenue, data.saas.netNew, data.saas.churn, data.saas.accounts, data.saas.arpa]
         : [
             data.finance.revenue,
             data.finance.margin.map((v) => v / 100),
@@ -111,20 +111,20 @@ export const kpisFor = (name) => {
           ];
     labels =
       name === 'saas'
-        ? ['MRR', 'Net new MRR', 'Churn', 'Active accounts']
+        ? ['MRR', 'Net new MRR', 'Churn', 'Active accounts', 'ARPA']
         : ['Revenue', 'Gross margin', 'Cash balance', 'Runway'];
     types =
       name === 'saas'
-        ? ['money', 'money', 'percent', 'number']
+        ? ['money', 'money', 'percent', 'number', 'money']
         : ['money', 'percent', 'money', 'months'];
     current = series.map(last);
     previous = series.map((v) => v.at(-2));
   } else if (name === 'store') {
-    labels = ['成交金额', '访客数', '支付转化率', '客单价'];
-    types = ['money', 'number', 'percent', 'money'];
-    current = storeMetrics(data.store);
-    previous = storeMetrics(data.store.previous);
-    yearAgo = storeMetrics(data.store.yearAgo);
+    labels = ['成交金额', '访客数', '支付转化率', '客单价', '退款率'];
+    types = ['money', 'number', 'percent', 'money', 'percent'];
+    current = [...storeMetrics(data.store), last(data.store.refundRate)];
+    previous = [...storeMetrics(data.store.previous), last(data.store.previousRefundRate)];
+    yearAgo = [...storeMetrics(data.store.yearAgo), last(data.store.yearAgoRefundRate)];
   } else {
     const d = data.live;
     labels = ['成交金额', '支付订单', '实时访客', '支付转化率', '客单价', '退款金额'];
@@ -156,3 +156,25 @@ const allocate = (weights, total) => {
 data.saas.plans = allocate(data.saas.plans, last(data.saas.revenue));
 data.finance.ranks = allocate(data.finance.ranks, last(data.finance.expense));
 data.live.regions = allocate(data.live.regions, last(data.live.revenue));
+
+// Observed detail periods use the same fixed generator as the headline series.
+data.saas.arpa = data.saas.revenue.map((v, i) => v / data.saas.accounts[i]);
+data.store.refundRate = trend(30, 210, -0.6).map((v) => v / 10000);
+data.store.previousRefundRate = trend(30, 245, -0.5).map((v) => v / 10000);
+data.store.yearAgoRefundRate = trend(30, 270, -0.4).map((v) => v / 10000);
+data.saas.previousPlans = data.saas.plans.map((v) => Math.round(v / (1.02 + random() * 0.09)));
+data.finance.previousSpend = data.finance.ranks.map((v) =>
+  Math.round(v / (0.94 + random() * 0.15)),
+);
+data.store.previousRanks = data.store.ranks.map((v) => Math.round(v / (1.03 + random() * 0.15)));
+data.live.previousRanks = data.live.ranks.map((v) => Math.round(v / (1.03 + random() * 0.15)));
+data.store.channels = allocate(data.store.parts, sum(data.store.revenue));
+data.live.regionHourly = data.live.regions.map((v) => {
+  const increments = trend(19, 100, 18),
+    total = sum(increments);
+  let cumulative = 0;
+  return increments.map((n) => {
+    cumulative += n;
+    return Math.round((cumulative / total) * v);
+  });
+});

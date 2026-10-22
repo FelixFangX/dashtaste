@@ -45,6 +45,10 @@ export interface Pack {
   light: Tokens;
   dark: Tokens;
   typography: {
+    fontFamily: string;
+    fontFeatureSettings: string;
+    headingWeight: number;
+    bodyWeight: number;
     body: number;
     minimum: number;
   };

@@ -4,9 +4,9 @@
     "variant": "before",
     "pack": "global",
     "mode": "light",
-    "errors": 28,
-    "warnings": 36,
-    "info": 1,
+    "errors": 32,
+    "warnings": 50,
+    "info": 2,
     "score": 0,
     "ruleIds": [
       "DT001",
@@ -23,7 +23,11 @@
       "DT015",
       "DT017",
       "DT018",
-      "DT021"
+      "DT021",
+      "DT024",
+      "DT026",
+      "DT027",
+      "DT028"
     ]
   },
   {
@@ -43,8 +47,8 @@
     "pack": "global",
     "mode": "dark",
     "errors": 7,
-    "warnings": 30,
-    "info": 0,
+    "warnings": 40,
+    "info": 1,
     "score": 0,
     "ruleIds": [
       "DT001",
@@ -57,7 +61,11 @@
       "DT013",
       "DT017",
       "DT018",
-      "DT021"
+      "DT021",
+      "DT024",
+      "DT026",
+      "DT027",
+      "DT028"
     ]
   },
   {
@@ -76,9 +84,9 @@
     "variant": "before",
     "pack": "cn",
     "mode": "light",
-    "errors": 34,
-    "warnings": 26,
-    "info": 1,
+    "errors": 41,
+    "warnings": 61,
+    "info": 2,
     "score": 0,
     "ruleIds": [
       "DT001",
@@ -86,6 +94,7 @@
       "DT003",
       "DT004",
       "DT005",
+      "DT008",
       "DT009",
       "DT010",
       "DT013",
@@ -94,7 +103,10 @@
       "DT017",
       "DT018",
       "DT021",
-      "DT023"
+      "DT023",
+      "DT024",
+      "DT027",
+      "DT028"
     ]
   },
   {
@@ -114,8 +126,8 @@
     "pack": "cn",
     "mode": "dark",
     "errors": 32,
-    "warnings": 44,
-    "info": 0,
+    "warnings": 76,
+    "info": 1,
     "score": 0,
     "ruleIds": [
       "DT001",
@@ -128,7 +140,11 @@
       "DT017",
       "DT018",
       "DT020",
-      "DT021"
+      "DT021",
+      "DT025",
+      "DT026",
+      "DT027",
+      "DT028"
     ]
   },
   {

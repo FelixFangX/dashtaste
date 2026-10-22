@@ -83,3 +83,11 @@ const longDate = new Intl.DateTimeFormat('en-US', {
 Set timezone handling before formatting server timestamps.
 Never parse a display string back into analytical data.
 Keep raw amounts, units, and comparison periods as separate fields.
+
+## Numeral typography
+
+Use "Instrument Sans" with "PingFang SC", "Noto Sans CJK SC", sans-serif fallback.
+Set font-variant-numeric: tabular-nums on every number.
+Keep decimal precision consistent within each metric and table column.
+Use 500 for headings and values, 400 for body text; never exceed 600.
+Use one hero at 2.2 times the secondary KPI size or larger.

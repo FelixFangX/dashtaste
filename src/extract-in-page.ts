@@ -69,6 +69,8 @@ export function extractInPage(): PageFacts {
         background: compositeBackground(el),
         fontSize,
         fontWeight: style.fontWeight === 'bold' ? 700 : parseInt(style.fontWeight) || 400,
+        fontVariantNumeric: style.fontVariantNumeric,
+        fontFeatureSettings: style.fontFeatureSettings,
       });
     // Decoration facts include CSS gradients and shadows.
     if (/gradient\(/.test(style.backgroundImage))
@@ -89,6 +91,9 @@ export function extractInPage(): PageFacts {
         text: text || el.textContent?.trim() || '',
         color: style.color,
         background: compositeBackground(el),
+        fontSize,
+        fontVariantNumeric: style.fontVariantNumeric,
+        fontFeatureSettings: style.fontFeatureSettings,
       });
     if (el.hasAttribute('data-delta') || /[▲▼↑↓]|[+\-]\s*\d+(?:\.\d+)?%/.test(text)) {
       const direction = el.getAttribute('data-direction');

@@ -27,7 +27,7 @@ it('deltas and switches', () => {
   expect(formatDelta(107.2, 100, 'global')).toEqual({
     text: '▲ 7.2%',
     direction: 'up',
-    color: '#2F7D4F',
+    color: '#12805C',
   });
   expect(formatDelta(90, 100, 'cn')).toEqual({
     text: '▼ 10.0%',

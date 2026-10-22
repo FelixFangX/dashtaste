@@ -3,6 +3,7 @@ import type { PackName, Mode, DeltaColors, Polarity } from './packs/index.js';
 export interface ChartStyle {
   color?: string | Option;
   formatter?: string | ((...args: unknown[]) => unknown);
+  width?: number;
   fontSize?: number;
   fontWeight?: number | 'bold' | 'normal';
   show?: boolean;
@@ -48,6 +49,8 @@ export interface TextFact {
   background: string;
   fontSize: number;
   fontWeight: number;
+  fontVariantNumeric?: string;
+  fontFeatureSettings?: string;
 }
 export interface DeltaFact {
   selector: string;
@@ -73,6 +76,9 @@ export interface PageFacts {
     text: string;
     color: string;
     background?: string;
+    fontSize?: number;
+    fontVariantNumeric?: string;
+    fontFeatureSettings?: string;
   }[];
   deltas?: DeltaFact[];
   emojis?: {

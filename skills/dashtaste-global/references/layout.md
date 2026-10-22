@@ -1,73 +1,69 @@
-# Global page layout
+# Layout
 
-## Page skeleton
+Use one hero to establish the reading order.
+The hero is 52–64px on desktop and 112–128px on a screen.
+The hero is at least 2.2 times the next KPI.
+Use weight 500 and letter spacing −0.02em for the hero.
+Secondary KPIs use 22–26px, or 32–40px on screens.
+Labels use 12–13px and weight 500.
+Use sentence case without uppercase tracking.
+Titles name the metric or state a supported finding.
+Do not add helper text or explanatory sentences.
 
-Use one document column, normally 1120–1280px wide.
-Centre the column with at least 24px outer padding.
-Start with a 24px page title and the selected date range.
-Place the main decision first, then evidence, then detail.
-Use a 32px gap between major sections.
-Use a 16px gap between related elements.
-Keep chart surfaces the same paper colour as the page.
-Separate sections with a 1px hairline when whitespace is insufficient.
-Do not wrap every section in a card.
+## Surface
 
-## KPI strip
+The white page is the single surface.
+Separate sections with hairlines and whitespace.
+Avoid repeated boxed cards.
+Inner radii are at most 6px.
+Do not use in-flow shadows, gradients, glow, or glass effects.
+Dark screens use hairlines rather than luminous panel borders.
 
-Keep primary KPIs in one row on a wide viewport.
-Use three to six KPIs; fewer is often clearer.
-Separate KPI columns with vertical hairline dividers.
-Use no cards, shadows, icon tiles, or coloured value backgrounds.
-Each column has a 14px label, 32px ink value, and 12px comparison.
-Use smaller units next to values when the unit is fixed.
-Keep numeric baselines aligned across the row.
-Use colour only on the delta, with an arrow for direction.
-Use muted text and no arrow for a flat comparison.
-At narrow widths wrap into two columns, preserving reading order.
-Keep the label and comparison with their value.
+## Density
 
-## Titles and evidence
+Fill the viewport with relevant information.
+Size the plot after reserving space for titles and direct labels.
+Keep all content inside the viewport.
+Use a main trend and a compact right rail.
+Place categorical detail beneath the trend.
+Keep date ranges in the header.
+Align section headings and plot edges.
+Align numeric baselines across the rail.
+Reserve room for the longest label.
+Avoid empty quadrants and decorative whitespace.
 
-Use finding-style titles when the data supports a claim.
-Example: “Repeat orders rose for three weeks”.
-Use a neutral measure title when the finding changes with filters.
-Example: “Weekly repeat orders”.
-Do not write helper labels or explanatory captions.
-Do not write “this chart shows” text.
-Put units in axis names, such as “Orders (K)”.
-Use direct category labels where possible.
-Avoid a legend for one series.
-Keep method definitions in a separate accessible detail view.
+## Tables
 
-## Filters
+Use semantic tables with 13px text and 36px rows.
+Use 12px muted column headers.
+Right-align numbers with tabular figures.
+Use hairline row separators.
+Do not use zebra stripes or vertical rules.
+Show share with a 4px inline bar.
+The maximum share uses the accent; context uses a tint.
+Use muted tabular ranks without medals.
+Keep row names left aligned.
+Show units consistently within a column.
+Keep decimal precision consistent.
 
-Use inline text controls near the title or section they affect.
-Example: “Period: Last 30 days” followed by “Region: All”.
-Use a visible label and keyboard focus for each control.
-Show the selected value directly; avoid an icon-only trigger.
-Use 32–36px control height and at least 8px separation.
-Keep page-wide filters together above the KPI strip.
-Keep local filters beside the relevant section title.
-Preserve filter state when opening a detail view.
+## Screen
 
-## Chart and table placement
+Use a 1920×1080 viewport.
+The minimum CJK size is 16px.
+Use a 112–128px hero and a secondary KPI strip.
+Use twelve regional small multiples instead of coloured tiles.
+Use the same scale across regional sparklines.
+Keep the current time visible in the header.
+Mark the current hour with a vertical hairline.
+Progress bars are 4px flat fills.
+Use ink for the numerator and muted for the denominator.
 
-Use one wide chart for the primary trend, typically 280–360px tall.
-Use two columns only for related charts that remain legible.
-Avoid more than two charts across the document column.
-Align plot edges and category labels, not just outer containers.
-Use tables for exact values and mixed measures.
-Right-align numbers and keep units consistent within a column.
-Use 36px table rows, 14px body text, and hairline row separators.
-Limit initial rankings to TOP 5 and offer the full list separately.
+## Checks
 
-## Responsive review
-
-At 768px, move paired charts into one column.
-At 375px, retain readable text and allow a table region to scroll.
-Do not shrink text to fit a desktop composition.
-Check empty, loading, long-label, and missing-data states.
-Keep empty states concise and provide a useful next action.
-Read the page in source order with styling disabled.
-Check keyboard access, visible focus, and contrast in both modes.
-Use the same structure in dark mode with dark pack tokens.
+Check overflow at the exact target viewport.
+Inspect every exported image for clipping and overlap.
+Wait for local fonts before rendering.
+Render at a device scale factor of two.
+Keep tooltips out of the captured state.
+Check contrast on every surface.
+Keep at most three font weights, never above 600.

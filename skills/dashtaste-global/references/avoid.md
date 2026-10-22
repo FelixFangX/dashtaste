@@ -40,8 +40,8 @@ Replace it: use flat 2D charts.
 
 ## DT008: dual-axis
 
-Above two value axes warns; two axes warn for matching series types or unnamed global axes.
-Replace it: use one axis or a named amount bar and rate line.
+Multiple value axes obscure comparisons, including mixed bar and line charts.
+Replace it: use one value axis or aligned small multiples.
 
 ## DT009: missing-unit
 
@@ -123,3 +123,13 @@ Replace it: hide the legend or label the series directly.
 Helper labels and explanatory captions repeat visible structure; no automatic rule yet.
 Decorative icon tiles distract from values; no automatic rule yet.
 Repeated card boxes weaken the document hierarchy; no automatic rule yet.
+
+## Measured anti-patterns
+
+DT024: uncapped bars and bars wider than 24px (32px on screens).
+DT025: legends for two to four lines without direct end labels.
+DT026: decorative line strokes above 3px or below 1px.
+DT027: proportional numerals in KPI values.
+DT028: several equally sized KPIs without a clear hero.
+Avoid donuts on KPI boards, dual axes, repeated boxed cards, and empty quadrants.
+Avoid helper sentences, uppercase tracking, and in-flow shadows.

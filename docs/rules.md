@@ -209,9 +209,9 @@ Severity: warn. Packs: global, cn.
 
 Why: Independent scales can imply misleading relationships.
 
-Triggers: Above two value axes warns; two axes warn for matching series types or unnamed global axes.
+Triggers: Multiple value axes obscure comparisons, including mixed bar and line charts.
 
-Fix: use one axis or a named amount bar and rate line.
+Fix: use one value axis or aligned small multiples.
 
 Minimal failing input:
 
@@ -695,3 +695,41 @@ Minimal failing input:
   ]
 }
 ```
+
+## DT024 bar-width
+
+Bars need an explicit width cap of 24px, or 32px on screens.
+
+set barMaxWidth to 24 or less; use 32 or less on screens
+
+## DT025 legend-not-direct-label
+
+Two to four line series need direct labels instead of a legend.
+
+hide the legend and label series at their last point
+
+## DT026 line-weight
+
+Line widths outside 1–3px obscure the data.
+
+use 2px main lines and 1.5px comparison lines
+
+## DT027 tabular-numerals
+
+KPI numbers need tabular numerals.
+
+set font-variant-numeric to tabular-nums
+
+## DT028 hero-metric
+
+Pages with at least three KPIs need a clear hero metric.
+
+make the largest KPI at least 1.6 times the median of the others
+
+## Pack defaults
+
+The cn pack uses a warm neutral page, one white sheet, steel data marks, red-up and green-down deltas. Its dark screen uses an almost black page and sky data marks.
+The global pack uses one white surface, ink, one blue accent, and grey context. Its dark mode uses the same hierarchy with a pale accent. Global deltas follow metric polarity.
+Use the numeral faces and exact colour tables in the skill references. Subtle is decorative; the last two cn light categorical fills need direct labels. Comparison lines use muted when other grey cannot meet 3:1.
+Use 400 for body text and 500 for headings and values, at most 600. Use tabular figures everywhere. One hero is 52–64px on desktop or 112–128px on screens, at least 2.2 times the next KPI. Secondary values are 22–26px, or 32–40px on screens.
+Use one sheet, hairlines, 36px table rows, and 4px share bars. Keep screen CJK at least 16px. No donuts on KPI boards, dual axes, helper sentences, gradients, glow, or in-flow shadows.

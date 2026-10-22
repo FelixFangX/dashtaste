@@ -4,6 +4,7 @@ import { copyFile, mkdir } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { copyFonts } from '../gallery/fonts.mjs';
 import { check, summarize } from '../src/engine.js';
 import { extractInPage } from '../src/extract-in-page.js';
 import type { Browser } from 'playwright-core';
@@ -20,6 +21,7 @@ try {
 let browser: Browser;
 beforeAll(async () => {
   if (!available) return;
+  await copyFonts();
   execFileSync(process.execPath, ['node_modules/typescript/bin/tsc']);
   await mkdir('gallery/vendor', { recursive: true });
   await copyFile('node_modules/echarts/dist/echarts.min.js', 'gallery/vendor/echarts.min.js');

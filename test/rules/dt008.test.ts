@@ -22,8 +22,8 @@ describe('DT008', () => {
   it('flags matching series types on two value axes', () => {
     expect(check(flagged, { pack: 'global', only: ['DT008'] }).length).toBeGreaterThan(0);
   });
-  it('passes a named amount-and-rate combo', () => {
-    expect(check(passing, { pack: 'global', only: ['DT008'] })).toEqual([]);
+  it('flags a named amount-and-rate combo', () => {
+    expect(check(passing, { pack: 'global', only: ['DT008'] })).toHaveLength(1);
   });
   for (const pack of ['global', 'cn'] as const) {
     it('passes an empty option for ' + pack, () => {

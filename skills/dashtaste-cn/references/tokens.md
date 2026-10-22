@@ -1,76 +1,63 @@
 # Tokens
 
-Use ink and muted for body text on the listed surfaces. Accent colours are for marks and deltas; they are not body text colours. Hairlines are decorative separators.
+Ink and muted are text colours. Subtle and hairlines are decorative.
 
 ## light
 
 | Token               | Hex     |
 | ------------------- | ------- |
-| light.page          | #F6F7F9 |
+| light.page          | #F2F4F2 |
 | light.card          | #FFFFFF |
-| light.hairline      | #E6E8EC |
-| light.ink           | #1D2433 |
-| light.muted         | #5F6B7E |
-| light.brand         | #2A62D9 |
-| light.other         | #B9B7AE |
-| light.up            | #D93A3A |
+| light.sunken        | #F7F8F7 |
+| light.ink           | #141414 |
+| light.muted         | #636261 |
+| light.subtle        | #7B7B76 |
+| light.hairline      | #E6E6E6 |
+| light.strong        | #DDDDDD |
+| light.primary       | #141414 |
+| light.brand         | #3E6A88 |
+| light.up            | #C8372F |
 | light.down          | #167D4F |
-| light.flat          | #5F6B7E |
-| light.categorical.0 | #2A62D9 |
-| light.categorical.1 | #36B3C2 |
-| light.categorical.2 | #F0A33C |
-| light.categorical.3 | #2E3F66 |
-| light.categorical.4 | #B9CFF5 |
-| light.categorical.5 | #A8673A |
+| light.flat          | #636261 |
+| light.other         | #BCBBBA |
+| light.categorical.0 | #3E6A88 |
+| light.categorical.1 | #20293A |
+| light.categorical.2 | #8080F7 |
+| light.categorical.3 | #B4A85D |
+| light.categorical.4 | #77C4D6 |
+| light.sequential.0  | #EEF2F5 |
+| light.sequential.1  | #DDE4EA |
+| light.sequential.2  | #B3CADB |
+| light.sequential.3  | #74ABD0 |
+| light.sequential.4  | #3E6A88 |
 
 ## dark
 
 | Token              | Hex     |
 | ------------------ | ------- |
-| dark.bg            | #0B1220 |
-| dark.panel         | #111A2B |
-| dark.hairline      | #1F2A3D |
-| dark.ink           | #E6EBF5 |
-| dark.muted         | #8C99B0 |
-| dark.brand         | #4F8CFF |
-| dark.other         | #5E5C55 |
-| dark.up            | #FF6B6B |
-| dark.down          | #3CCB86 |
-| dark.flat          | #8C99B0 |
-| dark.categorical.0 | #4F8CFF |
-| dark.categorical.1 | #3FD0D4 |
-| dark.categorical.2 | #FFD27A |
-| dark.categorical.3 | #2D4E8F |
-| dark.categorical.4 | #E38A5D |
+| dark.bg            | #121212 |
+| dark.panel         | #171716 |
+| dark.sunken        | #0A0B0A |
+| dark.ink           | #EEEEEB |
+| dark.muted         | #959590 |
+| dark.subtle        | #7B7B76 |
+| dark.hairline      | #2A2926 |
+| dark.strong        | #484843 |
+| dark.brand         | #74ABD0 |
+| dark.up            | #DB655C |
+| dark.down          | #73B78E |
+| dark.flat          | #959590 |
+| dark.other         | #61615C |
+| dark.categorical.0 | #74ABD0 |
+| dark.categorical.1 | #E5B357 |
+| dark.categorical.2 | #9B7EF0 |
+| dark.categorical.3 | #466376 |
+| dark.categorical.4 | #4B8C9C |
+| dark.sequential.0  | #1F303B |
+| dark.sequential.1  | #2A4456 |
+| dark.sequential.2  | #3E6A88 |
+| dark.sequential.3  | #74ABD0 |
+| dark.sequential.4  | #B3CADB |
 
-## Typography and spacing
-
-| Role                     | Size | Weight |
-| ------------------------ | ---- | ------ |
-| Page title               | 24px | 600    |
-| Section title            | 18px | 600    |
-| Body and control         | 14px | 400    |
-| Axis and secondary label | 12px | 400    |
-| KPI value                | 32px | 600    |
-| KPI unit                 | 14px | 400    |
-
-Use `system-ui, sans-serif`. Use tabular numerals for numeric columns.
-Space on a 4px grid: 4, 8, 12, 16, 24, 32px.
-Use 24px page padding, 16px section gaps, and 16px panel padding.
-Radius: 0px for charts, 4px for controls, at most 6px for cards.
-Borders: 1px solid hairline. Shadows: none.
-Use ink for primary text; muted for secondary text on the listed surfaces.
-Use brand for a single measured series, selection, and keyboard focus.
-Use categorical colours only to distinguish independent series or categories.
-Keep category-to-colour mappings stable across the page and across filters.
-Use other grey for a grouped tail or a de-emphasised comparison, never missing data.
-Use up/down only for directional comparisons; flat values use muted.
-Hairline and other are not body text colours.
-Use the lightest sequential colour for low values and darkest for high values.
-Do not interpolate categorical colours into a sequential scale.
-Line colours need 3:1 against their surface; pale categorical marks suit bars.
-Text needs 4.5:1, or 3:1 at 24px or 18.66px bold.
-Do not assume an accent colour is suitable for small text.
-
-Dark screen: use bg for the canvas and panel for regions.
-Use a 1920×1080 artboard, 16px body, and 40–56px KPI values.
+Use the numeral face with tabular figures. Headings use weight 500; body uses 400.
+One hero anchors the page; all other numbers remain subordinate.
