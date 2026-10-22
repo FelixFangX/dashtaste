@@ -12,7 +12,7 @@ const t = getTokens(pack, mode),
   d = data[name];
 const bg = t.page || t.bg || t.paper,
   surface = t.card || t.panel || t.paper;
-const compact = (v) => formatCompact(Number(v), pack);
+const compact = (v) => formatCompact(Number(Number(v).toFixed(2)), pack);
 const num = (v) => (before ? String(v) : compact(v));
 const pct = (v) => (before ? String(v * 100) : formatPercent(v));
 const money = (v) => `${cn ? '¥' : '$'}${num(v)}`;
@@ -33,14 +33,25 @@ css.textContent += `body[data-dashboard=finance] .chart{height:180px}body[data-d
 css.textContent += `body[data-dashboard=store] .main-chart{height:200px}body[data-dashboard=store] .chart-small{height:100px}.regions .tile{flex-direction:column;gap:4px;padding:8px}.regions .tile b{font-size:16px}.regions .tile span{font-size:14px}`;
 css.textContent += `body[data-dashboard=store][data-variant=after] .chart-small{height:140px}.channel-breakdown{position:absolute;left:48%;right:24px;top:8px;font-size:12px}.channel-breakdown>div{display:flex;justify-content:space-between;height:24px;align-items:center}.channel-breakdown i{display:inline-block;width:8px;height:8px;margin-right:8px}.channel-breakdown b{font-weight:400}`;
 css.textContent += `${before && live ? '.kpi:nth-child(1) .value{color:#a9eaff}.kpi:nth-child(2) .value{color:#ffe5a0}.kpi:nth-child(3) .value{color:#b8f1d3}.kpi:nth-child(4) .value{color:#f9b3c4}.kpi:nth-child(5) .value{color:#bcd1ff}.kpi:nth-child(6) .value{color:#e4c1ff}' : ''}`;
+if (!before)
+  css.textContent += `
+body[data-dashboard=saas] .comparison,body[data-dashboard=finance] .comparison{justify-content:flex-start}.kpis{grid-template-columns:repeat(4,minmax(0,1fr))}.live-page .kpis{grid-template-columns:repeat(6,minmax(0,1fr))}.comparison .period{color:${t.muted}}.kpi small{font-size:22px}
+body[data-dashboard=saas] main,body[data-dashboard=finance] main{height:900px;display:flex;flex-direction:column}
+body[data-dashboard=saas] .board,body[data-dashboard=finance] .board{flex:1;min-height:0;grid-template-rows:1fr 1fr;gap:24px}
+body[data-dashboard=saas] .panel,body[data-dashboard=finance] .panel{display:flex;flex-direction:column;padding-top:16px}
+body[data-dashboard=saas] .chart,body[data-dashboard=finance] .chart{flex:1;height:auto;min-height:0}
+.ranking .top-rank{font-weight:750;font-size:18px}.ranking b{font-weight:400}.rank-product{display:flex;flex-direction:column;gap:7px}.rank-track{height:5px;background:${t.hairline};width:100%;border-radius:2px;overflow:hidden}.rank-track>span{display:block;height:100%;background:${t.brand}}.ranking li{grid-template-columns:32px minmax(0,1fr) 96px;height:39px}.ranking .amount{font-variant-numeric:tabular-nums}
+.store-layout{grid-template-columns:1.7fr 1fr}.channel-breakdown{left:48%;right:auto;width:190px;top:8px}.channel-breakdown>div{display:grid;grid-template-columns:1fr 40px;gap:16px}.channel-breakdown b{text-align:right}
+.live-layout .ranking{height:calc(100% - 44px);display:grid;grid-template-rows:repeat(8,1fr)}.live-layout .ranking li{height:auto;grid-template-columns:32px minmax(0,1fr) 120px}.live-layout .rank-track{height:7px}.regions .tile{border:0}.regions .tile span{color:inherit}
+`;
 document.head.append(css);
 const root = document.querySelector('main');
 const delta = (v, previous, label, i) => {
   const f = formatDelta(v, previous, pack, { mode });
-  return `<div class="comparison"><span>${label}</span><span data-delta data-direction="${f.direction}" style="color:${before ? (i % 2 ? '#39d58a' : '#ed5e70') : f.color}">${before ? `${i % 2 ? '+' : '▲ '}${(((v - previous) / previous) * 100).toFixed(2)}%` : f.text}</span></div>`;
+  return `<div class="comparison">${!before && global ? '' : `<span>${label}</span>`}<span data-delta data-direction="${f.direction}" style="color:${before ? (i % 2 ? '#39d58a' : '#ed5e70') : f.color}">${before ? `${i % 2 ? '+' : '▲ '}${(((v - previous) / previous) * 100).toFixed(2)}%` : f.text}</span>${!before && global ? `<span class="period">vs ${name === 'saas' ? 'Oct' : 'Sep'}</span>` : ''}</div>`;
 };
 const kpis = kpisFor(name);
-root.innerHTML = `<header><div><div class="identity">${cn ? '示例店铺' : 'Example workspace'}</div><h1>${before ? '✨ ' : ''}${titles[name]}</h1></div><div class="date">${live ? `${date}　18:00` : cn ? `${formatDate('2026-09-01', pack)} 至 ${date}` : name === 'saas' ? 'Jun 1, 2025 – Nov 30, 2026' : 'Nov 1, 2025 – Oct 31, 2026'}</div></header>${name === 'store' ? `<div class="controls"><div class="segments" aria-label="日期范围">${['今天', '昨天', '近7天', '近30天', '本月'].map((s) => `<button class="${s === '近30天' ? 'active' : ''}" aria-pressed="${s === '近30天'}">${s}</button>`).join('')}</div></div>` : ''}<section class="kpis">${kpis.map(([label, v, type], i) => `<div class="kpi"><label data-kpi-label>${before ? ['💰', '📈', '🎯', '👥', '⚡', '💎'][i] + ' ' : ''}${label}</label><div class="value" data-kpi>${type === 'money' ? money(v) : type === 'percent' ? pct(v) : num(v)}${type === 'months' ? ' <small>months</small>' : ''}</div>${delta(v, v / [1.084, 1.126, 0.94, 1.042, 1.065, 0.97][i], cn ? (live ? '日环比' : '环比') : 'Prior month', i)}${cn && !live ? delta(v, v / [1.182, 1.22, 1.064, 0.982][i], '同比', i + 1) : ''}</div>`).join('')}</section><div class="board ${name === 'store' ? 'store-layout' : live ? 'live-layout' : ''}"></div>`;
+root.innerHTML = `<header><div><div class="identity">${cn ? '示例店铺' : 'Example workspace'}</div><h1>${before ? '✨ ' : ''}${titles[name]}</h1></div><div class="date">${live ? `${date}　18:00` : cn ? `${formatDate('2026-09-01', pack)} 至 ${date}` : name === 'saas' ? 'Jun 1, 2025 – Nov 30, 2026' : 'Nov 1, 2025 – Oct 31, 2026'}</div></header>${name === 'store' ? `<div class="controls"><div class="segments" aria-label="日期范围">${['今天', '昨天', '近7天', '近30天', '本月'].map((s) => `<button class="${s === '近30天' ? 'active' : ''}" aria-pressed="${s === '近30天'}">${s}</button>`).join('')}</div></div>` : ''}<section class="kpis">${kpis.map(([label, v, type, previous, yearAgo], i) => `<div class="kpi"><label data-kpi-label>${before ? ['💰', '📈', '🎯', '👥', '⚡', '💎'][i] + ' ' : ''}${label}</label><div class="value" data-kpi>${type === 'money' ? money(v) : type === 'percent' ? pct(v) : type === 'months' && !before ? v.toFixed(1) : num(v)}${type === 'months' ? ' <small>months</small>' : ''}</div>${delta(v, previous, cn ? (live ? '日环比' : '环比') : 'Prior month', i)}${cn && !live ? delta(v, yearAgo, '同比', i + 1) : ''}</div>`).join('')}</section><div class="board ${name === 'store' ? 'store-layout' : live ? 'live-layout' : ''}"></div>`;
 const board = root.querySelector('.board');
 function panel(title, cls = '') {
   const el = document.createElement('section');
@@ -65,6 +76,28 @@ function chart(title, option, cls = '', chartCls = '') {
     grid: { left: 60, right: 28, top: 52, bottom: 32 },
     ...(!before ? { color: t.categorical } : {}),
   };
+  if (!before && option.yAxis?.type === 'category') {
+    const rows = option.yAxis.data.map((label, i) => ({ label, value: option.series[0].data[i] }));
+    rows.sort((a, b) => (a.label === 'Other' ? 1 : b.label === 'Other' ? -1 : b.value - a.value));
+    option.yAxis.data = rows.map((r) => r.label);
+    option.yAxis.inverse = true;
+    option.xAxis = {
+      ...option.xAxis,
+      show: false,
+      name: '',
+      max: Math.max(...rows.map((r) => r.value)) * 1.22,
+    };
+    option.series[0].data = rows.map((r) => r.value);
+    option.series[0].label = {
+      show: true,
+      position: 'right',
+      color: t.ink,
+      formatter: (p) => (title === 'Signups by channel' ? compact(p.value) : money(p.value)),
+    };
+    option.grid = { left: 100, right: 32, top: 8, bottom: 8 };
+  } else if (!before && global) {
+    option.grid = { left: 64, right: 28, top: 44, bottom: 32 };
+  }
   instance.setOption({ ...base, ...option });
   return el;
 }
@@ -79,7 +112,9 @@ const axis = (name, extra = {}) => ({
     ...(!before
       ? {
           formatter:
-            global && name.includes('$') ? (v) => compact(Number((v / 1000).toFixed(1))) : compact,
+            global && name.includes('$')
+              ? (v) => (v / 1000).toLocaleString('en-US', { maximumFractionDigits: 1 })
+              : compact,
         }
       : {}),
   },
@@ -120,7 +155,7 @@ const legend = {
 };
 function ranking(title, labels, values) {
   const el = panel(title, 'ranking-panel');
-  el.innerHTML += `<ol class="ranking" data-ranking>${values.map((v, i) => `<li><b>${before && live && i < 3 ? ['🥇', '🥈', '🥉'][i] : compact(i + 1)}</b><span>${labels[i]}</span><span class="amount">${money(v)}</span></li>`).join('')}</ol>`;
+  el.innerHTML += `<ol class="ranking" data-ranking>${values.map((v, i) => `<li><b class="${i < 3 ? 'top-rank' : ''}">${before && live && i < 3 ? ['🥇', '🥈', '🥉'][i] : compact(i + 1)}</b><span class="rank-product">${labels[i]}${!before ? `<span class="rank-track"><span style="width:${(v / Math.max(...values)) * 100}%"></span></span>` : ''}</span><span class="amount">${money(v)}</span></li>`).join('')}</ol>`;
 }
 function parts(title, labels) {
   const values = before
@@ -138,7 +173,7 @@ function parts(title, labels) {
         {
           type: 'pie',
           radius: ['46%', '68%'],
-          center: before ? ['50%', '45%'] : ['25%', '50%'],
+          center: before ? ['50%', '45%'] : ['38%', '50%'],
           label: { show: false },
           itemStyle: { shadowBlur: before ? 24 : 0, shadowColor: '#7766cc' },
           data: values.map((v, i) => ({
@@ -161,7 +196,9 @@ function parts(title, labels) {
 }
 if (name === 'saas') {
   chart(
-    'MRR trend',
+    before
+      ? 'MRR trend'
+      : `MRR ${kpis[0][1] >= kpis[0][3] ? 'up' : 'down'} ${Math.abs((kpis[0][1] / kpis[0][3] - 1) * 100).toFixed(1)}% in November`,
     { xAxis: x, yAxis: axis('MRR ($)'), series: [line('MRR', d.revenue)] },
     '',
     'main-chart',
@@ -230,6 +267,7 @@ if (name === 'saas') {
   chart('Gross margin', {
     xAxis: x,
     yAxis: axis('Margin (%)', {
+      ...(!before ? { min: 50, max: 80, interval: 10 } : {}),
       axisLabel: { color: t.muted, formatter: (v) => formatPercent(v / 100, 0) },
     }),
     series: [line('Gross margin', d.margin)],
@@ -315,9 +353,9 @@ if (name === 'saas') {
     'main-chart',
   );
   ranking(
-    `商品成交排行 · TOP ${compact(5)}`,
-    Array.from({ length: 5 }, (_, i) => `示例商品 ${String.fromCharCode(65 + i)}`),
-    d.ranks,
+    `商品成交排行 · TOP ${compact(before ? 5 : 8)}`,
+    Array.from({ length: before ? 5 : 8 }, (_, i) => `示例商品 ${String.fromCharCode(65 + i)}`),
+    before ? d.ranks.slice(0, 5) : d.ranks,
   );
   const ring = chart(
     '目标达成率',
@@ -331,8 +369,12 @@ if (name === 'saas') {
           label: { show: false },
           itemStyle: { shadowBlur: before ? 24 : 0 },
           data: [
-            { value: 64.32, name: '已完成' },
-            { value: 35.68, name: '待完成', itemStyle: { color: before ? undefined : t.hairline } },
+            { value: (kpis[0][1] / 2000000) * 100, name: '已完成' },
+            {
+              value: 100 - (kpis[0][1] / 2000000) * 100,
+              name: '待完成',
+              itemStyle: { color: before ? undefined : t.hairline },
+            },
           ],
         },
       ],
@@ -341,9 +383,13 @@ if (name === 'saas') {
     'ring',
   );
   ring.lastChild.classList.add('ring-wrap');
-  ring.lastChild.insertAdjacentHTML('beforeend', `<div class="ring-value">${pct(0.6432)}</div>`);
+  ring.lastChild.insertAdjacentHTML(
+    'beforeend',
+    `<div class="ring-value">${pct(kpis[0][1] / 2000000)}</div>`,
+  );
   const el = panel('区域成交', 'regions');
-  el.innerHTML += `<div class="tiles">${d.regions.map((v, i) => `<div class="tile"><span>区域 ${String.fromCharCode(65 + i)}</span><b>${money(v)}</b></div>`).join('')}</div>`;
+  const shades = ['#17263c', '#203955', '#294d70', '#32618b', t.brand];
+  el.innerHTML += `<div class="tiles">${d.regions.map((v, i) => `<div class="tile" ${!before ? `style="background:${shades[Math.min(4, Math.floor(((v - Math.min(...d.regions)) / (Math.max(...d.regions) - Math.min(...d.regions))) * 5))]};color:${v >= Math.min(...d.regions) + (Math.max(...d.regions) - Math.min(...d.regions)) * 0.8 ? '#0B1220' : '#f0f5fc'}"` : ''}><span>区域 ${String.fromCharCode(65 + i)}</span><b>${money(v)}</b></div>`).join('')}</div>`;
 }
 document.body.classList.toggle('live-page', live);
 window.galleryReady = true;

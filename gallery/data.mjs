@@ -50,36 +50,90 @@ export const dashboards = [
   { name: 'live', pack: 'cn', mode: 'dark', width: 1920, height: 1080 },
 ];
 
-export const kpisFor = (name) =>
-  name === 'saas'
-    ? [
-        ['MRR', 328240, 'money'],
-        ['Net new MRR', 18640, 'money'],
-        ['Churn', 0.021, 'percent'],
-        ['Active accounts', 1842, 'number'],
-      ]
-    : name === 'finance'
-      ? [
-          ['Revenue', 864200, 'money'],
-          ['Gross margin', 0.684, 'percent'],
-          ['Cash balance', 3240000, 'money'],
-          ['Runway', 18.4, 'months'],
-        ]
-      : name === 'store'
-        ? [
-            ['成交金额', 2641800, 'money'],
-            ['访客数', 246280, 'number'],
-            ['支付转化率', 0.0382, 'percent'],
-            ['客单价', 280.81, 'money'],
-          ]
+const last = (series) => series.at(-1);
+const sum = (series) => series.reduce((a, b) => a + b, 0);
+// Each KPI has its own observed series; comparisons use the same aggregation
+// as the displayed value. Store comparisons cover equal 30-day periods.
+data.saas.netNew = data.saas.added.map((v, i) => v - data.saas.churned[i]);
+// Monthly recurring revenue rolls forward by additions less churn.
+data.saas.revenue = data.saas.netNew.reduce((series, net, i) => {
+  series.push(i === 0 ? data.saas.revenue[0] : series[i - 1] + net);
+  return series;
+}, []);
+data.saas.accounts = trend(18, 1120, 43);
+data.saas.churn = data.saas.churned.map((v, i) => v / data.saas.revenue[i]);
+data.finance.cash = trend(12, 2400000, 68000);
+data.finance.runway = data.finance.cash.map((v, i) => v / (data.finance.expense[i] * 0.34));
+data.store.visitors = trend(30, 6200, 92);
+data.store.orders = data.store.visitors.map((v, i) => Math.round((v * data.store.rate[i]) / 100));
+data.store.previous = {
+  revenue: trend(30, 62000, 980),
+  visitors: trend(30, 5900, 78),
+  orders: trend(30, 165, 3),
+};
+data.store.yearAgo = {
+  revenue: trend(30, 54000, 850),
+  visitors: trend(30, 5100, 70),
+  orders: trend(30, 142, 2),
+};
+data.live.orders = data.live.revenue.map((v, i) => Math.round(v / (278 + i * 1.2)));
+data.live.visitors = trend(19, 14200, 11800);
+data.live.refunds = trend(19, 1800, 740);
+data.live.previousOrders = data.live.yesterday.map((v, i) => Math.round(v / (269 + i * 0.8)));
+data.live.previousVisitors = trend(19, 13800, 10300);
+data.live.previousRefunds = trend(19, 2100, 690);
+data.live.ranks = trend(8, 42000, 17000).reverse();
+const storeMetrics = (series) => {
+  const revenue = sum(series.revenue),
+    visitors = sum(series.visitors),
+    orders = sum(series.orders);
+  return [revenue, visitors, orders / visitors, revenue / orders];
+};
+const liveMetrics = (revenue, orders, visitors, refunds) => [
+  last(revenue),
+  last(orders),
+  last(visitors),
+  last(orders) / last(visitors),
+  last(revenue) / last(orders),
+  last(refunds),
+];
+export const kpisFor = (name) => {
+  let labels, types, current, previous, yearAgo;
+  if (name === 'saas' || name === 'finance') {
+    const series =
+      name === 'saas'
+        ? [data.saas.revenue, data.saas.netNew, data.saas.churn, data.saas.accounts]
         : [
-            ['成交金额', 12864000, 'money'],
-            ['支付订单', 42880, 'number'],
-            ['实时访客', 186420, 'number'],
-            ['支付转化率', 0.046, 'percent'],
-            ['客单价', 300, 'money'],
-            ['退款金额', 182400, 'money'],
+            data.finance.revenue,
+            data.finance.margin.map((v) => v / 100),
+            data.finance.cash,
+            data.finance.runway,
           ];
+    labels =
+      name === 'saas'
+        ? ['MRR', 'Net new MRR', 'Churn', 'Active accounts']
+        : ['Revenue', 'Gross margin', 'Cash balance', 'Runway'];
+    types =
+      name === 'saas'
+        ? ['money', 'money', 'percent', 'number']
+        : ['money', 'percent', 'money', 'months'];
+    current = series.map(last);
+    previous = series.map((v) => v.at(-2));
+  } else if (name === 'store') {
+    labels = ['成交金额', '访客数', '支付转化率', '客单价'];
+    types = ['money', 'number', 'percent', 'money'];
+    current = storeMetrics(data.store);
+    previous = storeMetrics(data.store.previous);
+    yearAgo = storeMetrics(data.store.yearAgo);
+  } else {
+    const d = data.live;
+    labels = ['成交金额', '支付订单', '实时访客', '支付转化率', '客单价', '退款金额'];
+    types = ['money', 'number', 'number', 'percent', 'money', 'money'];
+    current = liveMetrics(d.revenue, d.orders, d.visitors, d.refunds);
+    previous = liveMetrics(d.yesterday, d.previousOrders, d.previousVisitors, d.previousRefunds);
+  }
+  return labels.map((label, i) => [label, current[i], types[i], previous[i], yearAgo?.[i]]);
+};
 
 data.saas.plans = [42000, 78000, 92000, 82000, 18240, 10000, 6000];
 data.saas.planNames = [
@@ -91,3 +145,14 @@ data.saas.planNames = [
   'Community',
   'Legacy',
 ];
+
+// Reconcile categorical breakdowns to their corresponding headline totals.
+const allocate = (weights, total) => {
+  const weight = sum(weights);
+  const values = weights.map((v) => Math.floor((v / weight) * total));
+  values[0] += total - sum(values);
+  return values;
+};
+data.saas.plans = allocate(data.saas.plans, last(data.saas.revenue));
+data.finance.ranks = allocate(data.finance.ranks, last(data.finance.expense));
+data.live.regions = allocate(data.live.regions, last(data.live.revenue));
