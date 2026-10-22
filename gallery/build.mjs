@@ -76,7 +76,7 @@ async function verifyLayout(page, name) {
       const labels = c
         .getZr()
         .storage.getDisplayList()
-        .filter((item) => item.type === 'tspan')
+        .filter((item) => item.type === 'text' || item.type === 'tspan')
         .map((item) => {
           const box = item.getBoundingRect().clone();
           box.applyTransform(item.getComputedTransform());
