@@ -86,8 +86,8 @@ async function verifyLayout(page, name) {
       if (parseFloat(getComputedStyle(document.querySelector('.hero')).fontSize) < 112)
         issues.push('Live hero below 112px');
       const c = echarts.getInstanceByDom(document.getElementById('cumulative'));
-      if (c.getModel().getComponent('grid').coordinateSystem.getRect().height < 300)
-        issues.push('Cumulative plot below 300px');
+      if (c.getModel().getComponent('grid').coordinateSystem.getRect().height < 320)
+        issues.push('Cumulative plot below 320px');
     }
     return [...new Set(issues)];
   }, name);
@@ -144,12 +144,124 @@ try {
     for (const format of ['wide', 'tall']) {
       const wide = format === 'wide',
         width = wide ? 1600 : 1080;
-      const boardWidth = wide ? (width - 48 - 16) / 2 : width - 48;
-      const height = wide ? Math.ceil(48 + 26 + (boardWidth * d.height) / d.width) : 1440;
+      const height = wide ? 900 : 1440;
+      const margin = 24,
+        gap = 16,
+        caption = 30;
+      // Use source CSS pixels; screenshots contain two device pixels per CSS pixel.
+      const beforeWidth = wide ? 592 : 1032;
+      const beforeHeight = (beforeWidth * d.height) / d.width;
+      const afterWidth = wide ? 920 : 1032;
+      const scale = wide ? 0.9 : afterWidth / 1280;
+      const cropWidth = afterWidth / scale;
+      const cropHeight = wide
+        ? (height - 2 * margin - caption) / scale
+        : (height - 2 * margin - 2 * caption - gap - beforeHeight) / scale;
+      const afterHeight = cropHeight * scale;
+      const bottomBand =
+        height -
+        (margin +
+          caption +
+          (wide
+            ? Math.max(beforeHeight, afterHeight)
+            : beforeHeight + gap + caption + afterHeight));
+      if (wide && scale < 0.85) throw new Error('After crop scale below 0.85');
+      if (bottomBand > 40 || bottomBand < 0)
+        throw new Error('Invalid comparison bottom band: ' + bottomBand);
       const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 2 });
+      let afterShot = shots[1];
+      {
+        const focus = await browser.newPage({
+          viewport: { width: Math.ceil(cropWidth), height: Math.ceil(cropHeight) },
+          deviceScaleFactor: 2,
+        });
+        await focus.goto(pathToFileURL(resolve(`gallery/pages/${d.name}/after.html`)).href);
+        await focus.waitForFunction(() => window.galleryReady === true);
+        await focus.addStyleTag({
+          content: `main{margin:16px!important;padding:12px!important;height:auto!important}header{margin-bottom:12px!important}.top{display:block!important}.top>aside,.bottom,.strip,main>section{display:none!important}.hero-band{gap:12px}.pace{width:280px}.top>section{height:auto!important}body[data-dashboard=store] .bottom{display:block!important;border:0;margin:8px 0!important;padding:0!important}body[data-dashboard=store] .bottom>section:first-child{display:none!important}body[data-dashboard=store] .bottom>.rail{border:0;padding:0}body[data-dashboard=store] .calendar>div{height:34px}.bridge>div,.bridge h2,label{font-size:12px!important}.ruler{max-width:460px}`,
+        });
+        await focus.evaluate((name) => {
+          const id = { saas: 'mrr', finance: 'cash', store: 'sales', live: 'cumulative' }[name];
+          const el = document.getElementById(id);
+          el.style.height = { saas: 460, finance: 360, store: 300, live: 550 }[name] + 'px';
+          const last =
+            name === 'store'
+              ? document.querySelector('.calendar')
+              : name === 'finance'
+                ? document.getElementById('burn')
+                : el;
+          const bottom = last.getBoundingClientRect().bottom;
+          el.style.height = parseFloat(el.style.height) + innerHeight - bottom + 'px';
+          if (innerHeight - last.getBoundingClientRect().bottom > 40)
+            throw new Error('Focused crop bottom band exceeds 40px');
+          for (const node of document.querySelectorAll('[_echarts_instance_]'))
+            echarts.getInstanceByDom(node).resize();
+        }, d.name);
+        // Rebuild event leaders after chart resize; pixel graphics follow the new coordinates.
+        await focus.evaluate((name) => {
+          const id = { saas: 'mrr', finance: 'cash', store: 'sales', live: 'cumulative' }[name];
+          const c = echarts.getInstanceByDom(document.getElementById(id));
+          const index = { saas: 9, finance: 5, store: 8, live: 1 }[name];
+          let previousY = -Infinity;
+          c.getOption().series.forEach((item, i) => {
+            if (item.type !== 'line' || !item.name) return;
+            const [x, y] = c.convertToPixel({ gridIndex: 0 }, [
+              item.data.length - 1,
+              item.data.at(-1),
+            ]);
+            const labelY =
+              Math.abs(y - previousY) < 24 ? previousY + (y < previousY ? -24 : 24) : y;
+            previousY = labelY;
+            c.setOption({
+              graphic: [
+                { id: 'leader-' + i, shape: { x1: x + 5, y1: y, x2: x + 22, y2: labelY } },
+                { id: 'annotation-' + i, x: x + 28, y: labelY },
+              ],
+            });
+          });
+          const value = c.getOption().series[0].data[index];
+          const [x, y] = c.convertToPixel({ gridIndex: 0 }, [index, value]);
+          const dy = name === 'finance' ? 80 : name === 'saas' ? -65 : -35;
+          const dx = name === 'saas' ? -100 : 32;
+          c.setOption({
+            graphic: [
+              { id: 'event-dot', shape: { cx: x, cy: y } },
+              {
+                id: 'event-leader',
+                shape: {
+                  points: [
+                    [x, y],
+                    [x + dx, y + dy],
+                    [x + dx + 16, y + dy],
+                  ],
+                },
+              },
+              { id: 'event-label', x: x + dx + 20, y: y + dy },
+            ],
+          });
+        }, d.name);
+        afterShot = (await focus.screenshot()).toString('base64');
+        await focus.close();
+      }
       await page.setContent(
-        `<style>*{box-sizing:border-box}body{margin:0;background:${d.name === 'live' ? '#0B0B0C' : '#EDEDEA'};font:12px sans-serif;color:${d.name === 'live' ? '#959590' : '#636261'}}main{display:flex;flex-direction:${wide ? 'row' : 'column'};gap:16px;padding:24px}section{width:${boardWidth}px}p{margin:0 0 12px;line-height:14px}img{width:100%;display:block}</style><main>${shots.map((s, i) => `<section><p>${i ? 'dashtaste ' + d.pack : 'Default'}</p><img src="data:image/png;base64,${s}"></section>`).join('')}</main>`,
+        `<style>*{box-sizing:border-box}body{margin:0;background:${d.name === 'live' ? '#0B0B0C' : '#EDEDEA'};font:14px sans-serif;color:${d.name === 'live' ? '#959590' : '#636261'}}main{display:flex;flex-direction:${wide ? 'row' : 'column'};gap:${gap}px;padding:${margin}px}section{flex-shrink:0}p{margin:0;height:${caption}px;line-height:18px}.crop{overflow:hidden;position:relative}img{display:block;max-width:none}</style><main><section style="width:${beforeWidth}px"><p>Default</p><img style="width:${beforeWidth}px;height:${beforeHeight}px" src="data:image/png;base64,${shots[0]}"></section><section style="width:${afterWidth}px"><p>dashtaste ${d.pack}</p><div class="crop" data-scale="${scale}" style="width:${afterWidth}px;height:${afterHeight}px"><img style="width:${Math.ceil(cropWidth) * scale}px;height:${Math.ceil(cropHeight) * scale}px" src="data:image/png;base64,${afterShot}"></div></section></main>`,
       );
+      await page
+        .locator('img')
+        .last()
+        .evaluate(async (img) => {
+          if (!img.complete) await new Promise((resolve) => (img.onload = resolve));
+        });
+      const measured = await page.evaluate(() => {
+        const crop = document.querySelector('.crop'),
+          img = crop.querySelector('img');
+        return {
+          scale: img.getBoundingClientRect().width / (img.naturalWidth / 2),
+          bottom: innerHeight - crop.getBoundingClientRect().bottom,
+        };
+      });
+      if (wide && measured.scale < 0.85) throw new Error('Measured comparison scale below 0.85');
+      if (measured.bottom > 40) throw new Error('Measured comparison bottom band exceeds 40px');
       await page.screenshot({ path: `gallery/compare/${d.name}-${format}.png` });
       await page.close();
     }

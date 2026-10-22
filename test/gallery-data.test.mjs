@@ -39,5 +39,25 @@ it('categorical breakdowns reconcile to their series totals', () => {
   expect(sum(data.saas.plans)).toBe(data.saas.revenue.at(-1));
   expect(sum(data.finance.ranks)).toBe(data.finance.expense.at(-1));
   expect(sum(data.live.regions)).toBe(data.live.revenue.at(-1));
-  expect(sum(data.live.ranks)).toBeLessThan(data.live.revenue.at(-1));
+  expect(sum(data.live.ranks)).toBe(data.live.revenue.at(-1));
+});
+
+it('event periods, burn and hourly regional values reconcile', () => {
+  const s = data.saas,
+    f = data.finance,
+    l = data.live;
+  expect(s.expansion[9]).toBeGreaterThan(s.expansion[8] * 5);
+  expect(s.churned[10]).toBeGreaterThan(s.churned[9] * 2);
+  f.cash.forEach((v, i) =>
+    expect(v - (i ? f.cash[i - 1] : 3300000)).toBe(f.funding[i] - f.burn[i]),
+  );
+  f.runway.forEach((v, i) =>
+    expect(v).toBeCloseTo(
+      f.cash[i] /
+        (f.burn.slice(Math.max(0, i - 2), i + 1).reduce((a, b) => a + b, 0) / Math.min(3, i + 1)),
+    ),
+  );
+  l.revenue.forEach((v, h) =>
+    expect(l.regionHourly.reduce((a, r) => a + r[h], 0)).toBe(v - (h ? l.revenue[h - 1] : 0)),
+  );
 });

@@ -116,3 +116,7 @@ Only latest and extreme values may have labels.
 Use markLine, markPoint or graphic for leader-line annotations.
 Thin ink bars are at most 12px; negative bars are mid-grey.
 Inline table bars use ink at 20% opacity; the top row uses solid ink.
+
+Use story-bearing data in examples. Annotate one event per chart with a leader line, a hollow ink dot, and a short label in empty space. Keep the latest point as the single accent.
+
+Use one signature element per board. Place it alongside the main metric so it reinforces the data story.

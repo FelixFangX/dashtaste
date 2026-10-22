@@ -84,7 +84,10 @@ export function extractInPage(): PageFacts {
     // KPI and delta facts support explicit data attributes and visible-value heuristics.
     if (
       el.hasAttribute('data-kpi') ||
-      (fontSize >= 22 && /^[\s+−\-\d,.%KMB万亿¥$€]+$/.test(text) && /\d/.test(text))
+      (fontSize >= 22 &&
+        !el.closest('[data-ranking]') &&
+        /^[\s+−\-\d,.%KMB万亿¥$€]+$/.test(text) &&
+        /\d/.test(text))
     )
       facts.kpis!.push({
         selector: path,

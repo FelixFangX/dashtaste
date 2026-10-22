@@ -1,6 +1,14 @@
 import { getTokens } from '../../dist/packs/index.js';
 import { formatDelta } from '../../dist/format.js';
 export { data, kpisFor } from '../data.mjs';
+const shares = (values, total) => {
+  const exact = values.map((v) => (v / total) * 1000),
+    rounded = exact.map(Math.floor);
+  const order = exact.map((v, i) => ({ i, r: v - rounded[i] })).sort((a, b) => b.r - a.r);
+  const remainder = 1000 - rounded.reduce((a, b) => a + b, 0);
+  for (let n = 0; n < remainder; n++) rounded[order[n].i]++;
+  return rounded.map((v) => v / 10);
+};
 export const last = (a) => a.at(-1);
 export async function setup(name, title, date) {
   const cn = ['store', 'live'].includes(name),
@@ -22,6 +30,7 @@ export async function setup(name, title, date) {
   style.textContent += `.period:empty{display:none}td:last-child{padding-left:10px}th:not(:first-child){padding-left:12px}.target{padding-bottom:48px}body[data-dashboard=finance] .top{grid-template-columns:minmax(0,1.85fr) minmax(0,1fr)}body[data-dashboard=finance] .share{padding-left:8px}body[data-dashboard=store] .bottom{grid-template-columns:1.4fr 1fr!important}`;
   style.textContent += `header{height:48px;margin-bottom:20px}body[data-dashboard=store] header{height:48px}th{font-family:${cn ? face : mono};font-size:${screen ? 16 : cn ? 12 : 11}px;letter-spacing:${cn ? 0 : '.06em'};text-transform:${cn ? 'none' : 'uppercase'}}${!cn ? `label{font:400 11px '${mono}';letter-spacing:.06em;text-transform:uppercase}` : ''}.track i{background:${t.ink};opacity:.2}tr:first-child .track i,.channels>div:first-child .track i{opacity:1}.progress i{background:${t.ink}}body[data-dashboard=live] .hero{font-size:112px;line-height:1.15;margin-top:12px}body[data-dashboard=live] header{height:44px;margin-bottom:12px}body[data-dashboard=live] .kpi{min-height:0}body[data-dashboard=live] .chart{margin-top:8px}body[data-dashboard=live] .region{height:75px}body[data-dashboard=live] .region .spark{height:38px}`;
   style.textContent += `body[data-dashboard=store] .top>.rail{display:block}body[data-dashboard=store] .top>.rail .kpi{height:82px;min-height:0;padding:8px 136px 8px 0}body[data-dashboard=store] .top>.rail label{font-size:13px}body[data-dashboard=store] .top>.rail .value{font-size:24px;line-height:28px;margin:3px 0}body[data-dashboard=store] .top>.rail .spark{width:120px;height:32px;top:24px;bottom:auto}body[data-dashboard=store] .channels .track,body[data-dashboard=store] .channels .track i{height:4px}body[data-dashboard=store] .channels .track i{background:${t.muted};opacity:1}body[data-dashboard=store] .channels>div:first-child .track i{background:${t.ink}}`;
+  style.textContent += `.bridge{display:flex;gap:24px;align-items:center;margin-top:12px}.bridge h2{width:90px;margin:0;font-size:12px}.bridge>div{flex:1;font-size:11px}.bridge i{margin:6px 0}.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center;font-size:12px}.calendar>div{height:42px;display:grid;place-items:center}.hero-band{display:flex;align-items:center;justify-content:space-between;gap:24px}.pace{width:300px;flex-shrink:0}.pace>div{margin:22px 0}body[data-dashboard=live] .regions{grid-template-columns:repeat(9,1fr);gap:12px 22px}body[data-dashboard=live] .region.major{grid-column:span 3;height:130px}body[data-dashboard=live] .region.major .small-number{font-size:40px}body[data-dashboard=live] .region.major .spark{top:54px;height:72px}body[data-dashboard=live] .region.minor{height:72px}body[data-dashboard=live] .region.minor .row{display:block}body[data-dashboard=live] .region.minor .spark{top:44px;height:28px}body[data-dashboard=live] .region.minor .small-number{font-size:20px}body[data-dashboard=live] .strip{padding:8px 0}body[data-dashboard=live] header{margin-bottom:4px}body[data-dashboard=live] .region.major{height:115px}body[data-dashboard=live] .region.major .spark{height:64px}body[data-dashboard=live] .region.minor{height:66px}body[data-dashboard=live] .region.minor .row{display:flex;flex-wrap:wrap}body[data-dashboard=live] .hero{font-size:112px}`;
   document.head.append(style);
   style.textContent += `body[data-dashboard=store] .top>.rail .rail-row,body[data-dashboard=saas] .top>.rail .rail-row{display:grid;grid-template-columns:minmax(0,1fr) 120px;column-gap:16px;padding:12px 0;border-bottom:1px solid ${t.hairline}}body[data-dashboard=store] .top>.rail .rail-row .kpi,body[data-dashboard=saas] .top>.rail .rail-row .kpi{height:auto;min-height:0;padding:0;border:0}body[data-dashboard=store] .top>.rail .rail-row .value,body[data-dashboard=saas] .top>.rail .rail-row .value{font-size:22px;line-height:24px;margin:1px 0}body[data-dashboard=store] .top>.rail .rail-row .spark,body[data-dashboard=saas] .top>.rail .rail-row .spark{position:static;width:120px;height:32px;align-self:center}`;
   style.textContent += `.rail-row label{line-height:15px}.rail-row .delta-row{min-height:16px;line-height:16px}`;
@@ -152,21 +161,27 @@ export async function setup(name, title, date) {
       },
     });
     const annotations = [];
+    let previousY = -Infinity;
     series.forEach((item, i) => {
       if (item.type !== 'line' || !item.name) return;
       const [x, y] = c.convertToPixel({ gridIndex: 0 }, [labels.length - 1, item.data.at(-1)]);
+      const labelY =
+        Math.abs(y - previousY) < (screen ? 24 : 20)
+          ? previousY + (y < previousY ? -1 : 1) * (screen ? 24 : 20)
+          : y;
+      previousY = labelY;
       annotations.push(
         {
           id: 'leader-' + i,
           type: 'line',
-          shape: { x1: x + 5, y1: y, x2: x + 22, y2: y },
+          shape: { x1: x + 5, y1: y, x2: x + 22, y2: labelY },
           style: { stroke: t.muted, lineWidth: 1 },
         },
         {
           id: 'annotation-' + i,
           type: 'text',
           x: x + 28,
-          y,
+          y: labelY,
           style: {
             text: item.name,
             fill: t.muted,
@@ -179,7 +194,7 @@ export async function setup(name, title, date) {
     if (annotations.length) c.setOption({ graphic: annotations });
     return c;
   }
-  const spark = (id, values, max) => {
+  const spark = (id, values, max, accent = true) => {
     const c = echarts.init(document.getElementById(id));
     c.setOption({
       animation: false,
@@ -211,7 +226,7 @@ export async function setup(name, title, date) {
             symbolSize: 4,
             itemStyle: { color: cn ? t.accent : t.brand },
             label: { show: false },
-            data: [{ coord: [values.length - 1, last(values)] }],
+            data: accent ? [{ coord: [values.length - 1, last(values)] }] : [],
           },
         },
       ],
@@ -225,7 +240,7 @@ export async function setup(name, title, date) {
     polarity = 'higher-is-better',
     total = values.reduce((a, b) => a + b, 0),
   ) =>
-    `<table class="ranking"><thead><tr><th>${cnTable ? '排名' : 'Rank'}</th><th>${cnTable ? '商品' : 'Item'}</th><th>${cnTable ? '成交额' : 'Amount'}</th><th>${cnTable ? '占比' : 'Share'}</th><th>${cnTable ? '同比' : name === 'finance' ? 'Δ vs Sep' : 'Δ vs Oct'}</th></tr></thead><tbody>${values.map((v, i) => `<tr><td class="rank">${String(i + 1).padStart(2, '0')}</td><td class="product">${names[i]}</td><td class="amount">${(cn ? '¥' : '$') + (v / (cn ? 10000 : 1000)).toFixed(2) + (cn ? '万' : 'K')}</td><td class="share"><span class="share-inline"><span class="track"><i style="width:${(v / Math.max(...values)) * 100}%"></i></span><span>${((v / total) * 100).toFixed(1)}%</span></span></td><td>${delta(v, previous[i], '', polarity)}</td></tr>`).join('')}</tbody></table>`;
+    `<table class="ranking"><thead><tr><th>${cnTable ? '排名' : 'Rank'}</th><th>${cnTable ? '商品' : 'Item'}</th><th>${cnTable ? '成交额' : 'Amount'}</th><th>${cnTable ? '占比' : 'Share'}</th><th>${cnTable ? '同比' : name === 'finance' ? 'Δ vs Sep' : 'Δ vs Oct'}</th></tr></thead><tbody>${values.map((v, i) => `<tr><td class="rank">${String(i + 1).padStart(2, '0')}</td><td class="product">${names[i]}</td><td class="amount">${(cn ? '¥' : '$') + (v / (cn ? 10000 : 1000)).toFixed(2) + (cn ? '万' : 'K')}</td><td class="share"><span class="share-inline"><span class="track"><i style="width:${(v / Math.max(...values)) * 100}%"></i></span><span>${shares(values, total)[i].toFixed(1)}%</span></span></td><td>${delta(v, previous[i], '', polarity)}</td></tr>`).join('')}</tbody></table>`;
   const ready = async () => {
     await document.fonts.ready;
     window.galleryReady = true;
@@ -233,5 +248,42 @@ export async function setup(name, title, date) {
   await document.fonts.load(`500 24px '${face}'`);
   await document.fonts.load(`400 11px '${mono}'`);
   await document.fonts.ready;
-  return { root, t, tick, compact, money, delta, metric, line, chart, spark, table, ready };
+  const event = (c, index, value, text, dx = 32, dy = -42) => {
+    const [x, y] = c.convertToPixel({ gridIndex: 0 }, [index, value]);
+    c.setOption({
+      graphic: [
+        {
+          id: 'event-dot',
+          type: 'circle',
+          shape: { cx: x, cy: y, r: 4 },
+          style: { fill: surface, stroke: t.ink, lineWidth: 1 },
+        },
+        {
+          id: 'event-leader',
+          type: 'polyline',
+          shape: {
+            points: [
+              [x, y],
+              [x + dx, y + dy],
+              [x + dx + 16, y + dy],
+            ],
+          },
+          style: { stroke: t.muted, lineWidth: 1, fill: 'none' },
+        },
+        {
+          id: 'event-label',
+          type: 'text',
+          x: x + dx + 20,
+          y: y + dy,
+          style: {
+            text,
+            fill: t.ink,
+            font: `${screen ? 16 : 12}px '${face}'`,
+            verticalAlign: 'middle',
+          },
+        },
+      ],
+    });
+  };
+  return { root, t, tick, compact, money, delta, metric, line, chart, spark, table, ready, event };
 }

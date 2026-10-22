@@ -54,16 +54,36 @@ const last = (series) => series.at(-1);
 const sum = (series) => series.reduce((a, b) => a + b, 0);
 // Each KPI has its own observed series; comparisons use the same aggregation
 // as the displayed value. Store comparisons cover equal 30-day periods.
-data.saas.netNew = data.saas.added.map((v, i) => v - data.saas.churned[i]);
-// Monthly recurring revenue rolls forward by additions less churn.
-data.saas.revenue = data.saas.netNew.reduce((series, net, i) => {
-  series.push(i === 0 ? data.saas.revenue[0] : series[i - 1] + net);
-  return series;
-}, []);
+data.saas.added = data.saas.months.map((m, i) =>
+  Math.round((13500 + i * 330) * (m.endsWith('-12') || m.endsWith('-08') ? 0.78 : 1)),
+);
+data.saas.expansion = data.saas.months.map((m, i) => (m === '2026-03' ? 37000 : 3200 + i * 140));
+data.saas.churned = data.saas.months.map((m, i) => (m === '2026-04' ? 12500 : 4200 + i * 75));
+data.saas.netNew = data.saas.added.map((v, i) => v + data.saas.expansion[i] - data.saas.churned[i]);
+data.saas.revenue = data.saas.netNew.reduce((a, v) => [...a, (a.at(-1) || 145000) + v], []);
 data.saas.accounts = trend(18, 1120, 43);
 data.saas.churn = data.saas.churned.map((v, i) => v / data.saas.revenue[i]);
-data.finance.cash = trend(12, 2400000, 68000);
-data.finance.runway = data.finance.cash.map((v, i) => v / (data.finance.expense[i] * 0.34));
+data.finance.revenue = data.finance.months.map((_, i) => 310000 + i * 9000);
+data.finance.expense = data.finance.months.map(
+  (m, i) => 465000 + i * 6500 + (m.endsWith('-12') ? 110000 : 0),
+);
+data.finance.burn = data.finance.expense.map((v, i) => v - data.finance.revenue[i]);
+data.finance.funding = data.finance.months.map((m) => (m === '2026-04' ? 1500000 : 0));
+data.finance.cash = data.finance.burn.reduce(
+  (a, v, i) => [...a, (a.at(-1) || 3300000) - v + data.finance.funding[i]],
+  [],
+);
+data.finance.runway = data.finance.cash.map(
+  (v, i) => v / (sum(data.finance.burn.slice(Math.max(0, i - 2), i + 1)) / Math.min(i + 1, 3)),
+);
+data.finance.margin = data.finance.revenue.map((v, i) => (100 * (v - (105000 + i * 2700))) / v);
+data.store.revenue = data.store.months.map((_, i) =>
+  Math.round(
+    (72000 + 3500 * Math.sin(i * 0.7)) *
+      ([0, 6].includes(new Date(2026, 8, i + 1).getDay()) ? 1.25 : 1) *
+      (i === 8 ? 2.2 : i === 16 ? 0.78 : 1),
+  ),
+);
 data.store.visitors = trend(30, 6200, 92);
 data.store.orders = data.store.visitors.map((v, i) => Math.round((v * data.store.rate[i]) / 100));
 data.store.previous = {
@@ -76,6 +96,19 @@ data.store.yearAgo = {
   visitors: trend(30, 5100, 70),
   orders: trend(30, 142, 2),
 };
+const cumulative = (a) => {
+  let n = 0;
+  return a.map((v) => (n += v));
+};
+data.live.revenue = cumulative(
+  allocate(
+    [140, 170, 20, 12, 10, 9, 12, 17, 24, 40, 50, 65, 72, 80, 90, 100, 110, 120, 133],
+    1274000,
+  ),
+);
+data.live.yesterday = cumulative(
+  allocate([60, 65, 35, 25, 22, 20, 24, 30, 35, 44, 52, 60, 65, 70, 75, 80, 90, 95, 100], 1132000),
+);
 data.live.orders = data.live.revenue.map((v, i) => Math.round(v / (278 + i * 1.2)));
 data.live.visitors = trend(19, 14200, 11800);
 data.live.refunds = trend(19, 1800, 740);
@@ -147,12 +180,12 @@ data.saas.planNames = [
 ];
 
 // Reconcile categorical breakdowns to their corresponding headline totals.
-const allocate = (weights, total) => {
+function allocate(weights, total) {
   const weight = sum(weights);
   const values = weights.map((v) => Math.floor((v / weight) * total));
   values[0] += total - sum(values);
   return values;
-};
+}
 data.saas.plans = allocate(data.saas.plans, last(data.saas.revenue));
 data.finance.ranks = allocate(data.finance.ranks, last(data.finance.expense));
 data.live.regions = allocate(data.live.regions, last(data.live.revenue));
@@ -166,18 +199,34 @@ data.saas.previousPlans = data.saas.plans.map((v) => Math.round(v / (1.02 + rand
 data.finance.previousSpend = data.finance.ranks.map((v) =>
   Math.round(v / (0.94 + random() * 0.15)),
 );
+data.store.ranks = allocate(data.store.ranks, sum(data.store.revenue));
+data.live.ranks = allocate(data.live.ranks, last(data.live.revenue));
 data.store.previousRanks = data.store.ranks.map((v) => Math.round(v / (1.03 + random() * 0.15)));
 data.live.previousRanks = data.live.ranks.map((v) => Math.round(v / (1.03 + random() * 0.15)));
 data.store.channels = allocate(data.store.parts, sum(data.store.revenue));
-data.live.regionHourly = data.live.regions.map((v) => {
-  const peak = 3 + random() * 13;
-  const increments = Array.from({ length: 19 }, (_, hour) =>
-      Math.round(30 + random() * 180 + 260 * Math.exp(-((hour - peak) ** 2) / 10)),
+data.live.regions = allocate([20, 16, 13, 11, 9, 8, 6, 5, 4, 3, 3, 2], last(data.live.revenue));
+data.live.regionHourly = data.live.regions.map((v, i) =>
+  allocate(
+    Array.from(
+      { length: 19 },
+      (_, h) =>
+        20 + 70 * Math.exp(-((h - ((i % 5) + 12)) ** 2) / 12) + (h < 2 ? 80 : 0) + random() * 25,
     ),
-    total = sum(increments);
-  let cumulative = 0;
-  return increments.map((n) => {
-    cumulative += n;
-    return Math.round((cumulative / total) * v);
-  });
-});
+    v,
+  ),
+);
+// Detail comparisons reconcile to the same prior observation as the headline.
+data.saas.previousPlans = allocate(data.saas.previousPlans, data.saas.revenue.at(-2));
+data.saas.planAccounts = allocate(data.saas.plans, last(data.saas.accounts));
+data.finance.previousSpend = allocate(data.finance.previousSpend, data.finance.expense.at(-2));
+data.store.previousRanks = allocate(data.store.previousRanks, sum(data.store.yearAgo.revenue));
+data.live.previousRanks = allocate(data.live.previousRanks, last(data.live.yesterday));
+
+const hourlyRegions = data.live.revenue.map((v, h) =>
+  allocate(
+    data.live.regions.map((w, i) => w * (1 + 0.3 * Math.sin(h * 0.55 + i))),
+    v - (h ? data.live.revenue[h - 1] : 0),
+  ),
+);
+data.live.regionHourly = data.live.regions.map((_, i) => hourlyRegions.map((row) => row[i]));
+data.live.regions = data.live.regionHourly.map(sum);

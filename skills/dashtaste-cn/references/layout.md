@@ -72,3 +72,7 @@ Header: a 20px, weight 500 title left and date range right.
 Omit breadcrumbs, identity lines, helper lines and footer captions.
 Use at most one hairline below the header.
 Create breathing room with margins; avoid half-empty panels.
+
+Use story-bearing data in examples. Annotate one event per chart with a leader line, a hollow ink dot, and a short label in empty space. Keep the latest point as the single accent.
+
+Use one signature element per board. Place it alongside the main metric so it reinforces the data story.
