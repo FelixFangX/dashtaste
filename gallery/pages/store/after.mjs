@@ -9,7 +9,15 @@ root.innerHTML += `<div class="top"><section>${metric('成交金额', money(k[0]
   (_, i) => {
     const day = i;
     const v = d.revenue[day - 1];
-    return `<div style="background:${v ? t.sequential[Math.min(4, Math.floor(v / 40000))] : 'transparent'};outline:${day === 9 ? '1px solid ' + t.ink : 'none'};color:${v >= 160000 ? '#FFFFFF' : t.ink}">${day > 0 && day <= 30 ? day : ''}</div>`;
+    const step = v
+      ? Math.min(
+          4,
+          Math.floor(
+            (5 * (v - Math.min(...d.revenue))) / (Math.max(...d.revenue) - Math.min(...d.revenue)),
+          ),
+        )
+      : 0;
+    return `<div style="background:${v ? t.sequential[step] : 'transparent'};outline:${day === 9 ? '1px solid ' + t.ink : 'none'};color:${step === 4 ? '#FFFFFF' : '#414141'}">${day > 0 && day <= 30 ? day : ''}</div>`;
   },
 ).join('')}</div></section></div>`;
 const current = line('今年', d.revenue);

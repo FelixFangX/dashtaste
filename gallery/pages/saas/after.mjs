@@ -4,31 +4,117 @@ const { root, t, tick, money, compact, delta, metric, line, chart, spark, table,
 const d = data.saas,
   k = kpisFor('saas');
 const rail = k.slice(1);
-root.innerHTML += `<div class="top"><section><div style="display:flex;justify-content:space-between;align-items:end">${metric('MRR', money(k[0][1]), delta(k[0][1], k[0][3]), true)}</div><div class="bridge"><h2>November bridge</h2><div style="flex:1">${[
-  ['Start MRR', 0, d.revenue.at(-2)],
-  ['+New', d.revenue.at(-2), d.revenue.at(-2) + last(d.added)],
-  [
-    '+Expansion',
-    d.revenue.at(-2) + last(d.added),
-    d.revenue.at(-2) + last(d.added) + last(d.expansion),
+root.innerHTML += `<div class="top"><section><div style="display:flex;justify-content:space-between;align-items:end">${metric('MRR', money(k[0][1]), delta(k[0][1], k[0][3]), true)}</div><div class="bridge"><h2>November</h2><div id="bridge" style="height:108px;width:100%"></div></div><div id="mrr" class="chart" style="height:165px"></div></section><aside class="rail">${rail.map(([label, v, type, p], i) => `<div class="rail-row">${metric(label, type === 'money' ? money(v) : type === 'percent' ? (v * 100).toFixed(2) + '%' : compact(v), delta(v, p, 'vs Oct', label === 'Churn' ? 'lower-is-better' : 'higher-is-better'))}<div class="spark" id="s${i}"></div></div>`).join('')}</aside></div><div class="bottom"><section><h2>MRR movement</h2><div id="movement" class="chart" style="height:165px"></div></section><section><h2>Plans</h2><table><thead><tr><th>Plan</th><th>Accounts</th><th>MRR</th><th>Share</th><th>Δ vs Oct</th></tr></thead><tbody>${d.plans.map((v, i) => `<tr><td>${d.planNames[i]}</td><td>${d.planAccounts[i].toLocaleString('en-US')}</td><td>${'$' + ((v / 1000).toFixed(1) + 'K')}</td><td class="share"><span class="share-inline"><span class="track"><i style="width:${(v / Math.max(...d.plans)) * 100}%"></i></span><span>${((v / last(d.revenue)) * 100).toFixed(1)}%</span></span></td><td>${delta(v, d.previousPlans[i], '')}</td></tr>`).join('')}</tbody></table></section></div>`;
+// A zoomed value axis with explicit floating interval geometry, never zero-based bars.
+const start = d.revenue.at(-2),
+  end = last(d.revenue);
+const segments = [
+  ['+New', start, start + last(d.added), t.ink, last(d.added)],
+  ['+Expansion', start + last(d.added), end + last(d.churned), t.muted, last(d.expansion)],
+  ['−Churn', end + last(d.churned), end, '#C9C5BD', -last(d.churned)],
+];
+const bridge = echarts.init(document.getElementById('bridge'));
+bridge.setOption({
+  animation: false,
+  color: [t.ink, t.muted],
+  grid: { left: 46, right: 46, top: 38, bottom: 24 },
+  xAxis: {
+    type: 'value',
+    min: start - 2000,
+    max: end + last(d.churned) + 2000,
+    interval: 5000,
+    axisLine: { show: true, lineStyle: { color: t.hairline, width: 1 } },
+    axisTick: { show: true, lineStyle: { color: t.hairline } },
+    axisLabel: {
+      color: t.muted,
+      fontFamily: 'Geist Mono',
+      fontSize: 10,
+      formatter: (v) => '$' + (v / 1000).toFixed(0) + 'K',
+    },
+    splitLine: { show: false },
+  },
+  yAxis: { type: 'category', data: ['MRR'], show: false },
+  series: [
+    {
+      type: 'custom',
+      data: segments.map((s, i) => [s[1], s[2], i]),
+      renderItem: (params, api) => {
+        const segment = segments[api.value(2)],
+          a = api.coord([api.value(0), 0]),
+          b = api.coord([api.value(1), 0]);
+        return {
+          type: 'group',
+          children: [
+            {
+              type: 'rect',
+              shape: {
+                x: Math.min(a[0], b[0]),
+                y: a[1] + (api.value(2) === 2 ? 2 : -6),
+                width: Math.abs(b[0] - a[0]),
+                height: api.value(2) === 2 ? 4 : 8,
+              },
+              style: { fill: segment[3] },
+            },
+            {
+              type: 'text',
+              x: (a[0] + b[0]) / 2,
+              y: a[1] - (api.value(2) === 1 ? 30 : 14),
+              style: {
+                text:
+                  (api.value(2) === 2 ? '← ' : '') +
+                  segment[0] +
+                  ' ' +
+                  (segment[4] < 0 ? '−' : '+') +
+                  money(Math.abs(segment[4])),
+                fill: t.ink,
+                font: "10px 'Geist Mono'",
+                align: 'center',
+                verticalAlign: 'bottom',
+              },
+            },
+          ],
+        };
+      },
+    },
   ],
-  ['−Churn', last(d.revenue), last(d.revenue) + last(d.churned)],
-  ['End MRR', 0, last(d.revenue)],
-]
-  .map(
-    ([label, a, b], i) =>
-      `<div style="display:grid;grid-template-columns:82px 1fr 72px;gap:8px;align-items:center;height:18px"><span>${label}</span><span style="position:relative;height:8px"><i style="position:absolute;margin:0;left:${(a / 460000) * 100}%;height:8px;width:${((b - a) / 460000) * 100}%;background:${i === 4 ? t.brand : i === 3 ? t.muted : t.ink}"></i></span><span>${money(i === 3 ? last(d.churned) : b - a)}</span></div>`,
-  )
-  .join(
-    '',
-  )}</div></div><div id="mrr" class="chart" style="height:165px"></div></section><aside class="rail">${rail.map(([label, v, type, p], i) => `<div class="rail-row">${metric(label, type === 'money' ? money(v) : type === 'percent' ? (v * 100).toFixed(2) + '%' : compact(v), delta(v, p, 'vs Oct', label === 'Churn' ? 'lower-is-better' : 'higher-is-better'))}<div class="spark" id="s${i}"></div></div>`).join('')}</aside></div><div class="bottom"><section><h2>MRR movement</h2><div id="movement" class="chart" style="height:165px"></div></section><section><h2>Plans</h2><table><thead><tr><th>Plan</th><th>Accounts</th><th>MRR</th><th>Share</th><th>Δ vs Oct</th></tr></thead><tbody>${d.plans.map((v, i) => `<tr><td>${d.planNames[i]}</td><td>${d.planAccounts[i].toLocaleString('en-US')}</td><td>${'$' + ((v / 1000).toFixed(1) + 'K')}</td><td class="share"><span class="share-inline"><span class="track"><i style="width:${(v / Math.max(...d.plans)) * 100}%"></i></span><span>${((v / last(d.revenue)) * 100).toFixed(1)}%</span></span></td><td>${delta(v, d.previousPlans[i], '')}</td></tr>`).join('')}</tbody></table></section></div>`;
+});
+bridge.setOption({
+  graphic: [start, end].flatMap((v, i) => {
+    const [x, y] = bridge.convertToPixel({ gridIndex: 0 }, [v, 0]);
+    return [
+      {
+        type: 'line',
+        shape: { x1: x, y1: y - 9, x2: x, y2: y + 9 },
+        style: { stroke: i ? t.brand : t.ink, lineWidth: 1 },
+      },
+      {
+        type: 'text',
+        x,
+        y: y + 14,
+        style: {
+          text: (i ? 'End ' : 'Start ') + money(v),
+          fill: i ? t.brand : t.ink,
+          font: "11px 'Geist Mono'",
+          align: i ? 'left' : 'right',
+        },
+      },
+    ];
+  }),
+});
 const main = line('MRR', d.revenue);
 main.markPoint.label.position = 'bottom';
 main.markLine = {
   symbol: 'none',
   lineStyle: { color: t.muted, type: 'dashed', width: 1 },
-  label: { show: false },
-  data: [{ yAxis: 400000 }],
+  label: {
+    show: true,
+    formatter: 'Target $500K',
+    position: 'insideEndTop',
+    color: t.muted,
+    fontSize: 11,
+    fontFamily: 'Geist Mono',
+  },
+  data: [{ yAxis: 500000 }],
 };
 const mrr = chart('mrr', d.months, [main], {
   yAxis: {

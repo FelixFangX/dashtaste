@@ -63,7 +63,8 @@ const cumulative = chart(
   },
 );
 event(cumulative, 1, d.revenue[1], '尾款开启', 65, -38);
+const regionalHours = d.regionHourly.map((values) => values.slice(1, 19));
 d.regions.forEach((v, i) =>
-  spark('r' + i, d.regionHourly[i], Math.max(...d.regionHourly.flat()) * 1.1, i === 0),
+  spark('r' + i, regionalHours[i], Math.max(...regionalHours.flat()) * 1.1, i === 0),
 );
 await ready();
