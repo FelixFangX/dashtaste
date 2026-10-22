@@ -60,6 +60,17 @@ async function verifyLayout(page, name) {
               issues.push('Text crosses divider: ' + t.text);
         }
     }
+    for (const row of document.querySelectorAll('.rail-row')) {
+      const b = row.getBoundingClientRect();
+      for (const t of texts)
+        if (
+          t.box.left < b.right &&
+          t.box.right > b.left &&
+          t.box.top < b.bottom + 6 &&
+          t.box.bottom > b.bottom - 6
+        )
+          issues.push('Text within 6px of row divider: ' + t.text);
+    }
     if (name === 'live') {
       for (const el of document.querySelectorAll('[_echarts_instance_]')) {
         const c = echarts.getInstanceByDom(el);
