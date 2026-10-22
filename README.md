@@ -97,14 +97,14 @@ Both packs specify spacing, typography, chart defaults, and number formatting. L
 
 All data is fictional and seeded in [gallery/data.mjs](gallery/data.mjs). Each pair shares the same data. Before pages use common unguided defaults; after pages apply their pack. These are style checks, not a usability benchmark.
 
-| Dashboard | Before score                    | After score                      |
-| --------- | ------------------------------- | -------------------------------- |
-| saas      | [0](gallery/saas-before.png)    | [100](gallery/saas-after.png)    |
-| finance   | [0](gallery/finance-before.png) | [100](gallery/finance-after.png) |
-| store     | [0](gallery/store-before.png)   | [100](gallery/store-after.png)   |
-| live      | [0](gallery/live-before.png)    | [100](gallery/live-after.png)    |
+| Dashboard | Pack, mode         | Before                                              | After                              |
+| --------- | ------------------ | --------------------------------------------------- | ---------------------------------- |
+| saas      | global, light      | [28 errors, 36 warnings](gallery/saas-before.png)   | [clean](gallery/saas-after.png)    |
+| finance   | global, dark       | [7 errors, 30 warnings](gallery/finance-before.png) | [clean](gallery/finance-after.png) |
+| store     | cn, light          | [34 errors, 26 warnings](gallery/store-before.png)  | [clean](gallery/store-after.png)   |
+| live      | cn, dark 1920×1080 | [32 errors, 44 warnings](gallery/live-before.png)   | [clean](gallery/live-after.png)    |
 
-Revenue uses global light; finance uses global dark; store uses cn light; live uses cn dark at 1920×1080. Other pages use 1440×900.
+The live page renders at 1920×1080; the others at 1440×900.
 
 ```sh
 pnpm gallery
