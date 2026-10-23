@@ -105,9 +105,9 @@ All data is fictional and seeded in [gallery/data.mjs](gallery/data.mjs). Each p
 | Dashboard | Pack, mode         | Before                                              | After                              |
 | --------- | ------------------ | --------------------------------------------------- | ---------------------------------- |
 | saas      | global, light      | [32 errors, 50 warnings](gallery/saas-before.png)   | [clean](gallery/saas-after.png)    |
-| finance   | global, dark       | [7 errors, 40 warnings](gallery/finance-before.png) | [clean](gallery/finance-after.png) |
-| store     | cn, light          | [41 errors, 61 warnings](gallery/store-before.png)  | [clean](gallery/store-after.png)   |
-| live      | cn, dark 1920×1080 | [32 errors, 76 warnings](gallery/live-before.png)   | [clean](gallery/live-after.png)    |
+| finance   | global, dark       | [7 errors, 42 warnings](gallery/finance-before.png) | [clean](gallery/finance-after.png) |
+| store     | cn, light          | [42 errors, 61 warnings](gallery/store-before.png)  | [clean](gallery/store-after.png)   |
+| live      | cn, dark 1920×1080 | [31 errors, 76 warnings](gallery/live-before.png)   | [clean](gallery/live-after.png)    |
 
 The live page renders at 1920×1080; the others at 1440×900.
 
