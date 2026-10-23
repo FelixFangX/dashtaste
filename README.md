@@ -67,31 +67,36 @@ Both packs specify spacing, typography, chart defaults, and number formatting. L
 
 [Reasons, triggers, and fixes](docs/rules.md) for every rule:
 
-| ID    | Name                 |
-| ----- | -------------------- |
-| DT001 | default-palette      |
-| DT002 | rainbow-palette      |
-| DT003 | smooth-line          |
-| DT004 | symbols-everywhere   |
-| DT005 | pie-slices           |
-| DT006 | pie-overuse          |
-| DT007 | three-d              |
-| DT008 | dual-axis            |
-| DT009 | missing-unit         |
-| DT010 | bar-baseline         |
-| DT011 | raw-large-numbers    |
-| DT012 | unit-system          |
-| DT013 | delta-convention     |
-| DT014 | delta-colour-only    |
-| DT015 | low-contrast-text    |
-| DT016 | thin-line-contrast   |
-| DT017 | gradient-decoration  |
-| DT018 | glow                 |
-| DT019 | kpi-overload         |
-| DT020 | kpi-rainbow          |
-| DT021 | emoji-icons          |
-| DT022 | cjk-min-size         |
-| DT023 | legend-single-series |
+| ID    | Name                    |
+| ----- | ----------------------- |
+| DT001 | default-palette         |
+| DT002 | rainbow-palette         |
+| DT003 | smooth-line             |
+| DT004 | symbols-everywhere      |
+| DT005 | pie-slices              |
+| DT006 | pie-overuse             |
+| DT007 | three-d                 |
+| DT008 | dual-axis               |
+| DT009 | missing-unit            |
+| DT010 | bar-baseline            |
+| DT011 | raw-large-numbers       |
+| DT012 | unit-system             |
+| DT013 | delta-convention        |
+| DT014 | delta-colour-only       |
+| DT015 | low-contrast-text       |
+| DT016 | thin-line-contrast      |
+| DT017 | gradient-decoration     |
+| DT018 | glow                    |
+| DT019 | kpi-overload            |
+| DT020 | kpi-rainbow             |
+| DT021 | emoji-icons             |
+| DT022 | cjk-min-size            |
+| DT023 | legend-single-series    |
+| DT024 | bar-width               |
+| DT025 | legend-not-direct-label |
+| DT026 | line-weight             |
+| DT027 | tabular-numerals        |
+| DT028 | hero-metric             |
 
 ## Gallery
 

@@ -20,21 +20,80 @@ export async function setup(name, title, date) {
   const bg = t.page || t.bg || t.paper,
     surface = name === 'store' ? t.card : bg;
   const style = document.createElement('style');
-  style.textContent = `@font-face{font-family:Inter;font-feature-settings:'tnum';src:url('../../vendor/fonts/inter.woff2');font-weight:100 900}@font-face{font-family:'Instrument Sans';src:url('../../vendor/fonts/instrument-sans.woff2');font-weight:100 900}
- @font-face{font-family:'Geist Mono';src:url('../../vendor/fonts/geist-mono.woff2');font-weight:100 900} *{box-sizing:border-box}body{margin:0;background:${bg};color:${t.ink};font:400 ${screen ? 16 : 13}px '${face}','PingFang SC','Noto Sans CJK SC',sans-serif;font-variant-numeric:tabular-nums;font-feature-settings:'tnum','cv11'}main{margin:${screen ? 32 : 28}px;height:calc(100vh - ${screen ? 64 : 56}px);${name === 'store' ? `background:${surface};border:1px solid ${t.hairline};border-radius:12px;padding:24px 28px;` : 'padding:0 12px;'}}header{height:${screen ? 66 : 64}px;display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid ${t.hairline};margin-bottom:24px}h1{font-size:20px;font-weight:500;margin:6px 0}h2{font-size:16px;font-weight:500;margin:0 0 16px}.muted,label,th,.period{color:${t.muted}}.identity{font-size:${screen ? 16 : 13}px}.date{color:${t.muted};padding-top:12px}label{display:block;font-size:${screen ? 16 : 13}px;font-weight:500}.hero{font-size:${screen ? 120 : 64}px;line-height:1.15;letter-spacing:-.025em;font-weight:500;margin:8px 0 12px}.value{font-size:${screen ? 36 : 24}px;font-weight:500;margin:8px 0}.delta{display:inline-flex;gap:6px;align-items:center;font-size:${screen ? 16 : 12}px}.period{margin-right:16px;white-space:nowrap}.top{display:grid;grid-template-columns:minmax(0,2.12fr) minmax(0,1fr);gap:32px}.rail{border-left:1px solid ${t.hairline};padding-left:28px}.rail .kpi{height:108px;border-bottom:1px solid ${t.hairline};position:relative;padding:8px 0}.spark{position:absolute;width:120px;height:32px;right:0;top:36px}.chart{width:100%;height:260px}.bottom{border-top:1px solid ${t.hairline};margin-top:24px;padding-top:22px;display:grid;grid-template-columns:1fr 1fr;gap:36px}table{width:100%;border-collapse:collapse;font-size:${screen ? 16 : 13}px}th{white-space:nowrap;font-size:${screen ? 16 : 12}px;font-weight:400;text-align:left;height:32px}td{height:${screen ? 48 : 36}px;border-bottom:1px solid ${t.hairline};white-space:nowrap}td:not(:first-child),th:not(:first-child){text-align:right}td.product,.ranking th:nth-child(2){text-align:left;padding-left:16px}.track{height:4px;background:${t.hairline};width:100%;margin-top:6px}.track i{display:block;height:4px;background:${t.ink}}.share{width:100px;padding-left:20px}.rank{min-width:36px;color:${t.muted};width:24px}.channels>div{padding:14px 0;border-bottom:1px solid ${t.hairline}}.row{display:flex;justify-content:space-between}.small-number{font-size:24px;font-weight:500}.strip{display:grid;grid-template-columns:repeat(5,1fr);gap:28px;padding:24px 0;border-top:1px solid ${t.hairline};border-bottom:1px solid ${t.hairline}}.regions{display:grid;grid-template-columns:repeat(6,1fr);gap:24px 28px}.region{position:relative;height:94px;border-bottom:1px solid ${t.hairline}}.region .spark{top:42px;width:100%;height:42px}.region .small-number{font-size:20px}.progress{height:4px;background:${t.hairline};margin:12px 0}.progress i{display:block;height:4px;background:${t.ink}}`;
-  style.textContent += `body[data-dashboard=store] main{margin:16px;height:calc(100vh - 32px);padding:16px 24px}body[data-dashboard=store] header{height:48px;margin-bottom:16px}body[data-dashboard=store] .rail .kpi{height:76px;padding:3px 0}body[data-dashboard=store] .rail .value{margin:3px 0}body[data-dashboard=store] .rail .spark{top:24px}body[data-dashboard=store] .channels>div{padding:11px 0}`;
-  style.textContent += `body[data-dashboard=live] .hero{font-size:112px;margin:4px 0 8px}body[data-dashboard=live] .strip{padding:16px 0}body[data-dashboard=live] .regions{gap:16px 28px}body[data-dashboard=live] .region{height:78px}body[data-dashboard=live] .region .spark{top:32px;height:40px}`;
-  style.textContent += `body[data-dashboard=saas] .rail .kpi{height:96px}`;
-  style.textContent += `.kpi{padding:8px 0;min-height:98px}.hero{margin:8px 0}.delta-row{display:flex;align-items:center;min-height:18px;white-space:nowrap}.hero + .delta-row{margin-top:8px}.chart{margin-top:20px}.rail .kpi{height:110px;padding:10px 0 14px}.rail .value{margin:8px 0}.share{width:150px;padding-left:16px}.share-inline{display:inline-flex;gap:10px;align-items:center}.share-inline .track{width:64px;margin:0;border-radius:2px;overflow:hidden}.share-inline>span:last-child{width:44px;text-align:right}.ranking{table-layout:auto}.ranking .product{width:100%}.ranking .amount{min-width:90px}.target{display:flex;align-items:center;gap:12px;padding-bottom:36px}.target .track{width:160px;margin:0}.target .track i{background:#C9D2FF}body[data-dashboard=store] header{height:78px;padding-bottom:16px}body[data-dashboard=store] h1{margin:4px 0 0}body[data-dashboard=store] .top>.rail{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}body[data-dashboard=store] .rail .kpi{height:148px;padding:8px 0 42px}body[data-dashboard=store] .rail .value{font-size:26px;margin:6px 0}body[data-dashboard=store] .rail .spark{width:100%;height:28px;top:auto;bottom:8px}body[data-dashboard=store] .channels>div{height:40px;padding:0;display:grid;grid-template-columns:64px 1fr 82px 48px;gap:10px;align-items:center;border-bottom:1px solid ${t.hairline}}.channels .track{height:6px;margin:0}.channels .track i{height:6px}.channels .num{text-align:right}body[data-dashboard=live] .hero{font-size:88px;line-height:1.05}body[data-dashboard=live] .chart{margin-top:20px}body[data-dashboard=live] .strip{margin-top:16px!important;padding:12px 0}body[data-dashboard=live] .regions{gap:12px 28px}body[data-dashboard=live] .region{height:94px}body[data-dashboard=live] .region .spark{top:34px;height:54px}body[data-dashboard=finance] .ranking td{height:40px}body[data-dashboard=finance] .bottom .rail .kpi{height:112px}`;
-  style.textContent += `body[data-dashboard=saas] .bottom td{height:26px}body[data-dashboard=saas] .bottom th{height:28px}body[data-dashboard=store] header{height:70px}body[data-dashboard=store] .hero{font-size:52px}body[data-dashboard=store] td{height:32px}body[data-dashboard=store] .top>.rail{align-content:start}body[data-dashboard=store] .bottom .rail{display:block}body[data-dashboard=store] .ranking .product{width:auto}body[data-dashboard=store] .ranking{table-layout:fixed}body[data-dashboard=store] .ranking th:first-child{width:36px}body[data-dashboard=store] .ranking th:nth-child(3){width:100px}body[data-dashboard=store] .ranking th:nth-child(4){width:150px}body[data-dashboard=store] .ranking th:nth-child(5){width:72px}body[data-dashboard=finance] #burn{margin-top:10px}body[data-dashboard=finance] .bottom .rail .kpi{height:98px}body[data-dashboard=live] .hero{font-size:64px}body[data-dashboard=live] .strip{padding:8px 0;margin-top:12px!important}body[data-dashboard=live] .strip .kpi{padding:0;min-height:94px;height:94px}body[data-dashboard=live] .strip .value{font-size:30px;line-height:1.15;margin:4px 0}body[data-dashboard=live] .progress{margin:8px 0}body[data-dashboard=live] .region{height:85px}body[data-dashboard=live] .region .spark{height:45px}`;
-  style.textContent += `.period:empty{display:none}td:last-child{padding-left:10px}th:not(:first-child){padding-left:12px}.target{padding-bottom:48px}body[data-dashboard=finance] .top{grid-template-columns:minmax(0,1.85fr) minmax(0,1fr)}body[data-dashboard=finance] .share{padding-left:8px}body[data-dashboard=store] .bottom{grid-template-columns:1.4fr 1fr!important}`;
-  style.textContent += `header{height:48px;margin-bottom:20px}body[data-dashboard=store] header{height:48px}th{font-family:${cn ? face : mono};font-size:${screen ? 16 : cn ? 12 : 11}px;letter-spacing:${cn ? 0 : '.06em'};text-transform:${cn ? 'none' : 'uppercase'}}${!cn ? `label{font:400 11px '${mono}';letter-spacing:.06em;text-transform:uppercase}` : ''}.track i{background:${t.ink};opacity:.2}tr:first-child .track i,.channels>div:first-child .track i{opacity:1}.progress i{background:${t.ink}}body[data-dashboard=live] .hero{font-size:112px;line-height:1.15;margin-top:12px}body[data-dashboard=live] header{height:44px;margin-bottom:12px}body[data-dashboard=live] .kpi{min-height:0}body[data-dashboard=live] .chart{margin-top:8px}body[data-dashboard=live] .region{height:75px}body[data-dashboard=live] .region .spark{height:38px}`;
-  style.textContent += `body[data-dashboard=store] .top>.rail{display:block}body[data-dashboard=store] .top>.rail .kpi{height:82px;min-height:0;padding:8px 136px 8px 0}body[data-dashboard=store] .top>.rail label{font-size:13px}body[data-dashboard=store] .top>.rail .value{font-size:24px;line-height:28px;margin:3px 0}body[data-dashboard=store] .top>.rail .spark{width:120px;height:32px;top:24px;bottom:auto}body[data-dashboard=store] .channels .track,body[data-dashboard=store] .channels .track i{height:4px}body[data-dashboard=store] .channels .track i{background:${t.muted};opacity:1}body[data-dashboard=store] .channels>div:first-child .track i{background:${t.ink}}`;
-  style.textContent += `.bridge{display:flex;gap:24px;align-items:center;margin-top:12px}.bridge h2{width:90px;margin:0;font-size:12px}.bridge>div{flex:1;font-size:11px}.bridge i{margin:6px 0}.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center;font-size:12px}.calendar>div{height:42px;display:grid;place-items:center}.hero-band{display:flex;align-items:center;justify-content:space-between;gap:24px}.pace{width:300px;flex-shrink:0}.pace>div{margin:22px 0}body[data-dashboard=live] .regions{grid-template-columns:repeat(9,1fr);gap:12px 22px}body[data-dashboard=live] .region.major{grid-column:span 3;height:130px}body[data-dashboard=live] .region.major .small-number{font-size:40px}body[data-dashboard=live] .region.major .spark{top:54px;height:72px}body[data-dashboard=live] .region.minor{height:72px}body[data-dashboard=live] .region.minor .row{display:block}body[data-dashboard=live] .region.minor .spark{top:44px;height:28px}body[data-dashboard=live] .region.minor .small-number{font-size:20px}body[data-dashboard=live] .strip{padding:8px 0}body[data-dashboard=live] header{margin-bottom:4px}body[data-dashboard=live] .region.major{height:115px}body[data-dashboard=live] .region.major .spark{height:64px}body[data-dashboard=live] .region.minor{height:66px}body[data-dashboard=live] .region.minor .row{display:flex;flex-wrap:wrap}body[data-dashboard=live] .hero{font-size:112px}`;
+  const accent = cn ? (dark ? '#E8B657' : '#C68A1C') : dark ? '#E6A24B' : '#B65A08';
+  style.textContent = `
+@font-face{font-family:Inter;src:url('../../vendor/fonts/inter.woff2');font-weight:100 900}
+@font-face{font-family:'Instrument Sans';src:url('../../vendor/fonts/instrument-sans.woff2');font-weight:100 900}
+@font-face{font-family:'Geist Mono';src:url('../../vendor/fonts/geist-mono.woff2');font-weight:100 900}
+*{box-sizing:border-box}
+body{margin:0;background:${bg};color:${t.ink};font:400 ${screen ? 16 : 13}px '${face}','PingFang SC','Noto Sans CJK SC',sans-serif;font-variant-numeric:tabular-nums;font-feature-settings:'tnum','cv11'}
+main{margin:${screen ? 32 : 28}px;height:calc(100vh - ${screen ? 64 : 56}px);padding:0 12px}
+header{height:48px;display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid ${t.hairline};margin-bottom:18px}
+h1{font-size:20px;font-weight:500;margin:0}h2{font-size:${screen ? 18 : 15}px;font-weight:500;margin:0 0 16px}
+.muted,label,th,.period,.date{color:${t.muted}}.date{padding-top:3px}
+label{display:block;font-size:${screen ? 16 : 13}px;font-weight:500;line-height:1.4}
+.kpi{position:relative;padding:8px 0;min-width:0}
+.hero,.value,.small-number{font-weight:500;font-variant-numeric:tabular-nums}
+.hero{font-size:${screen ? 120 : 56}px;line-height:1.12;letter-spacing:-.02em;margin:6px 0 8px}
+.value{font-size:${screen ? 36 : 24}px;line-height:1.2;margin:7px 0}
+.delta{display:inline-flex;gap:6px;align-items:center;font-size:${screen ? 16 : 12}px}
+.delta-row{display:flex;align-items:center;min-height:18px;white-space:nowrap;gap:12px}.period{white-space:nowrap}.period:empty{display:none}
+.top{display:grid;grid-template-columns:minmax(0,2.12fr) minmax(0,1fr);gap:32px}
+.rail{border-left:1px solid ${t.hairline};padding-left:28px;min-width:0}
+.rail-row{display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:16px;padding:17px 0;border-bottom:1px solid ${t.hairline}}
+.rail-row .kpi{padding:0}.rail-row .value{margin:5px 0}.rail-row .spark{position:static;align-self:center}
+.spark{position:absolute;width:120px;height:36px;right:0;top:38px}
+.chart{width:100%;height:260px;margin-top:20px}
+.bottom{border-top:1px solid ${t.hairline};margin-top:18px;padding-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:36px}
+table{width:100%;border-collapse:collapse;font-size:${screen ? 16 : 13}px}
+th{height:32px;text-align:left;font-size:${screen ? 16 : cn ? 12 : 11}px;font-weight:400;font-family:'${cn ? face : mono}';white-space:nowrap}
+td{height:${screen ? 48 : 36}px;border-bottom:1px solid ${t.hairline};white-space:nowrap}
+td:not(:first-child),th:not(:first-child){text-align:right;padding-left:10px}
+td.product,.ranking th:nth-child(2){text-align:left;padding-left:14px}.rank{width:30px;color:${t.muted}}
+.share{width:140px;padding-left:14px}.share-inline{display:inline-flex;gap:10px;align-items:center}.share-inline>span:last-child{width:44px;text-align:right}
+.track,.progress{height:4px;background:${t.hairline}}.track i,.progress i{display:block;height:4px;background:${t.ink}}
+.share-inline .track{width:60px}.track i{opacity:.25}tr:first-child .track i{opacity:1}
+.row{display:flex;justify-content:space-between;gap:12px}.small-number{font-size:24px}
+.bridge{margin-top:14px}.bridge h2{margin:0}.bridge-ends{display:flex;justify-content:space-between;margin:8px 0;font-size:12px}.bridge-ends b{font:12px 'Geist Mono';color:${t.ink};font-variant-numeric:tabular-nums;font-feature-settings:'tnum'}
+.ruler{max-width:48%;padding:0 26px 0 8px}.ruler .value{margin-bottom:18px}
+.calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr)) 76px;grid-template-rows:32px repeat(5,minmax(0,1fr));gap:4px;width:100%;height:392px;text-align:center;font:12px 'Geist Mono';font-variant-numeric:tabular-nums;font-feature-settings:'tnum';color:${t.muted}}
+.calendar>span{align-self:center}.calendar>div{display:grid;place-items:center;border-radius:2px}.calendar .week-total{background:none;color:${t.ink};justify-content:end}
+body[data-dashboard=saas] #mrr{margin-top:16px}
+body[data-dashboard=finance] .top{grid-template-columns:minmax(0,1.85fr) minmax(0,1fr)}
+body[data-dashboard=finance] .ranking .share{width:110px;padding-left:8px}body[data-dashboard=finance] .share-inline .track{width:36px}
+body[data-dashboard=finance] #burn{margin-top:10px}body[data-dashboard=finance] .bottom .kpi{padding:4px 0}
+body[data-dashboard=store] main{margin:16px;height:calc(100vh - 32px);padding:22px 26px;background:${surface};border:1px solid ${t.hairline};border-radius:12px}
+body[data-dashboard=store] header{margin-bottom:18px}body[data-dashboard=store] .hero{font-size:56px}
+body[data-dashboard=store] .rail-row{padding:8px 0}body[data-dashboard=store] .rail-row label{line-height:15px}body[data-dashboard=store] .rail-row .delta-row{min-height:16px;line-height:16px}body[data-dashboard=store] .rail-row .value{font-size:22px;line-height:24px;margin:2px 0}
+body[data-dashboard=store] .bottom{grid-template-columns:1.4fr 1fr!important}
+body[data-dashboard=store] .ranking{table-layout:fixed}body[data-dashboard=store] .ranking th:first-child{width:34px}body[data-dashboard=store] .ranking th:nth-child(3){width:100px}body[data-dashboard=store] .ranking th:nth-child(4){width:142px}body[data-dashboard=store] .ranking th:nth-child(5){width:72px}
+.hero-band{display:flex;align-items:center;justify-content:space-between;gap:28px}.pace{width:280px;flex-shrink:0}.pace>div{margin:22px 0}.progress{margin:12px 0}
+.strip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:28px;border-top:1px solid ${t.hairline};border-bottom:1px solid ${t.hairline}}
+.regions{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px 28px}
+.region{position:relative;height:80px;border-bottom:1px solid ${t.hairline}}.region .row{align-items:baseline}.region .small-number{font-size:24px}.region .spark{top:34px;width:100%;height:44px}
+body[data-dashboard=live] header{height:44px;margin-bottom:12px}body[data-dashboard=live] .hero{font-size:120px;margin:8px 0;line-height:1.12}
+body[data-dashboard=live] .chart{margin-top:8px}body[data-dashboard=live] .strip{margin-top:18px!important;padding:8px 0}
+body[data-dashboard=live] .strip .value{margin:4px 0}
+body[data-dashboard=live] .strip .kpi{padding:0}body[data-dashboard=live] main>section{padding-top:14px!important}body[data-dashboard=live] main>section h2{margin-bottom:12px}
+body[data-dashboard=live] .regions{grid-template-columns:repeat(9,minmax(0,1fr));gap:12px 22px}
+body[data-dashboard=live] .region.major{grid-column:span 3;height:115px}
+body[data-dashboard=live] .region.major .small-number{font-size:40px}
+body[data-dashboard=live] .region.major .spark{top:54px;height:64px}
+body[data-dashboard=live] .region.minor{height:88px}
+body[data-dashboard=live] .region.minor .small-number{font-size:20px}
+body[data-dashboard=live] .region.minor .spark{top:44px;height:44px}
+body[data-dashboard=live] .pace>div{margin:14px 0}
+body[data-dashboard=live] .hero{font-size:112px}
+body[data-dashboard=live] .strip{margin-top:8px!important;padding:4px 0}
+body[data-dashboard=live] header{margin-bottom:4px}
+body[data-dashboard=live] main{margin:28px 32px;height:calc(100vh - 56px)}
+body[data-dashboard=live] main>section{padding-top:8px!important}
+body[data-dashboard=saas] .rail-row{padding:14px 0}
+body[data-dashboard=saas] .bottom td{height:28px}body[data-dashboard=saas] .bottom th{height:28px}
+body[data-dashboard=finance] .bottom .rail .kpi{height:auto;padding:6px 0}
+body[data-dashboard=store] td{height:32px}body[data-dashboard=store] .calendar{height:352px}body[data-dashboard=store] .bottom{align-items:stretch}body[data-dashboard=store] .bottom>section{display:flex;flex-direction:column}body[data-dashboard=store] .bottom .rail{flex:1}body[data-dashboard=store] .calendar{flex:1;height:auto;min-height:0}
+`;
   document.head.append(style);
-  style.textContent += `body[data-dashboard=store] .top>.rail .rail-row,body[data-dashboard=saas] .top>.rail .rail-row{display:grid;grid-template-columns:minmax(0,1fr) 120px;column-gap:16px;padding:12px 0;border-bottom:1px solid ${t.hairline}}body[data-dashboard=store] .top>.rail .rail-row .kpi,body[data-dashboard=saas] .top>.rail .rail-row .kpi{height:auto;min-height:0;padding:0;border:0}body[data-dashboard=store] .top>.rail .rail-row .value,body[data-dashboard=saas] .top>.rail .rail-row .value{font-size:22px;line-height:24px;margin:1px 0}body[data-dashboard=store] .top>.rail .rail-row .spark,body[data-dashboard=saas] .top>.rail .rail-row .spark{position:static;width:120px;height:32px;align-self:center}`;
-  style.textContent += `.rail-row label{line-height:15px}.rail-row .delta-row{min-height:16px;line-height:16px}`;
-  style.textContent += `.bridge{display:block;margin-top:12px}.bridge h2{width:auto;font-size:16px;margin:0}.calendar{gap:3px;grid-template-columns:repeat(7,minmax(0,1fr)) 80px;grid-template-rows:32px repeat(5,minmax(0,1fr));width:100%;height:352px;font:11px 'Geist Mono';font-variant-numeric:tabular-nums;color:${t.muted}}.calendar>span{font-size:12px}.calendar>div{height:auto;border-radius:2px}.calendar>span{align-self:center}.calendar .week-total{background:none;color:${t.ink};display:flex;justify-content:flex-end;align-items:center;font-size:12px}.bridge-ends{display:flex;justify-content:space-between;margin:6px 0;font-size:12px}.bridge-ends b{font:12px 'Geist Mono';color:${t.ink};font-weight:400;font-variant-numeric:tabular-nums}body[data-dashboard=live] .hero{margin-top:12px;margin-bottom:8px;line-height:1.15}body[data-dashboard=live] .strip{margin-top:8px!important;padding:4px 0}body[data-dashboard=live] .strip .kpi{height:94px;min-height:94px}body[data-dashboard=live] .pace>div{margin:14px 0}body[data-dashboard=live] .region.minor{height:88px}body[data-dashboard=live] .region.minor .spark{top:44px;height:44px}body[data-dashboard=live] .region.major{height:115px}body[data-dashboard=live] .region.major .small-number{font-size:40px}body[data-dashboard=live] .region.major .spark{top:54px;height:64px}body[data-dashboard=live] main>section{padding-top:8px!important}`;
   const root = document.querySelector('main');
   root.innerHTML = `<header><div><h1>${title}</h1></div><div class="date">${date}</div></header>`;
   const compact = (v) =>
@@ -85,12 +144,12 @@ export async function setup(name, title, date) {
     type: 'line',
     name,
     data: values,
-    showSymbol: !cn && values.length <= 31,
+    showSymbol: false,
     symbol: comparison ? 'emptyCircle' : 'circle',
     symbolSize: 3.5,
     smooth: false,
     lineStyle: {
-      width: comparison ? 1 : 1.5,
+      width: comparison ? 1.5 : 1.8,
       type: comparison ? 'dashed' : 'solid',
       color: comparison ? t.muted : cn && !dark ? t.brand : t.ink,
     },
@@ -100,15 +159,16 @@ export async function setup(name, title, date) {
       ? undefined
       : {
           symbol: 'circle',
-          symbolSize: 7,
-          itemStyle: { color: cn ? t.accent : t.brand },
+          symbolSize: 6,
+          itemStyle: { color: accent },
           label: {
             show: !!name,
             formatter: () => money(last(values)),
             position: 'top',
-            distance: 10,
-            color: cn ? t.ink : t.brand,
+            distance: 8,
+            color: cn ? t.ink : accent,
             fontSize: screen ? 16 : 11,
+            fontFamily: face,
           },
           data: [{ coord: [values.length - 1, last(values)] }],
         },
@@ -129,7 +189,7 @@ export async function setup(name, title, date) {
         data: labels,
         boundaryGap: false,
         axisTick: { show: false },
-        axisLine: { lineStyle: { color: t.hairline } },
+        axisLine: { show: false },
         ...extra.xAxis,
         axisLabel: {
           color: t.muted,
@@ -161,37 +221,39 @@ export async function setup(name, title, date) {
         },
       },
     });
+    const namedLines = series.filter((item) => item.type === 'line' && item.name);
     const annotations = [];
     let previousY = -Infinity;
-    series.forEach((item, i) => {
-      if (item.type !== 'line' || !item.name) return;
-      const [x, y] = c.convertToPixel({ gridIndex: 0 }, [labels.length - 1, item.data.at(-1)]);
-      const labelY =
-        Math.abs(y - previousY) < (screen ? 24 : 20)
-          ? previousY + (y < previousY ? -1 : 1) * (screen ? 24 : 20)
-          : y;
-      previousY = labelY;
-      annotations.push(
-        {
-          id: 'leader-' + i,
-          type: 'line',
-          shape: { x1: x + 5, y1: y, x2: x + 22, y2: labelY },
-          style: { stroke: t.muted, lineWidth: 1 },
-        },
-        {
-          id: 'annotation-' + i,
-          type: 'text',
-          x: x + 28,
-          y: labelY,
-          style: {
-            text: item.name,
-            fill: t.muted,
-            font: `${screen ? 16 : 12}px '${face}'`,
-            verticalAlign: 'middle',
+    if (namedLines.length >= 2) {
+      namedLines.forEach((item, i) => {
+        const [x, y] = c.convertToPixel({ gridIndex: 0 }, [labels.length - 1, item.data.at(-1)]);
+        const labelY =
+          Math.abs(y - previousY) < (screen ? 24 : 20)
+            ? previousY + (y < previousY ? -1 : 1) * (screen ? 24 : 20)
+            : y;
+        previousY = labelY;
+        annotations.push(
+          {
+            id: 'leader-' + i,
+            type: 'line',
+            shape: { x1: x + 5, y1: y, x2: x + 22, y2: labelY },
+            style: { stroke: t.muted, lineWidth: 1 },
           },
-        },
-      );
-    });
+          {
+            id: 'annotation-' + i,
+            type: 'text',
+            x: x + 28,
+            y: labelY,
+            style: {
+              text: item.name,
+              fill: t.muted,
+              font: `${screen ? 16 : 12}px '${face}'`,
+              verticalAlign: 'middle',
+            },
+          },
+        );
+      });
+    }
     if (annotations.length) c.setOption({ graphic: annotations });
     return c;
   }
@@ -201,7 +263,7 @@ export async function setup(name, title, date) {
       animation: false,
       backgroundColor: surface,
       color: [t.ink],
-      grid: { left: 3, right: 4, top: 4, bottom: 4 },
+      grid: { left: 2, right: 2, top: 2, bottom: 2 },
       xAxis: {
         type: 'category',
         axisLabel: { color: t.muted },
@@ -221,7 +283,7 @@ export async function setup(name, title, date) {
           ...line('', values),
           showSymbol: false,
           endLabel: { show: false },
-          lineStyle: { width: 1.5, color: cn && !dark ? t.brand : t.ink },
+          lineStyle: { width: 1.8, color: cn && !dark ? t.brand : t.ink },
           markPoint: {
             symbol: 'circle',
             symbolSize: 4,
@@ -260,7 +322,7 @@ export async function setup(name, title, date) {
         {
           id: 'event-dot',
           type: 'circle',
-          shape: { cx: x, cy: y, r: 4 },
+          shape: { cx: x, cy: y, r: 2.5 },
           style: { fill: surface, stroke: t.ink, lineWidth: 1 },
         },
         {

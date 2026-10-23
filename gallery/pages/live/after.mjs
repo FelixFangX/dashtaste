@@ -18,7 +18,7 @@ root.innerHTML += `<div class="top" style="grid-template-columns:2.2fr 1fr"><sec
   )
   .join(
     '',
-  )}</div></div><div id="cumulative" class="chart" style="height:378px"></div></section><aside class="rail"><h2>商品 TOP 8</h2>${table(['轻量通勤包', '棉质衬衫', '城市运动鞋', '保温随行杯', '便携收纳盒', '针织开衫', '桌面阅读灯', '休闲长裤'], d.ranks, true, d.previousRanks, 'higher-is-better', k[0][1])}</aside></div><div class="strip" style="margin-top:24px">${k
+  )}</div></div><div id="cumulative" class="chart" style="height:378px"></div></section><aside class="rail"><h2>商品 TOP 8</h2>${table(['轻量通勤包', '棉质衬衫', '城市运动鞋', '保温随行杯', '便携收纳盒', '针织开衫', '桌面阅读灯', '休闲长裤'], d.ranks, true, d.previousRanks, 'higher-is-better', k[0][1])}</aside></div><div class="strip" style="margin-top:12px">${k
   .slice(1)
   .map(([label, v, type, p]) =>
     metric(
@@ -35,7 +35,7 @@ root.innerHTML += `<div class="top" style="grid-template-columns:2.2fr 1fr"><sec
   )
   .join(
     '',
-  )}</div><section style="padding-top:16px"><h2>区域成交</h2><div class="regions" data-ranking>${d.regions.map((v, i) => `<div class="region ${i < 3 ? 'major' : 'minor'}"><div class="row"><span class="muted">${String(i + 1).padStart(2, '0')}　${['广东', '浙江', '江苏', '上海', '北京', '山东', '福建', '四川', '湖北', '河南', '湖南', '其他'][i]}</span><span class="small-number">${money(v)}</span></div><div class="spark" id="r${i}"></div></div>`).join('')}</div></section>`;
+  )}</div><section style="padding-top:8px"><h2>区域成交</h2><div class="regions" data-ranking>${d.regions.map((v, i) => `<div class="region ${i < 3 ? 'major' : 'minor'}"><div class="row"><span class="muted">${String(i + 1).padStart(2, '0')}　${['广东', '浙江', '江苏', '上海', '北京', '山东', '福建', '四川', '湖北', '河南', '湖南', '其他'][i]}</span><span class="small-number">${money(v)}</span></div><div class="spark" id="r${i}"></div></div>`).join('')}</div></section>`;
 const today = line('今日', d.revenue);
 today.markLine = {
   symbol: 'none',
@@ -43,25 +43,20 @@ today.markLine = {
   lineStyle: { color: t.hairline, width: 1 },
   data: [{ xAxis: 18 }],
 };
-const cumulative = chart(
-  'cumulative',
-  d.months.map((v, i) => (i === 18 ? '' : v)),
-  [today, line('昨日', d.yesterday, true)],
-  {
-    yAxis: {
-      type: 'value',
-      min: 0,
-      max: 1500000,
-      interval: 500000,
-      axisLabel: {
-        fontSize: 16,
-        color: t.muted,
-        formatter: (v) => (v === 0 ? '0' : v / 10000 + '万'),
-      },
-      splitLine: { lineStyle: { color: t.grid } },
+const cumulative = chart('cumulative', d.months, [today, line('昨日', d.yesterday, true)], {
+  yAxis: {
+    type: 'value',
+    min: 0,
+    max: 1500000,
+    interval: 500000,
+    axisLabel: {
+      fontSize: 16,
+      color: t.muted,
+      formatter: (v) => (v === 0 ? '0' : v / 10000 + '万'),
     },
+    splitLine: { lineStyle: { color: t.grid } },
   },
-);
+});
 event(cumulative, 1, d.revenue[1], '尾款开启', 65, -38);
 const regionalHours = d.regionHourly.map((values) => values.slice(2, 19));
 const regionalMax = Math.max(...regionalHours.flat()) * 1.1;
