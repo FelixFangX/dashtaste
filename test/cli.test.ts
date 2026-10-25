@@ -1,6 +1,8 @@
 import { beforeAll, it, expect } from 'vitest';
 import { execFileSync, spawnSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { readFileSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 beforeAll(() => {
   execFileSync('node', ['node_modules/typescript/bin/tsc']);
 });
@@ -123,4 +125,55 @@ it('pluralises each summary count independently', () => {
       'DT003',
     ).stdout,
   ).toContain('0 errors, 3 warnings · score 91/100');
+});
+
+const overlayPath = 'test/fixtures/pack-overlay-cn.json';
+it('loads pack-file tokens and uses extends for metadata and check JSON', () => {
+  const tokens = cli('tokens', '--pack-file', overlayPath);
+  expect(tokens.status, tokens.stderr).toBe(0);
+  expect(JSON.parse(tokens.stdout).brand).toBe('#663399');
+  expect(
+    cli('tokens', '--pack-file', overlayPath, '--mode', 'dark', '--format', 'css').stdout,
+  ).toContain('--dt-brand: #BB99EE');
+  expect(cli('rules', '--pack-file', overlayPath, '--format', 'json').stdout).toBe(
+    cli('rules', '--pack', 'cn', '--format', 'json').stdout,
+  );
+  const result = cli(
+    'check',
+    'test/fixtures/good.json',
+    '--pack',
+    'global',
+    '--pack-file',
+    overlayPath,
+    '--format',
+    'json',
+  );
+  expect(result.status, result.stderr).toBe(0);
+  expect(JSON.parse(result.stdout)).toMatchObject({ pack: 'cn', packFile: 'cn-focused' });
+});
+
+it('invalid pack files exit two with useful stderr', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'dashtaste-packs-'));
+  try {
+    for (const [name, content, message] of [
+      ['missing.json', undefined, 'ENOENT'],
+      ['bad.json', '{', 'JSON'],
+      ['extends.json', '{"id":"x"}', 'extends'],
+      [
+        'categorical.json',
+        '{"id":"x","extends":"cn","tokens":{"light":{"categorical":[]}}}',
+        'categorical',
+      ],
+      ['disable.json', '{"id":"x","extends":"cn","disable":["DT999"]}', 'unknown rule'],
+    ] as const) {
+      const path = join(dir, name);
+      if (content !== undefined) writeFileSync(path, content);
+      const result = cli('tokens', '--pack-file', path);
+      expect(result.status).toBe(2);
+      expect(result.stderr).toContain('pack-file');
+      expect(result.stderr).toContain(message);
+    }
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 });

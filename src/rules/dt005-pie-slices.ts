@@ -1,4 +1,4 @@
-import { packs } from '../packs/index.js';
+import { getResolvedPack } from '../packs/index.js';
 import type { Rule } from '../types.js';
 import { asArray, series, isPie, rule, charts } from './helpers.js';
 
@@ -16,8 +16,8 @@ export const dt005: Rule = rule(
           isPie(item) &&
           asArray(item.data).length >
             (item.roseType
-              ? packs[context.pack].limits.maxRoseSlices
-              : packs[context.pack].limits.maxPieSlices)
+              ? getResolvedPack(context).limits.maxRoseSlices
+              : getResolvedPack(context).limits.maxPieSlices)
         )
           emit(`${path}.series[${index}]`);
       }),

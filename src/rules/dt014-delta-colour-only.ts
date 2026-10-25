@@ -1,7 +1,7 @@
 import type { Rule } from '../types.js';
 import { rule, sameColor } from './helpers.js';
 import { rgb } from '../color.js';
-import { getTokens } from '../packs/index.js';
+import { getResolvedPack } from '../packs/index.js';
 
 /** Directional colour must be accompanied by an arrow or signed number. */
 export const dt014: Rule = rule(
@@ -11,7 +11,7 @@ export const dt014: Rule = rule(
   'Directional colour must be accompanied by an arrow or signed number.',
   'add ▲/▼ or an explicit sign',
   function check(facts, context, emit) {
-    const tokens = getTokens(context.pack, context.mode);
+    const tokens = getResolvedPack(context)[context.mode];
     for (const delta of facts.deltas ?? []) {
       const hasDirection = /[▲▼↑↓]|[+-]\s*\d/.test(delta.text);
       if (hasDirection || sameColor(delta.color, tokens.muted)) continue;

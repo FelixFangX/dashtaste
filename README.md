@@ -19,6 +19,8 @@ For manual installation, copy the folder from [skills/](skills/) into your agent
 
 ## Check
 
+Extend built-in packs with local JSON overlays using [`--pack-file`](docs/packs.md).
+
 ```sh
 npx dashtaste check dashboard.json --pack cn
 npx dashtaste check http://localhost:5173 --pack global

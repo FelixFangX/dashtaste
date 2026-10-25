@@ -1,7 +1,7 @@
 import type { Rule } from '../types.js';
 import { rule, sameColor } from './helpers.js';
 import { rgb } from '../color.js';
-import { getTokens } from '../packs/index.js';
+import { getResolvedPack } from '../packs/index.js';
 
 /** Three or more distinct accent colours on KPI values or tiles distract. Neutral greys and pack text/background tokens are excluded. */
 export const dt020: Rule = rule(
@@ -11,7 +11,7 @@ export const dt020: Rule = rule(
   'Three or more distinct accent colours on KPI values or tiles distract. Neutral greys and pack text/background tokens are excluded.',
   'use ink for values and reserve colour for deltas',
   function check(facts, context, emit) {
-    const tokens = getTokens(context.pack, context.mode);
+    const tokens = getResolvedPack(context)[context.mode];
     const neutral = [
       tokens.ink,
       tokens.muted,

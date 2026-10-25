@@ -62,3 +62,76 @@ export { global, cn };
 export function getTokens(pack: PackName, mode: Mode = 'light'): Tokens {
   return packs[pack][mode];
 }
+
+/** Resolve once in the engine; direct rule callers can use the base pack. */
+export function getResolvedPack(options: { pack?: PackName; resolvedPack?: Pack }): Pack {
+  return options.resolvedPack ?? packs[options.pack ?? 'global'];
+}
+
+export interface PackOverlay {
+  id: string;
+  extends: PackName;
+  description?: string;
+  limits?: Partial<Pack['limits']>;
+  tokens?: { light?: Partial<Tokens>; dark?: Partial<Tokens> };
+  disable?: string[];
+}
+
+/** Validate untrusted JSON before merging it with a built-in pack. */
+export function parsePackOverlay(value: unknown): PackOverlay {
+  const object = (v: unknown): v is Record<string, unknown> =>
+    v !== null && typeof v === 'object' && !Array.isArray(v);
+  const fail = (message: string): never => {
+    throw new Error(`invalid pack-file: ${message}`);
+  };
+  if (!object(value)) return fail('expected an object');
+  if (typeof value.id !== 'string' || !value.id.trim()) fail('id must be a non-empty string');
+  if (value.extends !== 'global' && value.extends !== 'cn') fail('extends must be global or cn');
+  if (value.description !== undefined && typeof value.description !== 'string')
+    fail('description must be a string');
+  if (value.limits !== undefined) {
+    if (!object(value.limits)) return fail('limits must be an object');
+    for (const [key, limit] of Object.entries(value.limits)) {
+      if (
+        !Object.hasOwn(packs.global.limits, key) ||
+        typeof limit !== 'number' ||
+        !Number.isFinite(limit) ||
+        limit < 0
+      )
+        fail(`limits.${key} must be a non-negative finite number for a supported limit`);
+    }
+  }
+  if (value.tokens !== undefined) {
+    if (!object(value.tokens)) return fail('tokens must be an object');
+    for (const [mode, tokens] of Object.entries(value.tokens)) {
+      if (mode !== 'light' && mode !== 'dark') fail('tokens mode must be light or dark');
+      if (!object(tokens)) return fail(`tokens.${mode} must be an object`);
+      for (const [key, token] of Object.entries(tokens)) {
+        if (key === 'categorical' || key === 'sequential') {
+          if (
+            !Array.isArray(token) ||
+            !token.length ||
+            !token.every((entry) => typeof entry === 'string')
+          )
+            fail(`tokens.${mode}.${key} must be a non-empty string array`);
+        } else if (typeof token !== 'string') fail(`tokens.${mode}.${key} must be a string`);
+      }
+    }
+  }
+  if (
+    value.disable !== undefined &&
+    (!Array.isArray(value.disable) || !value.disable.every((id) => typeof id === 'string'))
+  )
+    fail('disable must be an array of rule IDs');
+  return value as unknown as PackOverlay;
+}
+
+export function resolvePackOverlay(overlay: PackOverlay): Pack {
+  const base = structuredClone(packs[overlay.extends]);
+  return {
+    ...base,
+    limits: { ...base.limits, ...overlay.limits },
+    light: { ...base.light, ...overlay.tokens?.light } as Tokens,
+    dark: { ...base.dark, ...overlay.tokens?.dark } as Tokens,
+  };
+}

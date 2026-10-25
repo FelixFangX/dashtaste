@@ -33,6 +33,28 @@ Defaults are the global pack, light mode, text output, and unlimited warnings.
 Errors always fail. `--max-warnings 0` also fails on any warning.
 Informational findings lower the score but do not fail a check.
 
+## Pack files
+
+Use `--pack-file path.json` with `check`, `rules`, or `tokens` to extend a built-in
+pack. The JSON schema requires `id` (non-empty string) and `extends` (`global` or
+`cn`). Optional fields are `description` (string), `limits` (partial numeric
+`maxPieSlices`, `maxRoseSlices`, `maxKpis`, `cjkMinFontSize`), `tokens` (partial
+`light`/`dark` token objects), and `disable` (existing rule ID array).
+Limits are non-negative finite numbers. Token values are strings; `categorical`
+and `sequential` must be non-empty string arrays when present.
+
+```sh
+npx dashtaste check dashboard.json --pack-file examples/pack-overlay-cn.json
+npx dashtaste tokens --pack-file examples/pack-overlay-cn.json --mode dark
+```
+
+The file's `extends` takes precedence over `--pack`. Limits and tokens merge onto
+a clone of the base pack; arrays replace base arrays. Overlay disables combine
+with `--disable`. `rules` lists base-pack metadata, including disabled rules.
+JSON checks add `packFile` with the overlay id and keep `pack` as the base name.
+Invalid pack files exit 2 with a diagnostic on stderr.
+See [Pack overlays](packs.md) for an example and distribution details.
+
 ## Check rendered pages
 
 ```sh
@@ -53,6 +75,7 @@ The extractor inspects visible DOM text; canvas text is checked through options.
 
 | Flag             | Commands      | Values                         |
 | ---------------- | ------------- | ------------------------------ |
+| `--pack-file`    | all           | path to a JSON overlay         |
 | `--pack`         | all           | `global`, `cn`                 |
 | `--mode`         | check, tokens | `light`, `dark`                |
 | `--format`       | check, rules  | `text`, `json`                 |
@@ -65,7 +88,7 @@ The extractor inspects visible DOM text; canvas text is checked through options.
 
 `--disable` takes precedence over `--only`. Unknown rule IDs are input errors.
 `--background` overrides chart, page, and pack backgrounds for contrast checks.
-`tokens` requires an explicit `--pack`.
+`tokens` requires `--pack` or `--pack-file`.
 
 Exit 0 means no errors and warnings within the selected limit.
 Exit 1 means errors or too many warnings.

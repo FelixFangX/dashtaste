@@ -1,4 +1,4 @@
-import type { PackName, Mode, DeltaColors, Polarity } from './packs/index.js';
+import type { PackName, Mode, DeltaColors, Polarity, PackOverlay, Pack } from './packs/index.js';
 /** JSON-compatible ECharts options; unknown extension fields are retained. */
 export interface ChartStyle {
   type?: string;
@@ -96,6 +96,8 @@ export interface PageFacts {
   };
 }
 export interface CheckOptions {
+  packOverlay?: PackOverlay;
+  resolvedPack?: Pack;
   pack?: PackName;
   mode?: Mode;
   background?: string;

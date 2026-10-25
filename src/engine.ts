@@ -1,3 +1,4 @@
+import { getResolvedPack, resolvePackOverlay } from './packs/index.js';
 import { rules } from './rules/index.js';
 import type { CheckOptions, Finding, PageFacts, Option } from './types.js';
 export function normalizeInput(input: unknown): PageFacts {
@@ -20,12 +21,20 @@ export function normalizeInput(input: unknown): PageFacts {
 }
 export function check(input: unknown, options: CheckOptions = {}): Finding[] {
   const facts = normalizeInput(input);
-  const settings = { ...options, pack: options.pack ?? 'global', mode: options.mode ?? 'light' };
+  const settings = {
+    ...options,
+    pack: options.packOverlay?.extends ?? options.pack ?? 'global',
+    mode: options.mode ?? 'light',
+    resolvedPack: options.packOverlay
+      ? resolvePackOverlay(options.packOverlay)
+      : getResolvedPack(options),
+    disable: [...new Set([...(options.disable ?? []), ...(options.packOverlay?.disable ?? [])])],
+  };
   return rules
     .filter(
       (r) =>
         r.packs.includes(settings.pack) &&
-        !options.disable?.includes(r.id) &&
+        !settings.disable.includes(r.id) &&
         (!options.only || options.only.includes(r.id)),
     )
     .flatMap((r) => r.check(facts, settings));

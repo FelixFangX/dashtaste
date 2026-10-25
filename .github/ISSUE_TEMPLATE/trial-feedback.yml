@@ -1,0 +1,38 @@
+name: Trial feedback
+description: Share how dashtaste worked in a real project.
+title: 'Trial feedback: '
+labels: [feedback]
+body:
+  - type: textarea
+    id: usage
+    attributes:
+      label: How do you use dashtaste?
+      description: Describe your project and workflow.
+    validations:
+      required: true
+  - type: dropdown
+    id: pack
+    attributes:
+      label: Base pack
+      options:
+        - global
+        - cn
+    validations:
+      required: true
+  - type: textarea
+    id: failure
+    attributes:
+      label: What failed or got in your way?
+      description: Include a small example or command if possible.
+    validations:
+      required: true
+  - type: dropdown
+    id: operator
+    attributes:
+      label: Who ran dashtaste?
+      options:
+        - Agent
+        - Human
+        - Both
+    validations:
+      required: true

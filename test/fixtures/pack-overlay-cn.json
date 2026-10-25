@@ -1,0 +1,8 @@
+{
+  "id": "cn-focused",
+  "extends": "cn",
+  "description": "A focused dashboard with one primary KPI.",
+  "limits": { "maxKpis": 1 },
+  "tokens": { "light": { "brand": "#663399" }, "dark": { "brand": "#BB99EE" } },
+  "disable": ["DT021"]
+}

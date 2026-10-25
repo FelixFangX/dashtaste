@@ -1,4 +1,4 @@
-import { packs } from '../packs/index.js';
+import { getResolvedPack } from '../packs/index.js';
 import type { Rule } from '../types.js';
 import { rule } from './helpers.js';
 
@@ -15,7 +15,7 @@ export const dt022: Rule = rule(
         /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u.test(
           text.text,
         ) &&
-        text.fontSize < packs[context.pack].limits.cjkMinFontSize
+        text.fontSize < getResolvedPack(context).limits.cjkMinFontSize
       )
         emit(text.selector);
   },

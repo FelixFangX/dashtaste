@@ -2,7 +2,13 @@
 import { readFile } from 'node:fs/promises';
 import { check, summarize, score } from './engine.js';
 import { rules } from './rules/index.js';
-import { getTokens, type PackName, type Mode } from './packs/index.js';
+import {
+  getResolvedPack,
+  parsePackOverlay,
+  resolvePackOverlay,
+  type PackName,
+  type Mode,
+} from './packs/index.js';
 import { extractPage } from './extract.js';
 import type { Finding } from './types.js';
 import { createRequire } from 'node:module';
@@ -10,20 +16,20 @@ const version = createRequire(import.meta.url)('../package.json').version as str
 const help: Record<string, string> = {
   main: 'Usage: dashtaste <check|rules|tokens> --help',
   check:
-    'Usage: dashtaste check <file|url...> [--pack global|cn] [--mode light|dark] [--format text|json] [--max-warnings N] [--disable DT001,...] [--only DT001,...] [--background #hex]\nCheck options, option arrays, or page facts. Exit: 0 pass, 1 findings exceed limit, 2 invalid input. Set NO_COLOR to disable ANSI colour; CHROME_PATH selects the browser.',
+    'Usage: dashtaste check <file|url...> [--pack global|cn] [--pack-file path.json] [--mode light|dark] [--format text|json] [--max-warnings N] [--disable DT001,...] [--only DT001,...] [--background #hex]\nCheck options, option arrays, or page facts. Exit: 0 pass, 1 findings exceed limit, 2 invalid input. Set NO_COLOR to disable ANSI colour; CHROME_PATH selects the browser.',
   rules:
-    'Usage: dashtaste rules [--pack global|cn] [--format text|json]\nList rule metadata in rule order.',
+    'Usage: dashtaste rules [--pack global|cn] [--pack-file path.json] [--format text|json]\nList rule metadata in rule order.',
   tokens:
-    'Usage: dashtaste tokens --pack global|cn [--mode light|dark] [--format json|css]\nPrint exact pack tokens.',
+    'Usage: dashtaste tokens [--pack global|cn] [--pack-file path.json] [--mode light|dark] [--format json|css]\nPrint exact pack tokens.',
 };
 
 function parseArgs(command: string | undefined, args: string[]) {
   const flags: Record<string, string> = {},
     inputs: string[] = [];
   const allowed: Record<string, string[]> = {
-    check: ['pack', 'mode', 'format', 'max-warnings', 'disable', 'only', 'background'],
-    rules: ['pack', 'format'],
-    tokens: ['pack', 'mode', 'format'],
+    check: ['pack-file', 'pack', 'mode', 'format', 'max-warnings', 'disable', 'only', 'background'],
+    rules: ['pack-file', 'pack', 'format'],
+    tokens: ['pack-file', 'pack', 'mode', 'format'],
   };
   if (!command || !allowed[command])
     throw new Error('usage: dashtaste check <file|url...> | rules | tokens --pack global|cn');
@@ -45,7 +51,21 @@ async function main() {
     return;
   }
   const { flags, inputs } = parseArgs(command, args);
-  const pack = (flags.pack ?? 'global') as PackName,
+  const packOverlay = flags['pack-file']
+    ? await (async () => {
+        try {
+          const overlay = parsePackOverlay(JSON.parse(await readFile(flags['pack-file'], 'utf8')));
+          if (overlay.disable?.some((id) => !rules.some((rule) => rule.id === id)))
+            throw new Error('unknown rule in disable');
+          return overlay;
+        } catch (error) {
+          throw new Error(
+            `cannot load pack-file ${flags['pack-file']}: ${(error as Error).message}`,
+          );
+        }
+      })()
+    : undefined;
+  const pack = (packOverlay?.extends ?? flags.pack ?? 'global') as PackName,
     mode = (flags.mode ?? 'light') as Mode,
     format = flags.format ?? (command === 'tokens' ? 'json' : 'text');
   if (!['global', 'cn'].includes(pack)) throw new Error('pack must be global or cn');
@@ -54,8 +74,8 @@ async function main() {
     throw new Error('invalid output format');
   if (command !== 'check' && inputs.length) throw new Error('unexpected input');
   if (command === 'tokens') {
-    if (!flags.pack) throw new Error('tokens requires --pack');
-    const t = getTokens(pack, mode);
+    if (!flags.pack && !packOverlay) throw new Error('tokens requires --pack or --pack-file');
+    const t = (packOverlay ? resolvePackOverlay(packOverlay) : getResolvedPack({ pack }))[mode];
     console.log(
       format === 'json'
         ? JSON.stringify(t, null, 2)
@@ -70,7 +90,7 @@ async function main() {
     return;
   }
   if (command === 'rules') {
-    const selected = rules.filter((r) => !flags.pack || r.packs.includes(pack));
+    const selected = rules.filter((r) => (!flags.pack && !packOverlay) || r.packs.includes(pack));
     console.log(
       format === 'json'
         ? JSON.stringify(
@@ -112,12 +132,31 @@ async function main() {
         throw new Error(`cannot read JSON input ${input}: ${(error as Error).message}`);
       }
     }
-    const findings = check(data, { pack, mode, disable, only, background: flags.background });
+    const findings = check(data, {
+      pack,
+      packOverlay,
+      mode,
+      disable,
+      only,
+      background: flags.background,
+    });
     results.push({ input, findings, score: score(findings) });
   }
   const summary = summarize(results.flatMap((r) => r.findings));
   if (format === 'json')
-    console.log(JSON.stringify({ version, pack, inputs: results, summary }, null, 2));
+    console.log(
+      JSON.stringify(
+        {
+          version,
+          pack,
+          ...(packOverlay ? { packFile: packOverlay.id } : {}),
+          inputs: results,
+          summary,
+        },
+        null,
+        2,
+      ),
+    );
   else {
     const tty = process.stdout.isTTY && process.env.NO_COLOR === undefined;
     for (const result of results) {

@@ -1,5 +1,5 @@
 import { rgb } from '../color.js';
-import { packs, getTokens } from '../packs/index.js';
+import { getResolvedPack } from '../packs/index.js';
 import type { Rule, Option, PageFacts, CheckOptions, Finding, Severity } from '../types.js';
 
 export function asArray<T>(value: T | T[] | null | undefined): T[] {
@@ -153,7 +153,7 @@ export function charts(facts: PageFacts, visit: (option: Option, path: string) =
 }
 
 export function background(facts: PageFacts, context: Context, option?: Option): string {
-  const tokens = getTokens(context.pack, context.mode);
+  const tokens = getResolvedPack(context)[context.mode];
   return (
     context.background ??
     option?.backgroundColor ??
