@@ -22,15 +22,17 @@ For a global audience use dashtaste-global.
 ## Ten rules to apply first
 
 - DT001: Set explicit series colours from the selected pack.
-- DT002: Keep at most five categorical colours; group the tail as Other.
+- DT002: Stay within six categorical colours and five saturated hue buckets; group the tail as Other.
 - DT003: Draw straight line segments; smoothing invents intermediate values.
-- DT004: Hide line symbols above 12 points.
-- DT005: Use ranked bars for shares; no donuts in KPI boards.
+- DT004: Use small dots only on short series (at most 31 points, 5px); otherwise hide symbols.
+- DT005: Cap pie slices at five (eight for cn rose charts); prefer bars or Other for the rest.
 - DT007: Use flat two-dimensional marks.
 - DT009: Put units in value-axis names.
 - DT010: Start bar value axes at zero and disable scale.
 - DT013: Use red-up and green-down deltas throughout the page.
 - DT015: Meet 4.5:1 text contrast, or 3:1 for large text.
+
+Prefer horizontal bars for shares on KPI boards; keep donut radius ratio at most 0.75 (DT006).
 
 ## Layout explains itself
 

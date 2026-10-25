@@ -1,5 +1,6 @@
 import { beforeAll, it, expect } from 'vitest';
 import { execFileSync, spawnSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 beforeAll(() => {
   execFileSync('node', ['node_modules/typescript/bin/tsc']);
 });
@@ -23,7 +24,7 @@ it('json has inputs, score, summary', () => {
   const r = cli('check', 'test/fixtures/bad.json', '--pack', 'cn', '--format', 'json');
   const out = JSON.parse(r.stdout);
   expect(r.status).toBe(1);
-  expect(out.version).toBe('0.0.1');
+  expect(out.version).toBe(JSON.parse(readFileSync('package.json', 'utf8')).version);
   expect(out.inputs[0].score).toBeLessThan(100);
   expect(out.summary.errors).toBeGreaterThan(0);
 });

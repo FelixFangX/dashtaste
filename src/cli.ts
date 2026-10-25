@@ -5,7 +5,8 @@ import { rules } from './rules/index.js';
 import { getTokens, type PackName, type Mode } from './packs/index.js';
 import { extractPage } from './extract.js';
 import type { Finding } from './types.js';
-const version = '0.0.1';
+import { createRequire } from 'node:module';
+const version = createRequire(import.meta.url)('../package.json').version as string;
 const help: Record<string, string> = {
   main: 'Usage: dashtaste <check|rules|tokens> --help',
   check:
