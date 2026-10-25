@@ -1,0 +1,17 @@
+Title:
+[Showoff Saturday] Agent skills + a chart linter so AI dashboards stop looking identical
+
+Body:
+Agents can spin up a dashboard in minutes. The output often shares the same look: rainbow pies, smooth lines with a symbol on every point, bar axes that don't start at 0, six KPI cards with emoji, a legend for one series. None of that fails tests.
+
+Dashtaste turns that into a checkable loop:
+
+- Skills first: `dashtaste-global` / `dashtaste-cn` (delta colours, units, KPI layout, and screen packs differ on purpose — not a skin)
+- Then `npx dashtaste check dashboard.json --pack global` — 28 rules, path + fix, 0–100 score, JSON for agents/CI; also checks rendered URLs/HTML with local Chromium
+
+Gallery in the README is before/after on the same fictional data (style consistency, not a UX study). MIT, npm `dashtaste`, 0.0.7, ECharts-only for now.
+
+Repo: https://github.com/FelixFangX/dashtaste
+npm: https://www.npmjs.com/package/dashtaste
+
+Happy to talk about which rules are too strict or which chart libs you'd want next.

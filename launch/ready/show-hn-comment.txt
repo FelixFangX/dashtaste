@@ -1,0 +1,17 @@
+Hi HN. Coding agents can scaffold a dashboard quickly, but the look tends to repeat: default or rainbow palettes, smoothed lines with markers on every point, many-slice pies, gradients/glows, a legend for a single series, a row of coloured KPI cards with emoji. None of that fails tests, so nothing pushes back.
+
+Dashtaste makes taste a checkable loop on the same conventions:
+
+1. Style-pack skills (`dashtaste-global` / `dashtaste-cn`) the agent loads before building — palette, type, spacing, number formatting, chart defaults.
+2. `npx dashtaste check` — lints an ECharts JSON config or a rendered page (local Chromium + optional `playwright-core`) against 28 rules. Findings include config path + suggested fix, a 0–100 score (−10 error / −3 warning / −1 info), and JSON output for agent/CI loops. Any rule can be `--disable`d.
+
+Locale packs matter: Western green-up/red-down and K/M/B vs Chinese red-up/green-down and 万/亿, plus 1920×1080 “big screen” composition on the cn side. Same rule IDs; the pack changes what “correct” means.
+
+The repo gallery has four before/after boards on the same fictional data. After pages are written to the same rules the linter checks, so clean scores are a consistency check — judge the images yourself.
+
+Limitations: ECharts only (Vega-Lite / Recharts planned), layout still needs a human, v0.0.7 so rules may move.
+
+npm: https://www.npmjs.com/package/dashtaste
+Site: https://ledring.dev/
+
+I'd like feedback on rules that feel wrong, smells it misses, and which libraries to support next.

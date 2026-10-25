@@ -1,0 +1,5 @@
+Coding agents scaffold dashboards in minutes. The look often repeats: rainbow pies, smooth lines with a dot on every point, bar axes that don't start at 0, emoji KPI rows.
+
+Dashtaste turns taste into a checkable loop — style skills first, then `npx dashtaste check`.
+
+https://github.com/FelixFangX/dashtaste

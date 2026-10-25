@@ -1,0 +1,10 @@
+Agent 做看板 3 分钟，默认却像模板：彩虹饼、满点折线、柱轴不从 0、emoji KPI。
+
+Dashtaste = Skill 先教怎么画 + `dashtaste check` 再验收（28 条，能打分）。
+
+两套包：全球 / 国内（红涨绿跌、万亿、大屏不是换皮）。
+
+同数据 before/after 自己看图。
+MIT · npm dashtaste · github.com/FelixFangX/dashtaste
+
+[配图：gallery/compare/store-wide.png]

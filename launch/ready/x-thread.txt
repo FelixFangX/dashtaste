@@ -1,0 +1,23 @@
+1/
+Coding agents scaffold dashboards in minutes. The look often repeats: rainbow pies, smooth lines with a dot on every point, bar axes that don't start at 0, emoji KPI rows.
+
+Dashtaste turns taste into a checkable loop — style skills first, then `npx dashtaste check`.
+
+https://github.com/FelixFangX/dashtaste
+
+2/
+Skill teaches the agent how to build. `dashtaste check` accepts the result: ECharts JSON or a rendered page, 28 rules (DT001–DT028), path + fix, score from 100, JSON for agent/CI loops.
+
+Install: `npx skills add FelixFangX/dashtaste --skill dashtaste-global` (or `dashtaste-cn`)
+
+3/
+global vs cn is not a skin. Green-up/red-down and K/M/B vs red-up/green-down and 万/亿. KPI strip vs PoP/YoY cards. cn also covers 1920×1080 big-screen boards.
+
+Same rule IDs; the pack changes what “correct” means.
+
+4/
+Before/after gallery (saas, finance, store, live) on the same fictional data. After boards are clean under the linter — consistency with the rules, not a claim that the style is “better”. Judge the images yourself.
+
+MIT · npm `dashtaste` · 0.0.7 · ECharts only for now.
+
+https://ledring.dev/

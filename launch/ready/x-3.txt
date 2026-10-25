@@ -1,0 +1,3 @@
+global vs cn is not a skin. Green-up/red-down and K/M/B vs red-up/green-down and 万/亿. KPI strip vs PoP/YoY cards. cn also covers 1920×1080 big-screen boards.
+
+Same rule IDs; the pack changes what “correct” means.

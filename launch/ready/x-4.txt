@@ -1,0 +1,5 @@
+Before/after gallery (saas, finance, store, live) on the same fictional data. After boards are clean under the linter — consistency with the rules, not a claim that the style is “better”. Judge the images yourself.
+
+MIT · npm `dashtaste` · 0.0.7 · ECharts only for now.
+
+https://ledring.dev/
