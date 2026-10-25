@@ -103,6 +103,8 @@ Both packs specify spacing, typography, chart defaults, and number formatting. L
 
 All data is fictional and seeded in [gallery/data.mjs](gallery/data.mjs). Each pair shares the same data. Before pages use common unguided defaults; after pages apply their pack. These are style checks, not a usability benchmark.
 
+Walkthroughs with scores and reproduce steps: [docs/cases](docs/cases/).
+
 | Dashboard | Pack, mode         | Before                                              | After                              |
 | --------- | ------------------ | --------------------------------------------------- | ---------------------------------- |
 | saas      | global, light      | [37 errors, 55 warnings](gallery/saas-before.png)   | [clean](gallery/saas-after.png)    |
