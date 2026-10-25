@@ -120,7 +120,11 @@ Replace it: hide the legend or label the series directly.
 
 ## Manual layout review
 
-Helper labels and explanatory captions repeat visible structure; no automatic rule yet.
+## DT029: helper-captions
+
+Helper labels and explanatory captions repeat visible structure.
+Replace it: remove the helper sentence; keep the metric label and value only.
+
 Decorative icon tiles distract from values; no automatic rule yet.
 Repeated card boxes weaken the document hierarchy; no automatic rule yet.
 
@@ -131,5 +135,6 @@ DT025: legends for two to four lines without direct end labels.
 DT026: decorative line strokes above 3px or below 1px.
 DT027: proportional numerals in KPI values.
 DT028: several equally sized KPIs without a clear hero.
+DT029: helper sentences under KPIs or narrating chart titles.
 Avoid donuts on KPI boards, dual axes, repeated boxed cards, and empty quadrants.
 Avoid helper sentences, uppercase tracking, and in-flow shadows.

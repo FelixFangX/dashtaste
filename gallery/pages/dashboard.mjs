@@ -48,6 +48,9 @@ body[data-dashboard=saas] .chart,body[data-dashboard=finance] .chart{flex:1;heig
 .live-layout .ranking{height:calc(100% - 44px);display:grid;grid-template-rows:repeat(8,1fr)}.live-layout .ranking li{height:auto;grid-template-columns:32px minmax(0,1fr) 120px}.live-layout .rank-track{height:7px}.regions .tile{border:0}.regions .tile span{color:inherit}
 `;
 css.textContent += `body[data-dashboard=saas][data-variant=before] .kpis,body[data-dashboard=store][data-variant=before] .kpis{grid-template-columns:repeat(5,minmax(0,1fr))}`;
+css.textContent += `.kpi [data-kpi-helper]{display:block;margin-top:4px;font-size:11px;line-height:1.2;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}`;
+css.textContent += `${before ? 'header{height:72px;margin-bottom:16px}.kpis{margin-bottom:16px}.board{gap:12px}.panel{padding-top:16px}.chart{height:228px}.main-chart{height:'+(live?320:global?230:250)+'px}' : ''}`;
+
 document.head.append(css);
 const root = document.querySelector('main');
 const delta = (v, previous, label, i, polarity) => {
@@ -59,7 +62,10 @@ const polarityFor = (label) =>
   ['Churn', 'Operating expense', '退款金额'].includes(label)
     ? 'lower-is-better'
     : 'higher-is-better';
-root.innerHTML = `<header><div><div class="identity">${cn ? '示例店铺' : 'Example workspace'}</div><h1>${before ? '✨ ' : ''}${titles[name]}</h1></div><div class="date">${live ? `${date}　18:00` : cn ? `${formatDate('2026-09-01', pack)} 至 ${date}` : name === 'saas' ? 'Jun 1, 2025 – Nov 30, 2026' : 'Nov 1, 2025 – Oct 31, 2026'}</div></header>${name === 'store' ? `<div class="controls"><div class="segments" aria-label="日期范围">${['今天', '昨天', '近7天', '近30天', '本月'].map((s) => `<button class="${s === '近30天' ? 'active' : ''}" aria-pressed="${s === '近30天'}">${s}</button>`).join('')}</div></div>` : ''}<section class="kpis">${kpis.map(([label, v, type, previous, yearAgo], i) => `<div class="kpi"><label data-kpi-label>${before ? ['💰', '📈', '🎯', '👥', '⚡', '💎'][i] + ' ' : ''}${label}</label><div class="value" data-kpi>${type === 'money' ? money(v) : type === 'percent' ? pct(v) : type === 'months' && !before ? v.toFixed(1) : num(v)}${type === 'months' ? ' <small>months</small>' : ''}</div>${delta(v, previous, cn ? (live ? '日环比' : '环比') : 'Prior month', i, polarityFor(label))}${cn && !live ? delta(v, yearAgo, '同比', i + 1, polarityFor(label)) : ''}</div>`).join('')}</section><div class="board ${name === 'store' ? 'store-layout' : live ? 'live-layout' : ''}"></div>`;
+const helpers = cn
+  ? ['本月持续上涨说明。', '近6个月访客说明。', '该指标环比说明。', '转化仍在爬坡说明。', '退款波动复核说明。', '会员活跃回升说明。']
+  : ['Trending up this month', 'Visitors for the last 6 months', 'Steady growth this quarter', 'Compared to last period', 'Watch this metric closely', 'Improvement across the cohort'];
+root.innerHTML = `<header><div><div class="identity">${cn ? '示例店铺' : 'Example workspace'}</div><h1>${before ? '✨ ' : ''}${titles[name]}</h1></div><div class="date">${live ? `${date}　18:00` : cn ? `${formatDate('2026-09-01', pack)} 至 ${date}` : name === 'saas' ? 'Jun 1, 2025 – Nov 30, 2026' : 'Nov 1, 2025 – Oct 31, 2026'}</div></header>${name === 'store' ? `<div class="controls"><div class="segments" aria-label="日期范围">${['今天', '昨天', '近7天', '近30天', '本月'].map((s) => `<button class="${s === '近30天' ? 'active' : ''}" aria-pressed="${s === '近30天'}">${s}</button>`).join('')}</div></div>` : ''}<section class="kpis">${kpis.map(([label, v, type, previous, yearAgo], i) => `<div class="kpi"><label data-kpi-label>${before ? ['💰', '📈', '🎯', '👥', '⚡', '💎'][i] + ' ' : ''}${label}</label><div class="value" data-kpi>${type === 'money' ? money(v) : type === 'percent' ? pct(v) : type === 'months' && !before ? v.toFixed(1) : num(v)}${type === 'months' ? ' <small>months</small>' : ''}</div>${delta(v, previous, cn ? (live ? '日环比' : '环比') : 'Prior month', i, polarityFor(label))}${cn && !live ? delta(v, yearAgo, '同比', i + 1, polarityFor(label)) : ''}${before ? `<p data-kpi-helper>${helpers[i] ?? helpers[0]}</p>` : ''}</div>`).join('')}</section><div class="board ${name === 'store' ? 'store-layout' : live ? 'live-layout' : ''}"></div>`;
 const board = root.querySelector('.board');
 function panel(title, cls = '') {
   const el = document.createElement('section');

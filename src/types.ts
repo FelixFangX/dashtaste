@@ -86,6 +86,10 @@ export interface PageFacts {
     selector: string;
     text: string;
   }[];
+  helpers?: {
+    selector: string;
+    text: string;
+  }[];
   page?: {
     background?: string;
     deltaColors?: DeltaColors;

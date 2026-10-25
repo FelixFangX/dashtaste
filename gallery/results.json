@@ -4,8 +4,8 @@
     "variant": "before",
     "pack": "global",
     "mode": "light",
-    "errors": 32,
-    "warnings": 50,
+    "errors": 37,
+    "warnings": 55,
     "info": 2,
     "score": 0,
     "ruleIds": [
@@ -27,7 +27,8 @@
       "DT024",
       "DT026",
       "DT027",
-      "DT028"
+      "DT028",
+      "DT029"
     ]
   },
   {
@@ -47,7 +48,7 @@
     "pack": "global",
     "mode": "dark",
     "errors": 7,
-    "warnings": 42,
+    "warnings": 46,
     "info": 1,
     "score": 0,
     "ruleIds": [
@@ -66,7 +67,8 @@
       "DT024",
       "DT026",
       "DT027",
-      "DT028"
+      "DT028",
+      "DT029"
     ]
   },
   {
@@ -85,8 +87,8 @@
     "variant": "before",
     "pack": "cn",
     "mode": "light",
-    "errors": 42,
-    "warnings": 61,
+    "errors": 47,
+    "warnings": 71,
     "info": 2,
     "score": 0,
     "ruleIds": [
@@ -104,10 +106,12 @@
       "DT017",
       "DT018",
       "DT021",
+      "DT022",
       "DT023",
       "DT024",
       "DT027",
-      "DT028"
+      "DT028",
+      "DT029"
     ]
   },
   {
@@ -126,8 +130,8 @@
     "variant": "before",
     "pack": "cn",
     "mode": "dark",
-    "errors": 31,
-    "warnings": 76,
+    "errors": 37,
+    "warnings": 88,
     "info": 1,
     "score": 0,
     "ruleIds": [
@@ -142,10 +146,12 @@
       "DT018",
       "DT020",
       "DT021",
+      "DT022",
       "DT025",
       "DT026",
       "DT027",
-      "DT028"
+      "DT028",
+      "DT029"
     ]
   },
   {

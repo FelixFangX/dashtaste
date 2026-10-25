@@ -70,8 +70,8 @@ it('browser error explains CHROME_PATH', () => {
 it('rules lists every id', () => {
   const r = cli('rules');
   expect(r.status).toBe(0);
-  for (let i = 1; i <= 28; i++) expect(r.stdout).toContain(`DT${String(i).padStart(3, '0')}`);
-  expect(JSON.parse(cli('rules', '--format', 'json').stdout)).toHaveLength(28);
+  for (let i = 1; i <= 29; i++) expect(r.stdout).toContain(`DT${String(i).padStart(3, '0')}`);
+  expect(JSON.parse(cli('rules', '--format', 'json').stdout)).toHaveLength(29);
 });
 it('tokens output', () => {
   expect(JSON.parse(cli('tokens', '--pack', 'cn', '--mode', 'dark').stdout).bg).toBe('#121212');

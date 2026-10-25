@@ -9,6 +9,7 @@ export function extractInPage(): PageFacts {
     kpis: [],
     deltas: [],
     emojis: [],
+    helpers: [],
   };
   const selector = (el: Element): string => {
     if (el.id) return `#${CSS.escape(el.id)}`;
@@ -118,7 +119,47 @@ export function extractInPage(): PageFacts {
     )
       facts.emojis!.push({ selector: path, text });
   }
-  // Chart facts preserve the live ECharts option for each mounted chart.
+  // Helper captions under KPIs are the AI-default explanatory sentences.
+  const helperBoilerplate =
+    /^(trending|visitors for|this chart|showing |shows |compared to|compared with|steady growth|up this month|down this month|本图|该图|此图|显示了|展示了|本月持续|较上月|环比说明)/i;
+  const looksLikeHelper = (value: string): boolean => {
+    const text = value.trim();
+    if (!text) return false;
+    if (helperBoilerplate.test(text)) return true;
+    const words = text.split(/\s+/).filter(Boolean);
+    if (/[.。]$/.test(text) && (words.length >= 4 || (/[\u3400-\u9fff]/.test(text) && text.length >= 8)))
+      return true;
+    return words.length >= 5;
+  };
+  for (const el of document.querySelectorAll('[data-kpi-helper], .kpi, [data-kpi-row]')) {
+    const targets = el.hasAttribute('data-kpi-helper')
+      ? [el]
+      : [...el.querySelectorAll('[data-kpi-helper], p, span, small, div')].filter(
+          (node) =>
+            !node.hasAttribute('data-kpi') &&
+            !node.hasAttribute('data-delta') &&
+            !node.hasAttribute('data-kpi-label') &&
+            node.tagName !== 'LABEL' &&
+            !node.querySelector('[data-kpi], [data-delta]'),
+        );
+    for (const node of targets) {
+      const style = getComputedStyle(node);
+      if (
+        style.display === 'none' ||
+        style.visibility === 'hidden' ||
+        Number(style.opacity) === 0 ||
+        !node.getClientRects().length
+      )
+        continue;
+      const text = ownText(node) || (node.hasAttribute('data-kpi-helper') ? node.textContent?.trim() || '' : '');
+      if (!text) continue;
+      if (!node.hasAttribute('data-kpi-helper') && !looksLikeHelper(text)) continue;
+      const path = selector(node);
+      if (facts.helpers!.some((entry) => entry.selector === path)) continue;
+      facts.helpers!.push({ selector: path, text });
+    }
+  }
+    // Chart facts preserve the live ECharts option for each mounted chart.
   const echarts = (
     window as unknown as {
       echarts?: {

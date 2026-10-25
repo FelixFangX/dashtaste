@@ -726,6 +726,30 @@ Pages with at least three KPIs need a clear hero metric.
 
 make the largest KPI at least 1.6 times the median of the others
 
+## DT029 helper-captions
+
+Severity: warn. Packs: global, cn.
+
+Why: Helper sentences under KPIs and chart titles that narrate the chart repeat visible structure.
+
+Triggers: Extracted `helpers` facts (including `[data-kpi-helper]`), or chart titles matching “this chart shows” / “shows the” / 本图显示 / 该图展示 / 此图显示.
+
+Fix: remove the helper sentence; keep the metric label and value only.
+
+Minimal failing input:
+
+```json
+{
+  "charts": [],
+  "helpers": [
+    {
+      "selector": ".kpi p",
+      "text": "Trending up this month"
+    }
+  ]
+}
+```
+
 ## Pack defaults
 
 The cn pack uses a warm neutral page, one white sheet, steel data marks, red-up and green-down deltas. Its dark screen uses an almost black page and sky data marks.

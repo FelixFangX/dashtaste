@@ -1,6 +1,6 @@
 {
   "name": "dashtaste",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Dashboard taste for coding agents: two style-pack skills (global and cn) plus a dashtaste check linter for ECharts configs and rendered dashboards.",
   "keywords": [
     "dashboard",

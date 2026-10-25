@@ -97,6 +97,7 @@ Both packs specify spacing, typography, chart defaults, and number formatting. L
 | DT026 | line-weight             |
 | DT027 | tabular-numerals        |
 | DT028 | hero-metric             |
+| DT029 | helper-captions         |
 
 ## Gallery
 
@@ -104,10 +105,10 @@ All data is fictional and seeded in [gallery/data.mjs](gallery/data.mjs). Each p
 
 | Dashboard | Pack, mode         | Before                                              | After                              |
 | --------- | ------------------ | --------------------------------------------------- | ---------------------------------- |
-| saas      | global, light      | [32 errors, 50 warnings](gallery/saas-before.png)   | [clean](gallery/saas-after.png)    |
-| finance   | global, dark       | [7 errors, 42 warnings](gallery/finance-before.png) | [clean](gallery/finance-after.png) |
-| store     | cn, light          | [42 errors, 61 warnings](gallery/store-before.png)  | [clean](gallery/store-after.png)   |
-| live      | cn, dark 1920×1080 | [31 errors, 76 warnings](gallery/live-before.png)   | [clean](gallery/live-after.png)    |
+| saas      | global, light      | [37 errors, 55 warnings](gallery/saas-before.png)   | [clean](gallery/saas-after.png)    |
+| finance   | global, dark       | [7 errors, 46 warnings](gallery/finance-before.png) | [clean](gallery/finance-after.png) |
+| store     | cn, light          | [47 errors, 71 warnings](gallery/store-before.png)  | [clean](gallery/store-after.png)   |
+| live      | cn, dark 1920×1080 | [37 errors, 88 warnings](gallery/live-before.png)   | [clean](gallery/live-after.png)    |
 
 The live page renders at 1920×1080; the others at 1440×900.
 

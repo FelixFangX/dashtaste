@@ -1,4 +1,5 @@
 import { dt028 } from './dt028-hero-metric.js';
+import { dt029 } from './dt029-helper-captions.js';
 import { dt027 } from './dt027-tabular-numerals.js';
 import { dt026 } from './dt026-line-weight.js';
 import { dt025 } from './dt025-legend-not-direct-label.js';
@@ -57,4 +58,5 @@ export const rules: Rule[] = [
   dt026,
   dt027,
   dt028,
+  dt029,
 ];
