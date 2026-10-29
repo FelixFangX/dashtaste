@@ -9,7 +9,7 @@ const net = last(d.added) + last(d.expansion) - last(d.churned);
 const segments = [
   ['+New', 0, last(d.added), last(d.added), t.ink],
   ['+Expansion', last(d.added), last(d.added) + last(d.expansion), last(d.expansion), t.muted],
-  ['−Churn', last(d.added) + last(d.expansion), net, -last(d.churned), '#C9C5BD'],
+  ['−Churn', last(d.added) + last(d.expansion), net, -last(d.churned), t.other],
   ['= Net new', 0, net, net, t.brand],
 ];
 const bridge = echarts.init(document.getElementById('bridge'));
@@ -81,7 +81,7 @@ main.markLine = {
     formatter: 'Target $500K',
     position: 'insideEndTop',
     color: t.muted,
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: 'Geist Mono',
   },
   data: [{ yAxis: 500000 }],
@@ -118,12 +118,12 @@ chart(
             : v,
         ),
       barMaxWidth: 8,
-      itemStyle: { color: (p) => (p.dataIndex === 11 ? t.brand : '#B9B5AC') },
+      itemStyle: { color: (p) => (p.dataIndex === 11 ? t.brand : '#9CAEC2') },
       label: {
         show: false,
         position: 'top',
         color: t.muted,
-        fontSize: 11,
+        fontSize: 12,
         formatter: (p) => compact(p.value),
       },
     },
@@ -139,12 +139,12 @@ chart(
           : -v,
       ),
       barMaxWidth: 8,
-      itemStyle: { color: '#D6D2CA' },
+      itemStyle: { color: '#CBD4DF' },
       label: {
         show: false,
         position: 'bottom',
         color: t.muted,
-        fontSize: 11,
+        fontSize: 12,
         formatter: (p) => compact(p.value),
       },
     },

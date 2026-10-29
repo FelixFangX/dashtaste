@@ -1,3 +1,4 @@
+import { documentTheme } from './after-theme.mjs';
 import { getTokens } from '../../dist/packs/index.js';
 import { formatDelta } from '../../dist/format.js';
 export { data, kpisFor } from '../data.mjs';
@@ -14,23 +15,23 @@ export async function setup(name, title, date) {
   const cn = ['store', 'live'].includes(name),
     screen = name === 'live',
     dark = ['finance', 'live'].includes(name);
-  const t = getTokens(cn ? 'cn' : 'global', dark ? 'dark' : 'light');
+  const t = documentTheme(getTokens(cn ? 'cn' : 'global', dark ? 'dark' : 'light'), dark);
   const face = cn ? 'Instrument Sans' : 'Inter';
   const mono = 'Geist Mono';
-  const bg = t.page || t.bg || t.paper,
+  const bg = name === 'store' ? t.page : t.paper,
     surface = name === 'store' ? t.card : bg;
   const style = document.createElement('style');
-  const accent = cn ? (dark ? '#E8B657' : '#C68A1C') : dark ? '#E6A24B' : '#B65A08';
+  const accent = t.brand;
   style.textContent = `
-@font-face{font-family:Inter;src:url('../../vendor/fonts/inter.woff2');font-weight:100 900}
-@font-face{font-family:'Instrument Sans';src:url('../../vendor/fonts/instrument-sans.woff2');font-weight:100 900}
-@font-face{font-family:'Geist Mono';src:url('../../vendor/fonts/geist-mono.woff2');font-weight:100 900}
+@font-face{font-family:Inter;src:url('../../vendor/fonts/inter.woff2');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Instrument Sans';src:url('../../vendor/fonts/instrument-sans.woff2');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Geist Mono';src:url('../../vendor/fonts/geist-mono.woff2');font-weight:100 900;font-display:swap}
 *{box-sizing:border-box}
 body{margin:0;background:${bg};color:${t.ink};font:400 ${screen ? 16 : 13}px '${face}','PingFang SC','Noto Sans CJK SC',sans-serif;font-variant-numeric:tabular-nums;font-feature-settings:'tnum','cv11'}
 main{margin:${screen ? 32 : 28}px;height:calc(100vh - ${screen ? 64 : 56}px);padding:0 12px}
 header{height:48px;display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid ${t.hairline};margin-bottom:18px}
-h1{font-size:20px;font-weight:500;margin:0}h2{font-size:${screen ? 18 : 15}px;font-weight:500;margin:0 0 16px}
-.muted,label,th,.period,.date{color:${t.muted}}.date{padding-top:3px}
+h1{font-size:20px;font-weight:550;letter-spacing:-.025em;line-height:1.3;margin:0}h2{font-size:${screen ? 18 : 15}px;font-weight:550;letter-spacing:-.015em;line-height:1.4;margin:0 0 16px}
+.muted,label,th,.period,.date{color:${t.muted}}.date{padding-top:3px;font-size:${screen ? 16 : 12}px;line-height:1.5;font-family:'${mono}';letter-spacing:-.025em}
 label{display:block;font-size:${screen ? 16 : 13}px;font-weight:500;line-height:1.4}
 .kpi{position:relative;padding:8px 0;min-width:0}
 .hero,.value,.small-number{font-weight:500;font-variant-numeric:tabular-nums}
@@ -46,13 +47,13 @@ label{display:block;font-size:${screen ? 16 : 13}px;font-weight:500;line-height:
 .chart{width:100%;height:260px;margin-top:20px}
 .bottom{border-top:1px solid ${t.hairline};margin-top:18px;padding-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:36px}
 table{width:100%;border-collapse:collapse;font-size:${screen ? 16 : 13}px}
-th{height:32px;text-align:left;font-size:${screen ? 16 : cn ? 12 : 11}px;font-weight:400;font-family:'${cn ? face : mono}';white-space:nowrap}
+th{height:32px;text-align:left;font-size:${screen ? 16 : 12}px;font-weight:400;font-family:'${cn ? face : mono}';white-space:nowrap}
 td{height:${screen ? 48 : 36}px;border-bottom:1px solid ${t.hairline};white-space:nowrap}
 td:not(:first-child),th:not(:first-child){text-align:right;padding-left:10px}
 td.product,.ranking th:nth-child(2){text-align:left;padding-left:14px}.rank{width:30px;color:${t.muted}}
 .share{width:140px;padding-left:14px}.share-inline{display:inline-flex;gap:10px;align-items:center}.share-inline>span:last-child{width:44px;text-align:right}
 .track,.progress{height:4px;background:${t.hairline}}.track i,.progress i{display:block;height:4px;background:${t.ink}}
-.share-inline .track{width:60px}.track i{opacity:.25}tr:first-child .track i{opacity:1}
+.share-inline .track{width:60px}.track i{background:${t.brand};opacity:.55}
 .row{display:flex;justify-content:space-between;gap:12px}.small-number{font-size:24px}
 .bridge{margin-top:14px}.bridge h2{margin:0}.bridge-ends{display:flex;justify-content:space-between;margin:8px 0;font-size:12px}.bridge-ends b{font:12px 'Geist Mono';color:${t.ink};font-variant-numeric:tabular-nums;font-feature-settings:'tnum'}
 .ruler{max-width:48%;padding:0 26px 0 8px}.ruler .value{margin-bottom:18px}
@@ -62,7 +63,7 @@ body[data-dashboard=saas] #mrr{margin-top:16px}
 body[data-dashboard=finance] .top{grid-template-columns:minmax(0,1.85fr) minmax(0,1fr)}
 body[data-dashboard=finance] .ranking .share{width:110px;padding-left:8px}body[data-dashboard=finance] .share-inline .track{width:36px}
 body[data-dashboard=finance] #burn{margin-top:10px}body[data-dashboard=finance] .bottom .kpi{padding:4px 0}
-body[data-dashboard=store] main{margin:16px;height:calc(100vh - 32px);padding:22px 26px;background:${surface};border:1px solid ${t.hairline};border-radius:12px}
+body[data-dashboard=store] main{margin:16px;height:calc(100vh - 32px);padding:22px 26px;background:${surface};border:1px solid ${t.hairline};border-radius:3px}
 body[data-dashboard=store] header{margin-bottom:18px}body[data-dashboard=store] .hero{font-size:56px}
 body[data-dashboard=store] .rail-row{padding:8px 0}body[data-dashboard=store] .rail-row label{line-height:15px}body[data-dashboard=store] .rail-row .delta-row{min-height:16px;line-height:16px}body[data-dashboard=store] .rail-row .value{font-size:22px;line-height:24px;margin:2px 0}
 body[data-dashboard=store] .bottom{grid-template-columns:1.4fr 1fr!important}
@@ -83,7 +84,7 @@ body[data-dashboard=live] .region.minor{height:88px}
 body[data-dashboard=live] .region.minor .small-number{font-size:20px}
 body[data-dashboard=live] .region.minor .spark{top:44px;height:44px}
 body[data-dashboard=live] .pace>div{margin:14px 0}
-body[data-dashboard=live] .hero{font-size:112px}
+body[data-dashboard=live] .hero{font-size:112px;letter-spacing:-.045em}
 body[data-dashboard=live] .strip{margin-top:8px!important;padding:4px 0}
 body[data-dashboard=live] header{margin-bottom:4px}
 body[data-dashboard=live] main{margin:28px 32px;height:calc(100vh - 56px)}
@@ -167,7 +168,7 @@ body[data-dashboard=store] td{height:32px}body[data-dashboard=store] .calendar{h
             position: 'top',
             distance: 8,
             color: cn ? t.ink : accent,
-            fontSize: screen ? 16 : 11,
+            fontSize: screen ? 16 : 12,
             fontFamily: face,
           },
           data: [{ coord: [values.length - 1, last(values)] }],

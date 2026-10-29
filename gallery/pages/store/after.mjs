@@ -22,7 +22,7 @@ root.innerHTML += `<div class="top"><section>${metric('成交金额', money(k[0]
                 ),
               )
             : 0;
-          return `<div style="background:${v ? ['#F0F1EF', '#DFE4E4', '#BFCBD0', '#829CA9', '#3E6A88'][step] : 'transparent'};outline:${day === 9 ? '1px solid ' + t.ink : 'none'};color:${step === 4 ? '#FFFFFF' : '#414141'}">${v ? day : ''}</div>`;
+          return `<div style="background:${v ? ['#F0F3F7', '#DFE7F0', '#BBCDDD', '#7D9BB9', '#3D648E'][step] : 'transparent'};outline:${day === 9 ? '1px solid ' + t.ink : 'none'};color:${step === 4 ? '#FFFFFF' : t.ink}">${v ? day : ''}</div>`;
         })
         .join('') +
       `<div class="week-total" data-total="${total}">${(total / 10000).toFixed(2)}万</div>`
