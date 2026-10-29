@@ -1,3 +1,4 @@
+import { documentTheme } from './after-theme.mjs';
 import { data, dashboards, kpisFor } from '../data.mjs';
 import { getTokens } from '../../dist/packs/index.js';
 import { formatCompact, formatDelta, formatPercent, formatDate } from '../../dist/format.js';
@@ -8,7 +9,9 @@ const { pack, mode } = config;
 const cn = pack === 'cn',
   live = name === 'live',
   global = !cn;
-const t = getTokens(pack, mode),
+const t = before
+    ? getTokens(pack, mode)
+    : documentTheme(getTokens(pack, mode), mode === 'dark'),
   d = data[name];
 const bg = t.page || t.bg || t.paper,
   surface = t.card || t.panel || t.paper;
@@ -38,12 +41,14 @@ css.textContent += `body[data-dashboard=store][data-variant=after] .chart-small{
 css.textContent += `${before && live ? '.kpi:nth-child(1) .value{color:#a9eaff}.kpi:nth-child(2) .value{color:#ffe5a0}.kpi:nth-child(3) .value{color:#b8f1d3}.kpi:nth-child(4) .value{color:#f9b3c4}.kpi:nth-child(5) .value{color:#bcd1ff}.kpi:nth-child(6) .value{color:#e4c1ff}' : ''}`;
 if (!before)
   css.textContent += `
+body{font-family:${cn ? "'Instrument Sans'" : "'Inter'"},sans-serif;font-variant-numeric:tabular-nums;font-feature-settings:'tnum','cv11'}h1,h2{font-weight:500;letter-spacing:-.025em}.panel,.kpi{border-radius:3px}.ranking .amount{font-variant-numeric:tabular-nums}
+
 body[data-dashboard=saas] .comparison,body[data-dashboard=finance] .comparison{justify-content:flex-start}.kpis{grid-template-columns:repeat(4,minmax(0,1fr))}.live-page .kpis{grid-template-columns:repeat(6,minmax(0,1fr))}.comparison .period{color:${t.muted}}.kpi small{font-size:22px}
 body[data-dashboard=saas] main,body[data-dashboard=finance] main{height:900px;display:flex;flex-direction:column}
 body[data-dashboard=saas] .board,body[data-dashboard=finance] .board{flex:1;min-height:0;grid-template-rows:1fr 1fr;gap:24px}
 body[data-dashboard=saas] .panel,body[data-dashboard=finance] .panel{display:flex;flex-direction:column;padding-top:16px}
 body[data-dashboard=saas] .chart,body[data-dashboard=finance] .chart{flex:1;height:auto;min-height:0}
-.ranking .top-rank{font-weight:750;font-size:18px}.ranking b{font-weight:400}.rank-product{display:flex;flex-direction:column;gap:7px}.rank-track{height:5px;background:${t.hairline};width:100%;border-radius:2px;overflow:hidden}.rank-track>span{display:block;height:100%;background:${t.brand}}.ranking li{grid-template-columns:32px minmax(0,1fr) 96px;height:39px}.ranking .amount{font-variant-numeric:normal}
+.ranking .top-rank{font-weight:750;font-size:18px}.ranking b{font-weight:400}.rank-product{display:flex;flex-direction:column;gap:7px}.rank-track{height:5px;background:${t.hairline};width:100%;border-radius:2px;overflow:hidden}.rank-track>span{display:block;height:100%;background:${t.brand}}.ranking li{grid-template-columns:32px minmax(0,1fr) 96px;height:39px}.ranking .amount{font-variant-numeric:tabular-nums}
 .store-layout{grid-template-columns:1.7fr 1fr}.channel-breakdown{left:48%;right:auto;width:190px;top:8px}.channel-breakdown>div{display:grid;grid-template-columns:1fr 40px;gap:16px}.channel-breakdown b{text-align:right}
 .live-layout .ranking{height:calc(100% - 44px);display:grid;grid-template-rows:repeat(8,1fr)}.live-layout .ranking li{height:auto;grid-template-columns:32px minmax(0,1fr) 120px}.live-layout .rank-track{height:7px}.regions .tile{border:0}.regions .tile span{color:inherit}
 `;
@@ -65,7 +70,7 @@ const polarityFor = (label) =>
 const helpers = cn
   ? ['本月持续上涨说明。', '近6个月访客说明。', '该指标环比说明。', '转化仍在爬坡说明。', '退款波动复核说明。', '会员活跃回升说明。']
   : ['Trending up this month', 'Visitors for the last 6 months', 'Steady growth this quarter', 'Compared to last period', 'Watch this metric closely', 'Improvement across the cohort'];
-root.innerHTML = `<header><div><div class="identity">${cn ? '示例店铺' : 'Example workspace'}</div><h1>${before ? '✨ ' : ''}${titles[name]}</h1></div><div class="date">${live ? `${date}　18:00` : cn ? `${formatDate('2026-09-01', pack)} 至 ${date}` : name === 'saas' ? 'Jun 1, 2025 – Nov 30, 2026' : 'Nov 1, 2025 – Oct 31, 2026'}</div></header>${name === 'store' ? `<div class="controls"><div class="segments" aria-label="日期范围">${['今天', '昨天', '近7天', '近30天', '本月'].map((s) => `<button class="${s === '近30天' ? 'active' : ''}" aria-pressed="${s === '近30天'}">${s}</button>`).join('')}</div></div>` : ''}<section class="kpis">${kpis.map(([label, v, type, previous, yearAgo], i) => `<div class="kpi"><label data-kpi-label>${before ? ['💰', '📈', '🎯', '👥', '⚡', '💎'][i] + ' ' : ''}${label}</label><div class="value" data-kpi>${type === 'money' ? money(v) : type === 'percent' ? pct(v) : type === 'months' && !before ? v.toFixed(1) : num(v)}${type === 'months' ? ' <small>months</small>' : ''}</div>${delta(v, previous, cn ? (live ? '日环比' : '环比') : 'Prior month', i, polarityFor(label))}${cn && !live ? delta(v, yearAgo, '同比', i + 1, polarityFor(label)) : ''}${before ? `<p data-kpi-helper>${helpers[i] ?? helpers[0]}</p>` : ''}</div>`).join('')}</section><div class="board ${name === 'store' ? 'store-layout' : live ? 'live-layout' : ''}"></div>`;
+root.innerHTML = `<header><div>${before ? `<div class="identity">${cn ? '示例店铺' : 'Example workspace'}</div>` : ''}<h1>${before ? '✨ ' : ''}${titles[name]}</h1></div><div class="date">${live ? `${date}　18:00` : cn ? `${formatDate('2026-09-01', pack)} 至 ${date}` : name === 'saas' ? 'Jun 1, 2025 – Nov 30, 2026' : 'Nov 1, 2025 – Oct 31, 2026'}</div></header>${name === 'store' ? `<div class="controls"><div class="segments" aria-label="日期范围">${['今天', '昨天', '近7天', '近30天', '本月'].map((s) => `<button class="${s === '近30天' ? 'active' : ''}" aria-pressed="${s === '近30天'}">${s}</button>`).join('')}</div></div>` : ''}<section class="kpis">${kpis.map(([label, v, type, previous, yearAgo], i) => `<div class="kpi"><label data-kpi-label>${before ? ['💰', '📈', '🎯', '👥', '⚡', '💎'][i] + ' ' : ''}${label}</label><div class="value" data-kpi>${type === 'money' ? money(v) : type === 'percent' ? pct(v) : type === 'months' && !before ? v.toFixed(1) : num(v)}${type === 'months' ? ' <small>months</small>' : ''}</div>${delta(v, previous, cn ? (live ? '日环比' : '环比') : 'Prior month', i, polarityFor(label))}${cn && !live ? delta(v, yearAgo, '同比', i + 1, polarityFor(label)) : ''}${before ? `<p data-kpi-helper>${helpers[i] ?? helpers[0]}</p>` : ''}</div>`).join('')}</section><div class="board ${name === 'store' ? 'store-layout' : live ? 'live-layout' : ''}"></div>`;
 const board = root.querySelector('.board');
 function panel(title, cls = '') {
   const el = document.createElement('section');

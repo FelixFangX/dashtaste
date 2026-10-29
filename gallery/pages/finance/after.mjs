@@ -28,13 +28,13 @@ chart(
       data: d.burn.map((v, i) => ({
         value: v,
         label: { show: i === 11 },
-        itemStyle: { color: i === 11 ? '#E6A24B' : '#5A5850' },
+        itemStyle: { color: i === 11 ? t.brand : '#66788E' },
       })),
       label: {
         show: true,
         position: 'top',
         color: t.muted,
-        fontSize: 11,
+        fontSize: 12,
         formatter: (p) => money(p.value),
       },
     },
