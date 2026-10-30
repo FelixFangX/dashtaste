@@ -3,10 +3,23 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>live · after</title>
+    <title>实时大屏 · 调整后</title>
+    <style>
+      body { margin: 0; background: #10151C; }
+      .dashboard-poster { display: block; width: 100%; height: auto; }
+    </style>
   </head>
   <body data-dashboard="live" data-variant="after">
-    <main></main>
+    <main>
+      <img
+        class="dashboard-poster"
+        src="../../live-after.png"
+        width="1920"
+        height="1080"
+        alt="大促实时大屏"
+        fetchpriority="high"
+      />
+    </main>
     <script src="../../vendor/echarts.min.js"></script>
     <script type="module" src="./after.mjs"></script>
   </body>

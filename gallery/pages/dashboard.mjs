@@ -331,7 +331,7 @@ if (name === 'saas') {
     'main-chart',
   );
   ranking(
-    `商品成交排行 · TOP ${compact(10)}`,
+    `商品成交前 ${compact(10)} 名`,
     Array.from({ length: 10 }, (_, i) => `示例商品 ${String.fromCharCode(65 + i)}`),
     d.ranks,
   );
@@ -372,7 +372,7 @@ if (name === 'saas') {
     'main-chart',
   );
   ranking(
-    `商品成交排行 · TOP ${compact(before ? 5 : 8)}`,
+    `商品成交前 ${compact(before ? 5 : 8)} 名`,
     Array.from({ length: before ? 5 : 8 }, (_, i) => `示例商品 ${String.fromCharCode(65 + i)}`),
     before ? d.ranks.slice(0, 5) : d.ranks,
   );

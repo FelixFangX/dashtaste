@@ -199,7 +199,7 @@ body[data-dashboard=store] td{height:32px}body[data-dashboard=store] .calendar{h
           hideOverlap: true,
           formatter: (v) =>
             /^\d{4}-\d{2}$/.test(v)
-              ? new Date(v + '-01').toLocaleString('en', { month: 'short' }).toUpperCase() +
+              ? new Date(v + '-01').toLocaleString(cn ? 'zh-CN' : 'en', { month: 'short' }).toUpperCase() +
                 ' ' +
                 v.slice(2, 4)
               : String(v).toUpperCase(),
