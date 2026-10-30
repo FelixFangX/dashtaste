@@ -9,9 +9,7 @@ const { pack, mode } = config;
 const cn = pack === 'cn',
   live = name === 'live',
   global = !cn;
-const t = before
-    ? getTokens(pack, mode)
-    : documentTheme(getTokens(pack, mode), mode === 'dark'),
+const t = before ? getTokens(pack, mode) : documentTheme(getTokens(pack, mode), mode === 'dark'),
   d = data[name];
 const bg = t.page || t.bg || t.paper,
   surface = t.card || t.panel || t.paper;
@@ -54,7 +52,7 @@ body[data-dashboard=saas] .chart,body[data-dashboard=finance] .chart{flex:1;heig
 `;
 css.textContent += `body[data-dashboard=saas][data-variant=before] .kpis,body[data-dashboard=store][data-variant=before] .kpis{grid-template-columns:repeat(5,minmax(0,1fr))}`;
 css.textContent += `.kpi [data-kpi-helper]{display:block;margin-top:4px;font-size:11px;line-height:1.2;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}`;
-css.textContent += `${before ? 'header{height:72px;margin-bottom:16px}.kpis{margin-bottom:16px}.board{gap:12px}.panel{padding-top:16px}.chart{height:228px}.main-chart{height:'+(live?320:global?230:250)+'px}' : ''}`;
+css.textContent += `${before ? 'header{height:72px;margin-bottom:16px}.kpis{margin-bottom:16px}.board{gap:12px}.panel{padding-top:16px}.chart{height:228px}.main-chart{height:' + (live ? 320 : global ? 230 : 250) + 'px}' : ''}`;
 
 document.head.append(css);
 const root = document.querySelector('main');
@@ -68,8 +66,22 @@ const polarityFor = (label) =>
     ? 'lower-is-better'
     : 'higher-is-better';
 const helpers = cn
-  ? ['本月持续上涨说明。', '近6个月访客说明。', '该指标环比说明。', '转化仍在爬坡说明。', '退款波动复核说明。', '会员活跃回升说明。']
-  : ['Trending up this month', 'Visitors for the last 6 months', 'Steady growth this quarter', 'Compared to last period', 'Watch this metric closely', 'Improvement across the cohort'];
+  ? [
+      '本月持续上涨说明。',
+      '近6个月访客说明。',
+      '该指标环比说明。',
+      '转化仍在爬坡说明。',
+      '退款波动复核说明。',
+      '会员活跃回升说明。',
+    ]
+  : [
+      'Trending up this month',
+      'Visitors for the last 6 months',
+      'Steady growth this quarter',
+      'Compared to last period',
+      'Watch this metric closely',
+      'Improvement across the cohort',
+    ];
 root.innerHTML = `<header><div>${before ? `<div class="identity">${cn ? '示例店铺' : 'Example workspace'}</div>` : ''}<h1>${before ? '✨ ' : ''}${titles[name]}</h1></div><div class="date">${live ? `${date}　18:00` : cn ? `${formatDate('2026-09-01', pack)} 至 ${date}` : name === 'saas' ? 'Jun 1, 2025 – Nov 30, 2026' : 'Nov 1, 2025 – Oct 31, 2026'}</div></header>${name === 'store' ? `<div class="controls"><div class="segments" aria-label="日期范围">${['今天', '昨天', '近7天', '近30天', '本月'].map((s) => `<button class="${s === '近30天' ? 'active' : ''}" aria-pressed="${s === '近30天'}">${s}</button>`).join('')}</div></div>` : ''}<section class="kpis">${kpis.map(([label, v, type, previous, yearAgo], i) => `<div class="kpi"><label data-kpi-label>${before ? ['💰', '📈', '🎯', '👥', '⚡', '💎'][i] + ' ' : ''}${label}</label><div class="value" data-kpi>${type === 'money' ? money(v) : type === 'percent' ? pct(v) : type === 'months' && !before ? v.toFixed(1) : num(v)}${type === 'months' ? ' <small>months</small>' : ''}</div>${delta(v, previous, cn ? (live ? '日环比' : '环比') : 'Prior month', i, polarityFor(label))}${cn && !live ? delta(v, yearAgo, '同比', i + 1, polarityFor(label)) : ''}${before ? `<p data-kpi-helper>${helpers[i] ?? helpers[0]}</p>` : ''}</div>`).join('')}</section><div class="board ${name === 'store' ? 'store-layout' : live ? 'live-layout' : ''}"></div>`;
 const board = root.querySelector('.board');
 function panel(title, cls = '') {
@@ -331,7 +343,7 @@ if (name === 'saas') {
     'main-chart',
   );
   ranking(
-    `商品成交排行 · TOP ${compact(10)}`,
+    `商品成交前 ${compact(10)} 名`,
     Array.from({ length: 10 }, (_, i) => `示例商品 ${String.fromCharCode(65 + i)}`),
     d.ranks,
   );
@@ -372,7 +384,7 @@ if (name === 'saas') {
     'main-chart',
   );
   ranking(
-    `商品成交排行 · TOP ${compact(before ? 5 : 8)}`,
+    `商品成交前 ${compact(before ? 5 : 8)} 名`,
     Array.from({ length: before ? 5 : 8 }, (_, i) => `示例商品 ${String.fromCharCode(65 + i)}`),
     before ? d.ranks.slice(0, 5) : d.ranks,
   );
