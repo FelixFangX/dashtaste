@@ -3,3 +3,7 @@ dist/
 
 gallery/vendor/
 research/
+
+site/public/gallery/
+site/public/dist/
+site/.wrangler/

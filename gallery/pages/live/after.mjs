@@ -18,7 +18,7 @@ root.innerHTML += `<div class="top" style="grid-template-columns:2.2fr 1fr"><sec
   )
   .join(
     '',
-  )}</div></div><div id="cumulative" class="chart" style="height:378px"></div></section><aside class="rail"><h2>商品 TOP 8</h2>${table(['轻量通勤包', '棉质衬衫', '城市运动鞋', '保温随行杯', '便携收纳盒', '针织开衫', '桌面阅读灯', '休闲长裤'], d.ranks, true, d.previousRanks, 'higher-is-better', k[0][1])}</aside></div><div class="strip" style="margin-top:12px">${k
+  )}</div></div><div id="cumulative" class="chart" style="height:378px"></div></section><aside class="rail"><h2>商品成交前八名</h2>${table(['轻量通勤包', '棉质衬衫', '城市运动鞋', '保温随行杯', '便携收纳盒', '针织开衫', '桌面阅读灯', '休闲长裤'], d.ranks, true, d.previousRanks, 'higher-is-better', k[0][1])}</aside></div><div class="strip" style="margin-top:12px">${k
   .slice(1)
   .map(([label, v, type, p]) =>
     metric(

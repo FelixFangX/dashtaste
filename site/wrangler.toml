@@ -1,0 +1,13 @@
+name = "dashtaste"
+main = "src/worker.js"
+compatibility_date = "2025-10-01"
+account_id = "debc68dfc6d9c7ea2a10c426ca02087d"
+workers_dev = true
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+[[routes]]
+pattern = "dashtaste.ledring.dev"
+custom_domain = true

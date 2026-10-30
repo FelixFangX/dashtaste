@@ -3,10 +3,30 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>store · after</title>
+    <title>店铺 · 调整后</title>
+    <style>
+      body {
+        margin: 0;
+        background: #f4f6f8;
+      }
+      .dashboard-poster {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+    </style>
   </head>
   <body data-dashboard="store" data-variant="after">
-    <main></main>
+    <main>
+      <img
+        class="dashboard-poster"
+        src="../../store-after.png"
+        width="1440"
+        height="900"
+        alt="店铺经营概览"
+        fetchpriority="high"
+      />
+    </main>
     <script src="../../vendor/echarts.min.js"></script>
     <script type="module" src="./after.mjs"></script>
   </body>
