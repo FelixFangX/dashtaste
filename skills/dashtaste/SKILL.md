@@ -15,6 +15,7 @@ Do not ship the default rainbow ECharts look. Pick one taste, then build and che
    - A story chart that leads with an annotation → `editorial-data`.
 3. Copy a passing option with `npx dashtaste example --taste <name>`, or write tokens and that example with `npx dashtaste apply --taste <name>`.
 4. Run `npx dashtaste check dashboard.json --taste <name>`. Fix errors before shipping. Warnings are still findings.
+5. From an MCP client, start `npx dashtaste mcp`. Call `list_tastes`, then `taste_tokens`, `taste_example` or `apply_taste`, then `check_taste`. Do not invent a palette.
 
 A taste is tokens plus composition: how many charts, how many series, KPI cap, annotation range, ground luminance, colour cap, motion, unit system, and (where the school needs them) a currency mark or a descending funnel. Swapping a color array without those rules is not the taste.
 

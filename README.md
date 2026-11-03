@@ -183,6 +183,33 @@ pnpm gallery
 
 This builds the CLI, renders the gallery PNGs, and writes `gallery/results.json`. It needs `playwright-core`. Set `CHROME_PATH` to Chromium. The default is `/usr/bin/google-chrome`.
 
+## MCP
+
+Agents start the stdio server with:
+
+```sh
+npx dashtaste mcp
+```
+
+From a checkout: `pnpm install && pnpm build`, then `node dist/cli.js mcp` or `node dist/mcp/server.js`. `dashtaste-mcp` is the same server.
+
+```json
+{
+  "mcpServers": {
+    "dashtaste": {
+      "command": "npx",
+      "args": ["-y", "dashtaste", "mcp"]
+    }
+  }
+}
+```
+
+- `list_tastes` returns the six schools, tokens, composition, and the rules sentence.
+- `taste_tokens` takes `{ "taste": "editorial-data" }`. Same payload as `tokens --taste`.
+- `taste_example` takes `{ "taste": "ops-wall" }` and returns an option that scores 100.
+- `check_taste` takes `option` or `optionJson`, plus optional `taste`, `pack`, and `mode`. The default taste is `saas-dense`. A rainbow palette is an error.
+- `apply_taste` takes `{ "taste": "cn-ecommerce" }` and returns the `tokens.json` and `example.json` bodies. `out` also writes those files.
+
 0.0.8. Rules can change in any 0.x release.
 
 ## License

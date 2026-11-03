@@ -113,7 +113,10 @@ npx dashtaste tokens --pack global --mode light
 npx dashtaste tokens --pack cn --mode dark --format css
 npx dashtaste example --taste ops-wall
 npx dashtaste apply --taste saas-dense --out ./taste
+npx dashtaste mcp
 ```
+
+`mcp` starts a stdio server. It exposes `list_tastes`, `taste_tokens`, `taste_example`, `check_taste`, and `apply_taste`. Those tools call the same catalog, checker, and apply bundle as the CLI. The default taste is `saas-dense`.
 
 The cn pack includes screen composition settings for a 1920×1080 artboard.
 Screen composition uses dark tokens and `--mode dark`; it is not a third CLI mode.

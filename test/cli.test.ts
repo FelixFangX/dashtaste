@@ -93,7 +93,7 @@ it('local package executable', () => {
   expect(r.stdout).toContain('DT023');
 });
 
-for (const command of ['check', 'rules', 'tokens', 'tastes', 'example', 'apply']) {
+for (const command of ['check', 'rules', 'tokens', 'tastes', 'example', 'apply', 'mcp']) {
   it(`prints help for ${command} without requiring input`, () => {
     const result = cli(command, '--help');
     expect(result.status).toBe(0);
@@ -140,6 +140,7 @@ it('lists tastes and prints a passing example', () => {
   ).toBe(2);
   expect(cli('example').status).toBe(2);
   expect(cli('check', 'test/fixtures/good.json', '--taste', 'nope').status).toBe(2);
+  expect(cli('mcp', '--extra').status).toBe(2);
 });
 
 it('pluralises each summary count independently', () => {

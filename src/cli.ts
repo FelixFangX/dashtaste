@@ -1,6 +1,5 @@
 #!/usr/bin/env node
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { readFile } from 'node:fs/promises';
 import { check, summarize, score } from './engine.js';
 import { rules } from './rules/index.js';
 import {
@@ -12,21 +11,14 @@ import {
 } from './packs/index.js';
 import { extractPage } from './extract.js';
 import { tasteSpecimen } from './specimens.js';
-import {
-  isTaste,
-  packAlias,
-  resolveTaste,
-  tasteCatalog,
-  tasteRules,
-  tastes,
-  type Taste,
-  type TasteName,
-} from './tastes.js';
+import { tasteDocument, writeApply } from './taste-install.js';
+import { isTaste, resolveTaste, tasteCatalog, tastes, type TasteName } from './tastes.js';
 import type { Finding } from './types.js';
 import { createRequire } from 'node:module';
 const version = createRequire(import.meta.url)('../package.json').version as string;
 const help: Record<string, string> = {
-  main: 'Usage: dashtaste <tastes|check|rules|tokens|example|apply> --help',
+  main: 'Usage: dashtaste <tastes|check|rules|tokens|example|apply|mcp> --help',
+  mcp: 'Usage: dashtaste mcp\nStart the stdio MCP server. Tools: list_tastes, taste_tokens, taste_example, check_taste, apply_taste.',
   tastes:
     'Usage: dashtaste tastes [--format text|json]\nList the six named tastes, their schools, and the rules the checker enforces.',
   check:
@@ -61,10 +53,11 @@ function parseArgs(command: string | undefined, args: string[]) {
     tastes: ['format'],
     example: ['taste'],
     apply: ['taste', 'out'],
+    mcp: [],
   };
   if (!command || !allowed[command])
     throw new Error(
-      'usage: dashtaste tastes | check <file|url...> | rules | tokens | example --taste <name> | apply --taste <name>',
+      'usage: dashtaste tastes | check <file|url...> | rules | tokens | example --taste <name> | apply --taste <name> | mcp',
     );
   for (let i = 0; i < args.length; i++) {
     if (args[i].startsWith('--')) {
@@ -108,28 +101,18 @@ function printTastes(format: string) {
   );
 }
 
-function printTasteTokens(taste: Taste, format: string) {
-  const payload = {
-    id: taste.id,
-    title: taste.title,
-    school: taste.school,
-    packAlias: taste.packAlias ?? null,
-    basePack: taste.basePack,
-    defaultMode: taste.defaultMode,
-    tokens: taste.tokens,
-    composition: taste.composition,
-    rules: tasteRules(taste),
-  };
+function printTasteTokens(taste: TasteName, format: string) {
+  const payload = tasteDocument(tastes[taste]);
   console.log(
     format === 'json'
       ? JSON.stringify(payload, null, 2)
-      : `:root {\n${Object.entries(taste.tokens)
+      : `:root {\n${Object.entries(payload.tokens)
           .flatMap(([key, value]) =>
             Array.isArray(value)
               ? value.map((entry, index) => `  --dt-${key}-${index + 1}: ${entry};`)
               : [`  --dt-${key}: ${value};`],
           )
-          .join('\n')}\n  /* ${tasteRules(taste)} */\n}`,
+          .join('\n')}\n  /* ${payload.rules} */\n}`,
   );
 }
 
@@ -140,6 +123,11 @@ async function main() {
     return;
   }
   const { flags, inputs } = parseArgs(command, args);
+  if (command === 'mcp') {
+    if (inputs.length) throw new Error('unexpected input');
+    await import('./mcp/server.js');
+    return;
+  }
   const packOverlay = flags['pack-file']
     ? await (async () => {
         try {
@@ -177,20 +165,8 @@ async function main() {
   }
   if (command === 'apply') {
     if (inputs.length) throw new Error('unexpected input');
-    const selected = tastes[requireTaste(flags)];
-    const dir = flags.out ?? '.';
-    await mkdir(dir, { recursive: true });
-    await writeFile(
-      join(dir, 'tokens.json'),
-      `${JSON.stringify({ id: selected.id, tokens: selected.tokens, composition: selected.composition, rules: tasteRules(selected) }, null, 2)}\n`,
-    );
-    await writeFile(
-      join(dir, 'example.json'),
-      `${JSON.stringify(tasteSpecimen(selected.id), null, 2)}\n`,
-    );
-    console.log(
-      `Wrote ${join(dir, 'tokens.json')} and ${join(dir, 'example.json')} for ${selected.id}`,
-    );
+    const written = await writeApply(requireTaste(flags), flags.out ?? '.');
+    console.log(`Wrote ${written.wrote.join(' and ')} for ${written.taste}`);
     return;
   }
   if (!['check', 'rules', 'tokens'].includes(command ?? '')) throw new Error('unexpected input');
@@ -199,7 +175,7 @@ async function main() {
     if (!flags.pack && !packOverlay && !flags.taste)
       throw new Error('tokens requires --taste, --pack, or --pack-file');
     if (flags.taste) {
-      printTasteTokens(tastes[taste], format);
+      printTasteTokens(taste, format);
       return;
     }
     const t = (packOverlay ? resolvePackOverlay(packOverlay) : getResolvedPack({ pack }))[mode];
