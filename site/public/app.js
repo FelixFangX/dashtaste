@@ -165,6 +165,12 @@ try {
     $('out-series').textContent = String(knobs.series);
     $('out-notes').textContent = String(knobs.annotations);
     $('out-charts').textContent = String(knobs.charts);
+    for (const id of ['knob-series', 'knob-notes', 'knob-charts']) {
+      const input = $(id);
+      const span =
+        (Number(input.value) - Number(input.min)) / (Number(input.max) - Number(input.min));
+      input.style.setProperty('--pct', `${span * 100}%`);
+    }
     paint(
       $('before-preview'),
       { paper: '#ffffff', ink: '#1a1a18', series: rainbowColors },
@@ -183,13 +189,6 @@ try {
     const totals = summarize(findings);
     $('score').textContent = String(totals.score);
     $('score').dataset.low = String(totals.score < 100);
-    const list = $('study-findings');
-    list.replaceChildren();
-    for (const finding of findings.slice(0, 4)) {
-      const item = document.createElement('li');
-      item.textContent = `${finding.ruleId} ${finding.message}`;
-      list.append(item);
-    }
   };
   const select = (id) => {
     selected = id;

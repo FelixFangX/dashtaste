@@ -43,7 +43,26 @@
       <section id="study" class="study" aria-labelledby="study-title">
         <div class="study-head">
           <h2 id="study-title">Live study · <span id="study-taste">saas-dense</span></h2>
-          <p class="study-score"><span id="score">—</span><span>/100</span></p>
+        </div>
+        <div class="study-controls">
+          <div class="knobs" role="group" aria-label="Specimen">
+            <label class="knob"
+              ><span>Series</span>
+              <input id="knob-series" type="range" min="1" max="6" step="1" value="1" />
+              <output id="out-series" for="knob-series">1</output></label
+            >
+            <label class="knob"
+              ><span>Annotations</span>
+              <input id="knob-notes" type="range" min="0" max="8" step="1" value="0" />
+              <output id="out-notes" for="knob-notes">0</output></label
+            >
+            <label class="knob"
+              ><span>Charts</span>
+              <input id="knob-charts" type="range" min="1" max="12" step="1" value="1" />
+              <output id="out-charts" for="knob-charts">1</output></label
+            >
+          </div>
+          <p class="study-score"><span id="score">—</span><span class="score-total">/100</span></p>
         </div>
         <div class="study-grid">
           <div class="pair-live">
@@ -57,27 +76,6 @@
               </figcaption>
               <div id="after-preview" class="preview"></div>
             </figure>
-          </div>
-          <div class="knobs">
-            <label
-              >Series
-              <input id="knob-series" type="range" min="1" max="6" step="1" value="1" />
-              <output id="out-series">1</output></label
-            >
-            <label
-              >Annotations
-              <input id="knob-notes" type="range" min="0" max="8" step="1" value="0" />
-              <output id="out-notes">0</output></label
-            >
-            <label
-              >Charts
-              <input id="knob-charts" type="range" min="1" max="12" step="1" value="1" />
-              <output id="out-charts">1</output></label
-            >
-            <p class="knob-note">
-              Knobs rewrite this taste's example. Past the cap, the score drops.
-            </p>
-            <ol id="study-findings"></ol>
           </div>
         </div>
       </section>
