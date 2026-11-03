@@ -1,139 +1,137 @@
-# dashtaste
+# Stop agents shipping rainbow ECharts dashboards.
 
-Two style-pack skills for coding agents, plus a `dashtaste check` CLI for chart configs and rendered dashboards.
+[![npm](https://img.shields.io/npm/v/dashtaste)](https://www.npmjs.com/package/dashtaste)
+[![demo](https://img.shields.io/badge/demo-dashtaste.ledring.dev-555555)](https://dashtaste.ledring.dev)
 
-| Before                              | After                             |
-| ----------------------------------- | --------------------------------- |
-| ![Before](gallery/store-before.png) | ![After](gallery/store-after.png) |
+![Before and after, SaaS, global pack](gallery/compare/saas-wide.png)
 
-## Install the skill
+```sh
+npx dashtaste check dashboard.json
+```
 
-Choose a pack for the dashboard's audience:
+## Check
+
+```sh
+npx dashtaste check dashboard.json --pack global
+npx dashtaste check dashboard.json --pack cn
+npx dashtaste check dashboard.json --pack cn --format json
+```
+
+Node 20 or newer. Input is one ECharts option, an array of options, or a page-facts envelope. A URL or HTML file also needs the optional `playwright-core` dependency and a local Chromium (`CHROME_PATH`).
+
+From a checkout:
+
+```sh
+pnpm install
+pnpm build
+node dist/cli.js check test/fixtures/bad.json --pack global
+```
+
+That fixture prints:
+
+```text
+test/fixtures/bad.json
+  error  DT001  charts[0]  default ECharts palette  → set option.color to the pack palette (dashtaste tokens --pack global)
+  warn  DT003  charts[0].series[1]  smooth line  → use straight segments: smooth: false
+  warn  DT004  charts[0].series[1]  symbols everywhere  → use dots at most 5px on at most 31 points, or set showSymbol: false
+  warn  DT009  charts[0].yAxis[0]  missing unit  → put units in axis names, rendered ticks, or formatter metadata
+  error  DT010  charts[0].yAxis[0]  bar baseline  → set min: 0 and scale: false
+  warn  DT011  charts[0].yAxis[0].axisLabel  raw large numbers  → format compact units: cn 万/亿; global K/M
+  warn  DT011  charts[0].tooltip  raw large numbers  → format compact units: cn 万/亿; global K/M
+  warn  DT024  charts[0].series[0]  bar width  → set barMaxWidth to 24 or less; use 32 or less on screens
+2 errors, 6 warnings · score 62/100
+```
+
+Exit 0 when there are no errors and warnings are within `--max-warnings` (no limit by default). Exit 1 when any finding is an error, or warnings exceed that limit. Exit 2 when the file or the flags are invalid. Info findings change the score and leave the exit code at 0. `--format json` prints `{ version, pack, inputs, summary }`. Each finding has `ruleId`, `severity`, `message`, `path`, and `fix`. Any rule can be skipped with `--disable`.
+
+The score starts at 100. Each error subtracts 10, each warning 3, each info 1, with a floor of 0.
+
+```ts
+import { check } from 'dashtaste';
+
+const findings = check({ series: [] }, { pack: 'global' });
+```
+
+`rules` lists rule metadata. `tokens` prints the selected pack colours as JSON or CSS. Flags are in [usage](docs/usage.md). `--pack-file` extends a built-in pack; see [packs](docs/packs.md).
+
+## Skills
 
 ```sh
 npx skills add FelixFangX/dashtaste --skill dashtaste-global
 npx skills add FelixFangX/dashtaste --skill dashtaste-cn
 ```
 
-For manual installation, copy the folder from [skills/](skills/) into your agent's skills directory. Ask the agent to follow the selected skill when building or reviewing a dashboard.
-
-## Check
-
-Extend built-in packs with local JSON overlays using [`--pack-file`](docs/packs.md).
-
-```sh
-npx dashtaste check dashboard.json --pack cn
-npx dashtaste check http://localhost:5173 --pack global
-npx dashtaste check dashboard.json --pack cn --format json
-npx dashtaste check dashboard.json --pack cn --disable DT003,DT005
-```
-
-Requires Node 20.19 or newer. Checking a URL or HTML file also needs a local Chromium (set `CHROME_PATH`) and the optional `playwright-core` dependency; JSON configs need neither.
-
-To run from a checkout instead, use pnpm:
-
-```sh
-pnpm install
-pnpm build
-node dist/cli.js check gallery/pages/store/before.html --pack cn --only DT003,DT005,DT010
-```
-
-Actual output from that three-rule gallery check:
-
-```text
-gallery/pages/store/before.html
-  warn  DT003  charts[0].series[1]  smooth line  → use straight segments: smooth: false
-  warn  DT005  charts[1].series[0]  pie slices  → use horizontal bars or combine small parts into Other
-  error  DT010  charts[0].yAxis[0]  bar baseline  → set min: 0 and scale: false
-1 error, 2 warnings · score 84/100
-```
-
-Exit codes: `0` passes, `1` means errors or warnings above the limit, and `2` means invalid input or unavailable extraction. Warnings have no limit by default; use `--max-warnings 0` to require none. Use `--mode dark` for dark pages. JSON output includes findings, paths, fixes, and scores. Every rule can be disabled with `--disable` and comma-separated IDs.
-
-Scores start at 100, subtract 10 per error, 3 per warning, and 1 per informational finding, with a floor of zero. See [usage](docs/usage.md) for all flags and input shapes.
+Or copy `skills/dashtaste-global` or `skills/dashtaste-cn` into the agent's skills directory and tell it to follow that skill.
 
 ## Packs
 
-| Choice        | global                           | cn                                                        |
-| ------------- | -------------------------------- | --------------------------------------------------------- |
-| Deltas        | Green up, red down; arrows       | Red up, green down; arrows                                |
-| Units         | K / M / B                        | wan / yi (10⁴ / 10⁸)                                      |
-| KPI layout    | One strip with dividers          | Flat cards; period-over-period and year-over-year rows    |
-| Legend        | Omit for one series              | Omit for one series; direct category labels work for pies |
-| Pie           | At most five slices; prefer bars | At most five slices; rose charts allow eight              |
-| Dark / screen | Paper and ink dark tokens        | Navy panels; 1920×1080 screen composition                 |
+`global` is green-up, with K / M / B, at most 6 KPIs, and at most 5 pie or rose slices. `cn` is red-up, with 万 / 亿, at most 8 KPIs, at most 5 pie slices, and at most 8 rose slices. `cn` defines a 1920×1080 screen. `DT022` runs on the cn pack only.
 
-Both packs specify spacing, typography, chart defaults, and number formatting. Layout still needs human review.
+Pass `--mode dark` for a dark page. Both packs have light and dark tokens.
 
 ## Rules
 
-[Reasons, triggers, and fixes](docs/rules.md) for every rule:
+[Reasons, triggers, and fixes](docs/rules.md).
 
-| ID    | Name                    |
-| ----- | ----------------------- |
-| DT001 | default-palette         |
-| DT002 | rainbow-palette         |
-| DT003 | smooth-line             |
-| DT004 | symbols-everywhere      |
-| DT005 | pie-slices              |
-| DT006 | pie-overuse             |
-| DT007 | three-d                 |
-| DT008 | dual-axis               |
-| DT009 | missing-unit            |
-| DT010 | bar-baseline            |
-| DT011 | raw-large-numbers       |
-| DT012 | unit-system             |
-| DT013 | delta-convention        |
-| DT014 | delta-colour-only       |
-| DT015 | low-contrast-text       |
-| DT016 | thin-line-contrast      |
-| DT017 | gradient-decoration     |
-| DT018 | glow                    |
-| DT019 | kpi-overload            |
-| DT020 | kpi-rainbow             |
-| DT021 | emoji-icons             |
-| DT022 | cjk-min-size            |
-| DT023 | legend-single-series    |
-| DT024 | bar-width               |
-| DT025 | legend-not-direct-label |
-| DT026 | line-weight             |
-| DT027 | tabular-numerals        |
-| DT028 | hero-metric             |
-| DT029 | helper-captions         |
+| ID    | Default | Name                    |
+| ----- | ------- | ----------------------- |
+| DT001 | error   | default-palette         |
+| DT002 | warn    | rainbow-palette         |
+| DT003 | warn    | smooth-line             |
+| DT004 | warn    | symbols-everywhere      |
+| DT005 | warn    | pie-slices              |
+| DT006 | warn    | pie-overuse             |
+| DT007 | error   | three-d                 |
+| DT008 | warn    | dual-axis               |
+| DT009 | warn    | missing-unit            |
+| DT010 | error   | bar-baseline            |
+| DT011 | warn    | raw-large-numbers       |
+| DT012 | warn    | unit-system             |
+| DT013 | error   | delta-convention        |
+| DT014 | warn    | delta-colour-only       |
+| DT015 | error   | low-contrast-text       |
+| DT016 | warn    | thin-line-contrast      |
+| DT017 | warn    | gradient-decoration     |
+| DT018 | warn    | glow                    |
+| DT019 | warn    | kpi-overload            |
+| DT020 | warn    | kpi-rainbow             |
+| DT021 | warn    | emoji-icons             |
+| DT022 | warn    | cjk-min-size            |
+| DT023 | info    | legend-single-series    |
+| DT024 | warn    | bar-width               |
+| DT025 | warn    | legend-not-direct-label |
+| DT026 | warn    | line-weight             |
+| DT027 | warn    | tabular-numerals        |
+| DT028 | info    | hero-metric             |
+| DT029 | warn    | helper-captions         |
 
 ## Gallery
 
-All data is fictional and seeded in [gallery/data.mjs](gallery/data.mjs). Each pair shares the same data. Before pages use common unguided defaults; after pages apply their pack. These are style checks, not a usability benchmark.
+[dashtaste.ledring.dev](https://dashtaste.ledring.dev)
 
-Walkthroughs with scores and reproduce steps: [docs/cases](docs/cases/).
+Gallery data is fictional, seeded in [gallery/data.mjs](gallery/data.mjs). Each pair shares that data. Before pages use unguided defaults. After pages follow the pack. Counts are from [gallery/results.json](gallery/results.json). A score of 100 means the page matched the rules.
 
-| Dashboard | Pack, mode         | Before                                              | After                              |
-| --------- | ------------------ | --------------------------------------------------- | ---------------------------------- |
-| saas      | global, light      | [37 errors, 55 warnings](gallery/saas-before.png)   | [clean](gallery/saas-after.png)    |
-| finance   | global, dark       | [7 errors, 46 warnings](gallery/finance-before.png) | [clean](gallery/finance-after.png) |
-| store     | cn, light          | [47 errors, 71 warnings](gallery/store-before.png)  | [clean](gallery/store-after.png)   |
-| live      | cn, dark 1920×1080 | [37 errors, 88 warnings](gallery/live-before.png)   | [clean](gallery/live-after.png)    |
+| Dashboard | Pack, mode          | Before                                  | After     |
+| --------- | ------------------- | --------------------------------------- | --------- |
+| saas      | global, light       | 37 errors, 55 warnings, 2 info, score 0 | score 100 |
+| finance   | global, dark        | 7 errors, 46 warnings, 1 info, score 0  | score 100 |
+| store     | cn, light           | 47 errors, 71 warnings, 2 info, score 0 | score 100 |
+| live      | cn, dark, 1920×1080 | 37 errors, 88 warnings, 1 info, score 0 | score 100 |
 
-The live page renders at 1920×1080; the others at 1440×900.
+Walkthroughs: [docs/cases](docs/cases/).
+
+- [saas](gallery/compare/saas-wide.png)
+- [finance](gallery/compare/finance-wide.png)
+- [store](gallery/compare/store-wide.png)
+- [live](gallery/compare/live-wide.png)
 
 ```sh
 pnpm gallery
 ```
 
-This builds the CLI, copies local ECharts into the ignored `gallery/vendor/` folder, renders eight PNGs, and writes [results.json](gallery/results.json). No CDN or network fonts are used. Set `CHROME_PATH` to your local Chromium executable; the default is `/usr/bin/google-chrome`. The browser test extracts each live page again instead of trusting saved scores.
+This builds the CLI, renders the gallery PNGs, and writes `gallery/results.json`. It needs `playwright-core`. Set `CHROME_PATH` to Chromium. The default is `/usr/bin/google-chrome`.
 
-Comparison captions: “Default” / “Dashtaste” (global and cn; the cn caption for “Default” is written in Chinese). Wide images preserve full board height and use measured column boundaries.
-
-- saas: [wide](gallery/compare/saas-wide.png) · [tall](gallery/compare/saas-tall.png)
-- finance: [wide](gallery/compare/finance-wide.png) · [tall](gallery/compare/finance-tall.png)
-- store: [wide](gallery/compare/store-wide.png) · [tall](gallery/compare/store-tall.png)
-- live: [wide](gallery/compare/live-wide.png) · [tall](gallery/compare/live-tall.png)
-
-## Status
-
-Early (0.x). Expect rule changes between minor versions.
-
-ECharts only for now. Vega-Lite and Recharts are planned. HTML mode needs a local Chromium. Rules are opinions with reasons; every rule can be disabled.
+0.0.7. Rules can change in any 0.x release.
 
 ## License
 
