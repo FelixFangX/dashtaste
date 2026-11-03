@@ -1,11 +1,8 @@
-import { beforeAll, it, expect } from 'vitest';
-import { execFileSync, spawnSync } from 'node:child_process';
+import { it, expect } from 'vitest';
+import { spawnSync } from 'node:child_process';
 import { readFileSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-beforeAll(() => {
-  execFileSync('node', ['node_modules/typescript/bin/tsc']);
-});
 const cli = (...args: string[]) =>
   spawnSync(process.execPath, ['dist/cli.js', ...args], {
     encoding: 'utf8',

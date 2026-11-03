@@ -1,7 +1,6 @@
 import { beforeAll, afterAll, expect, it } from 'vitest';
 import { existsSync } from 'node:fs';
 import { copyFile, mkdir } from 'node:fs/promises';
-import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { copyFonts } from '../gallery/fonts.mjs';
@@ -24,7 +23,6 @@ let browser: Browser;
 beforeAll(async () => {
   if (!available) return;
   await copyFonts();
-  execFileSync(process.execPath, ['node_modules/typescript/bin/tsc']);
   await mkdir('gallery/vendor', { recursive: true });
   await copyFile('node_modules/echarts/dist/echarts.min.js', 'gallery/vendor/echarts.min.js');
   const { chromium } = await import('playwright-core');
