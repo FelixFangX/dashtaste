@@ -1,7 +1,7 @@
 {
   "name": "dashtaste",
   "version": "0.0.7",
-  "description": "Dashboard taste for coding agents: two style-pack skills (global and cn) plus a dashtaste check linter for ECharts configs and rendered dashboards.",
+  "description": "Stop agents shipping rainbow ECharts dashboards.",
   "keywords": [
     "dashboard",
     "echarts",
