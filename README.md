@@ -1,20 +1,55 @@
-# Stop agents shipping rainbow ECharts dashboards.
+# Agents ship the same default rainbow ECharts look everywhere.
+
+Pick a named taste, check a dashboard against that school, and install its tokens. Not one shared palette.
+
+```sh
+npx dashtaste check dashboard.json --taste saas-dense
+```
 
 [![npm](https://img.shields.io/npm/v/dashtaste)](https://www.npmjs.com/package/dashtaste)
 [![demo](https://img.shields.io/badge/demo-dashtaste.ledring.dev-555555)](https://dashtaste.ledring.dev)
 
-![Before and after, SaaS, global pack](gallery/compare/saas-wide.png)
+## Tastes
+
+| Taste                | School              | What the check enforces                                                  |
+| -------------------- | ------------------- | ------------------------------------------------------------------------ |
+| `saas-dense`         | B2B metrics         | ≤ 8 charts, ≤ 3 series, straight lines, animation off. `--pack global`   |
+| `exec-brief`         | Board room          | 1 chart, ≤ 3 KPIs, ≤ 1 story annotation, paper ground                    |
+| `ops-wall`           | SRE / status        | Near-black ground (error if the page is light), status colours, ≤ 8 KPIs |
+| `cn-ecommerce`       | GMV and funnel      | 万/亿 ticks, ≤ 4 descending funnels, ≤ 4 series. `--pack cn`             |
+| `global-marketplace` | Cohort and currency | A currency mark on every value axis, ≤ 2 series, ≤ 4 charts              |
+| `editorial-data`     | Story charts        | At least one story annotation, ≤ 2 charts, paper ground                  |
 
 ```sh
-npx dashtaste check dashboard.json
+npx dashtaste tastes
+npx dashtaste tokens --taste editorial-data
+npx dashtaste example --taste ops-wall
+npx dashtaste apply --taste cn-ecommerce
 ```
+
+`tastes` lists the catalog. `tokens --taste` prints that school's colours and the rules sentence the checker uses. `example --taste` prints an option that scores 100 under that taste. `apply --taste` writes `tokens.json` and `example.json`. Each taste is tokens plus composition — chart count, series count, KPI cap, annotation range, ground, motion, units — not a color swap of the same dashboard.
+
+The [demo](https://dashtaste.ledring.dev) opens on the six tastes. Before is the rainbow. After uses that taste. Series, annotations, and charts are knobs. Past the cap, the score drops.
+
+![Six tastes. The ops-wall series knob is past the cap, so the score is 97.](gallery/tastes.png)
+
+## Pack aliases
+
+| `--pack` | Taste          |
+| -------- | -------------- |
+| `global` | `saas-dense`   |
+| `cn`     | `cn-ecommerce` |
+
+`--pack` still works. `--taste` and `--pack` together are an error when they name different schools. With neither flag, the check is `saas-dense`.
+
+![Before and after, SaaS, global pack](gallery/compare/saas-wide.png)
 
 ## Check
 
 ```sh
-npx dashtaste check dashboard.json --pack global
+npx dashtaste check dashboard.json --taste saas-dense
 npx dashtaste check dashboard.json --pack cn
-npx dashtaste check dashboard.json --pack cn --format json
+npx dashtaste check dashboard.json --taste cn-ecommerce --format json
 ```
 
 Node 20 or newer. Input is one ECharts option, an array of options, or a page-facts envelope. A URL or HTML file also needs the optional `playwright-core` dependency and a local Chromium (`CHROME_PATH`).
@@ -24,7 +59,7 @@ From a checkout:
 ```sh
 pnpm install
 pnpm build
-node dist/cli.js check test/fixtures/bad.json --pack global
+node dist/cli.js check test/fixtures/bad.json --taste saas-dense
 ```
 
 That fixture prints:
@@ -39,35 +74,41 @@ test/fixtures/bad.json
   warn  DT011  charts[0].yAxis[0].axisLabel  raw large numbers  → format compact units: cn 万/亿; global K/M
   warn  DT011  charts[0].tooltip  raw large numbers  → format compact units: cn 万/亿; global K/M
   warn  DT024  charts[0].series[0]  bar width  → set barMaxWidth to 24 or less; use 32 or less on screens
-2 errors, 6 warnings · score 62/100
+2 errors, 6 warnings · score 62/100 · saas-dense
 ```
 
-Exit 0 when there are no errors and warnings are within `--max-warnings` (no limit by default). Exit 1 when any finding is an error, or warnings exceed that limit. Exit 2 when the file or the flags are invalid. Info findings change the score and leave the exit code at 0. `--format json` prints `{ version, pack, inputs, summary }`. Each finding has `ruleId`, `severity`, `message`, `path`, and `fix`. Any rule can be skipped with `--disable`.
+Exit 0 when there are no errors and warnings are within `--max-warnings` (no limit by default). Exit 1 when any finding is an error, or warnings exceed that limit. Exit 2 when the file or the flags are invalid. Info findings change the score and leave the exit code at 0. `--format json` prints `{ version, pack, taste, inputs, summary }`. Each finding has `ruleId`, `severity`, `message`, `path`, and `fix`. Any rule can be skipped with `--disable`.
 
 The score starts at 100. Each error subtracts 10, each warning 3, each info 1, with a floor of 0.
 
 ```ts
 import { check } from 'dashtaste';
 
-const findings = check({ series: [] }, { pack: 'global' });
+const findings = check({ series: [] }, { taste: 'saas-dense' });
 ```
 
-`rules` lists rule metadata. `tokens` prints the selected pack colours as JSON or CSS. Flags are in [usage](docs/usage.md). `--pack-file` extends a built-in pack; see [packs](docs/packs.md).
+`{ pack: 'global' }` checks `saas-dense`. `{ pack: 'cn' }` checks `cn-ecommerce`. `rules` lists rule metadata. `tokens --pack` still prints that pack's colours. `tokens --taste` prints the taste. Flags are in [usage](docs/usage.md). `--pack-file` extends a built-in pack; see [packs](docs/packs.md).
 
 ## Skills
+
+```sh
+npx skills add FelixFangX/dashtaste --skill dashtaste
+```
+
+`dashtaste` is the selector: it lists the six tastes and tells the agent to check with `--taste`. `dashtaste-global` follows `saas-dense` (`--pack global`). `dashtaste-cn` follows `cn-ecommerce` (`--pack cn`).
 
 ```sh
 npx skills add FelixFangX/dashtaste --skill dashtaste-global
 npx skills add FelixFangX/dashtaste --skill dashtaste-cn
 ```
 
-Or copy `skills/dashtaste-global` or `skills/dashtaste-cn` into the agent's skills directory and tell it to follow that skill.
+Or copy `skills/dashtaste` into the agent's skills directory and tell it to follow that skill.
 
 ## Packs
 
-`global` is green-up, with K / M / B, at most 6 KPIs, and at most 5 pie or rose slices. `cn` is red-up, with 万 / 亿, at most 8 KPIs, at most 5 pie slices, and at most 8 rose slices. `cn` defines a 1920×1080 screen. `DT022` runs on the cn pack only.
+`global` is the `saas-dense` alias: green-up, K / M / B, at most 6 KPIs, and at most 5 pie or rose slices. `cn` is the `cn-ecommerce` alias: red-up, 万 / 亿, at most 8 KPIs, at most 5 pie slices, and at most 8 rose slices. `cn` defines a 1920×1080 screen. `DT022` runs on the cn pack only.
 
-Pass `--mode dark` for a dark page. Both packs have light and dark tokens.
+Pass `--mode dark` for a dark page. `ops-wall` defaults to dark. Both packs have light and dark tokens. The six tastes add composition on top of those packs.
 
 ## Rules
 
@@ -104,10 +145,21 @@ Pass `--mode dark` for a dark page. Both packs have light and dark tokens.
 | DT027 | warn    | tabular-numerals        |
 | DT028 | info    | hero-metric             |
 | DT029 | warn    | helper-captions         |
+| DT030 | error   | taste-rainbow           |
+| DT031 | warn    | taste-chart-cap         |
+| DT032 | warn    | taste-series-cap        |
+| DT033 | warn    | taste-annotation        |
+| DT034 | warn    | taste-motion            |
+| DT035 | warn    | taste-ground            |
+| DT036 | warn    | taste-currency          |
+| DT037 | warn    | taste-funnel            |
+| DT038 | warn    | taste-palette           |
 
 ## Gallery
 
 [dashtaste.ledring.dev](https://dashtaste.ledring.dev)
+
+The first screen is the catalog: six tastes, each with a rainbow before and that taste's after. Series, annotations, and charts are knobs. Past the cap, the specimen score drops. The four dashboards below are worked pages for the `saas-dense` and `cn-ecommerce` aliases.
 
 Gallery data is fictional, seeded in [gallery/data.mjs](gallery/data.mjs). Each pair shares that data. Before pages use unguided defaults. After pages follow the pack. Counts are from [gallery/results.json](gallery/results.json). A score of 100 means the page matched the rules.
 
@@ -131,7 +183,7 @@ pnpm gallery
 
 This builds the CLI, renders the gallery PNGs, and writes `gallery/results.json`. It needs `playwright-core`. Set `CHROME_PATH` to Chromium. The default is `/usr/bin/google-chrome`.
 
-0.0.7. Rules can change in any 0.x release.
+0.0.8. Rules can change in any 0.x release.
 
 ## License
 

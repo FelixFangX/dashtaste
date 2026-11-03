@@ -116,7 +116,7 @@ export const defaultColors = new Set([
   '#ea7ccc',
 ]);
 
-export type Context = Required<Pick<CheckOptions, 'pack' | 'mode'>> & CheckOptions;
+export type Context = Required<Pick<CheckOptions, 'pack' | 'mode' | 'taste'>> & CheckOptions;
 export type Emit = (path: string, message?: string, severity?: Severity) => void;
 
 /** Keep finding metadata and default messages consistent across all rule checks. */

@@ -8,13 +8,13 @@ description: Build or review readable Chinese-market dashboards with concrete la
 Use for dashboard pages, chart options, KPI strips, rankings, and dashboard reviews.
 For a global audience use dashtaste-global.
 
-1. Pick the cn pack and light or dark mode before choosing colours.
+1. Pick the `cn-ecommerce` taste (`--pack cn` is this alias) and light or dark mode before choosing colours. Other schools: `npx dashtaste tastes`.
 2. Read [tokens](references/tokens.md) for exact colours and sizes.
 3. Read [layout](references/layout.md) for page structure and controls.
 4. Read [charts](references/charts.md) for the chart types you need.
 5. Read [numbers](references/numbers.md) for units, dates, and comparisons.
 6. Build the page with real data, explicit units, and clear hierarchy.
-7. Run `npx dashtaste check options.json --pack cn --max-warnings 0`.
+7. Run `npx dashtaste check options.json --taste cn-ecommerce --max-warnings 0`.
    For a rendered page, check its URL with a browser available through `CHROME_PATH`.
 8. Fix errors and warnings; inspect informational findings. Recheck after edits.
    Read [avoid](references/avoid.md) when replacing a flagged pattern.

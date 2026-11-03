@@ -1,0 +1,48 @@
+{
+  "animation": false,
+  "backgroundColor": "#F3F6F8",
+  "color": ["#3E6F8A", "#1E2A32"],
+  "legend": {
+    "show": false
+  },
+  "xAxis": {
+    "type": "category",
+    "data": ["Mon", "Tue", "Wed"]
+  },
+  "yAxis": {
+    "type": "value",
+    "min": 0,
+    "scale": false,
+    "name": "Revenue ($)"
+  },
+  "series": [
+    {
+      "type": "line",
+      "name": "This cohort",
+      "data": [12, 18, 14],
+      "showSymbol": false,
+      "smooth": false,
+      "lineStyle": {
+        "width": 2,
+        "color": "#3E6F8A"
+      },
+      "itemStyle": {
+        "color": "#3E6F8A"
+      }
+    },
+    {
+      "type": "line",
+      "name": "Prior cohort",
+      "data": [13, 18, 15],
+      "showSymbol": false,
+      "smooth": false,
+      "lineStyle": {
+        "width": 2,
+        "color": "#1E2A32"
+      },
+      "itemStyle": {
+        "color": "#1E2A32"
+      }
+    }
+  ]
+}

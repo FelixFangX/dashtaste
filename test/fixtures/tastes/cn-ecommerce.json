@@ -1,0 +1,38 @@
+{
+  "animation": false,
+  "backgroundColor": "#F2F4F2",
+  "color": ["#3E6A88"],
+  "series": [
+    {
+      "type": "funnel",
+      "sort": "descending",
+      "label": {
+        "show": true,
+        "formatter": "{b}"
+      },
+      "data": [
+        {
+          "name": "访问",
+          "value": 90,
+          "itemStyle": {
+            "color": "#3E6A88"
+          }
+        },
+        {
+          "name": "下单",
+          "value": 60,
+          "itemStyle": {
+            "color": "#20293A"
+          }
+        },
+        {
+          "name": "支付",
+          "value": 30,
+          "itemStyle": {
+            "color": "#141414"
+          }
+        }
+      ]
+    }
+  ]
+}

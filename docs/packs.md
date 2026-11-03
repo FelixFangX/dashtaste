@@ -1,6 +1,6 @@
 # Pack overlays
 
-The built-in `global` and `cn` packs remain free. A pack file is a local JSON
+The built-in `global` and `cn` packs remain free. `global` is the `saas-dense` taste. `cn` is the `cn-ecommerce` taste. The other tastes (`exec-brief`, `ops-wall`, `global-marketplace`, `editorial-data`) use a pack's rule floor and add their own composition caps. List them with `npx dashtaste tastes`. A pack file is a local JSON
 overlay for private or vertical conventions. It changes existing limits and
 colour tokens and can disable existing rules; it adds no rule IDs. There are no
 payment, license, server, or hosted API checks.

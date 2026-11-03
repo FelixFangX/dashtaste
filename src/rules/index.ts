@@ -28,6 +28,7 @@ import { dt020 } from './dt020-kpi-rainbow.js';
 import { dt021 } from './dt021-emoji-icons.js';
 import { dt022 } from './dt022-cjk-min-size.js';
 import { dt023 } from './dt023-legend-single-series.js';
+import { dt030, dt031, dt032, dt033, dt034, dt035, dt036, dt037, dt038 } from './dt030-taste.js';
 
 export const rules: Rule[] = [
   dt001,
@@ -59,4 +60,13 @@ export const rules: Rule[] = [
   dt027,
   dt028,
   dt029,
+  dt030,
+  dt031,
+  dt032,
+  dt033,
+  dt034,
+  dt035,
+  dt036,
+  dt037,
+  dt038,
 ];

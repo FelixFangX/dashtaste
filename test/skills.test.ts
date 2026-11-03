@@ -22,6 +22,20 @@ for (const [name, pack] of Object.entries(packs)) {
     expect(rows.length).toBe(Object.keys(expected).length);
   });
 }
+it('selector skill names every taste', () => {
+  const skill = readFileSync('skills/dashtaste/SKILL.md', 'utf8');
+  expect(skill).toMatch(/^---\nname: dashtaste\ndescription: .+\n---/);
+  expect(skill.split('\n').length).toBeLessThan(80);
+  for (const id of [
+    'saas-dense',
+    'exec-brief',
+    'ops-wall',
+    'cn-ecommerce',
+    'global-marketplace',
+    'editorial-data',
+  ])
+    expect(skill).toContain(id);
+});
 it('every documented rule matches metadata', () => {
   const doc = readFileSync('docs/rules.md', 'utf8');
   for (const r of rules) {

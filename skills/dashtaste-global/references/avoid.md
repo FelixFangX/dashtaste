@@ -95,7 +95,7 @@ Replace it: remove glow and use hairline borders.
 
 ## DT019: kpi-overload
 
-More than 6 global or 8 cn KPI tiles weakens priority.
+More KPI tiles than the selected taste allows weakens priority.
 Replace it: keep only primary KPIs in the first view.
 
 ## DT020: kpi-rainbow

@@ -8,13 +8,13 @@ description: Build or review readable global-audience dashboards with concrete l
 Use for dashboard pages, chart options, KPI strips, rankings, and dashboard reviews.
 For a Chinese-market audience use dashtaste-cn.
 
-1. Pick the global pack and light or dark mode before choosing colours.
+1. Pick the `saas-dense` taste (`--pack global` is this alias) and light or dark mode before choosing colours. Other schools: `npx dashtaste tastes`.
 2. Read [tokens](references/tokens.md) for exact colours and sizes.
 3. Read [layout](references/layout.md) for page structure and controls.
 4. Read [charts](references/charts.md) for the chart types you need.
 5. Read [numbers](references/numbers.md) for units, dates, and comparisons.
 6. Build the page with real data, explicit units, and clear hierarchy.
-7. Run `npx dashtaste check options.json --pack global --max-warnings 0`.
+7. Run `npx dashtaste check options.json --taste saas-dense --max-warnings 0`.
    For a rendered page, check its URL with a browser available through `CHROME_PATH`.
 8. Fix errors and warnings; inspect informational findings. Recheck after edits.
    Read [avoid](references/avoid.md) when replacing a flagged pattern.

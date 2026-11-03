@@ -10,10 +10,10 @@
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#f6f5f1" />
-    <title>dashtaste · Give your dashboard better taste</title>
+    <title>dashtaste · Pick a taste</title>
     <meta
       name="description"
-      content="See dashboards before and after dashtaste. Check your ECharts options right in your browser."
+      content="Pick a named dashboard taste. Agents ship the same default rainbow ECharts look everywhere."
     />
     <link rel="stylesheet" href="/style.css" />
   </head>
@@ -31,23 +31,55 @@
     <main id="main">
       <section class="hero" aria-labelledby="title">
         <div class="hero-copy">
-          <p class="eyebrow" data-i18n="copy2">A little less default. A lot more clarity.</p>
-          <h1 id="title" data-i18n="copy3">Good data.<br />Better <em>dashboards.</em></h1>
+          <p class="eyebrow" data-i18n="copy2">Six dashboard schools</p>
+          <h1 id="title" data-i18n="copy3">Pick a taste.<br />Not a <em>palette.</em></h1>
           <p class="lead" data-i18n="copy4">
-            Give your coding agent a sense of taste. Catch the chart choices that get in the way.
+            Agents ship the same default rainbow ECharts look everywhere.
           </p>
-          <a class="button" href="#gallery" data-i18n="copy5"
-            >Try gallery <span aria-hidden="true">↗</span></a
-          >
+          <p class="cta"><code>npx dashtaste check dashboard.json --taste saas-dense</code></p>
         </div>
-        <figure class="dashboard">
-          <img
-            src="/gallery/saas-after.png"
-            alt="DashTaste SaaS dashboard with restrained charts and clear hierarchy"
-            fetchpriority="high"
-          />
-          <figcaption>SaaS / After dashtaste</figcaption>
-        </figure>
+        <div id="catalog" class="catalog" role="group" aria-label="Tastes"></div>
+      </section>
+      <section id="study" class="study" aria-labelledby="study-title">
+        <div class="study-head">
+          <h2 id="study-title">Live study · <span id="study-taste">saas-dense</span></h2>
+          <p class="study-score"><span id="score">—</span><span>/100</span></p>
+        </div>
+        <div class="study-grid">
+          <div class="pair-live">
+            <figure>
+              <figcaption><span class="dot before"></span> Before · rainbow</figcaption>
+              <div id="before-preview" class="preview"></div>
+            </figure>
+            <figure>
+              <figcaption>
+                <span class="dot after"></span> After · <span id="after-name">saas-dense</span>
+              </figcaption>
+              <div id="after-preview" class="preview"></div>
+            </figure>
+          </div>
+          <div class="knobs">
+            <label
+              >Series
+              <input id="knob-series" type="range" min="1" max="6" step="1" value="1" />
+              <output id="out-series">1</output></label
+            >
+            <label
+              >Annotations
+              <input id="knob-notes" type="range" min="0" max="8" step="1" value="0" />
+              <output id="out-notes">0</output></label
+            >
+            <label
+              >Charts
+              <input id="knob-charts" type="range" min="1" max="12" step="1" value="1" />
+              <output id="out-charts">1</output></label
+            >
+            <p class="knob-note">
+              Knobs rewrite this taste's example. Past the cap, the score drops.
+            </p>
+            <ol id="study-findings"></ol>
+          </div>
+        </div>
       </section>
       <section id="gallery" class="showcase" aria-label="Dashboard before and after">
         <div class="showcase-toolbar">
@@ -107,11 +139,15 @@
             </div>
             <textarea id="options" spellcheck="false" aria-label="ECharts options JSON"></textarea>
             <div class="editor-actions">
-              <label for="pack" data-i18n="copy14"
-                >Pack
-                <select id="pack">
-                  <option value="global" data-i18n="copy15">Global</option>
-                  <option value="cn" data-i18n="copy16">CN</option>
+              <label for="taste" data-i18n="copy14"
+                >Taste
+                <select id="taste">
+                  <option value="saas-dense">saas-dense</option>
+                  <option value="exec-brief">exec-brief</option>
+                  <option value="ops-wall">ops-wall</option>
+                  <option value="cn-ecommerce">cn-ecommerce</option>
+                  <option value="global-marketplace">global-marketplace</option>
+                  <option value="editorial-data">editorial-data</option>
                 </select></label
               ><button id="run" class="button" type="button" disabled data-i18n="copy17">
                 Loading engine…
@@ -153,11 +189,11 @@
         <div class="commands">
           <div>
             <span data-i18n="copy26">01 / Add the skill</span>
-            <pre><code>npx skills add FelixFangX/dashtaste --skill dashtaste-global</code></pre>
+            <pre><code>npx skills add FelixFangX/dashtaste --skill dashtaste</code></pre>
           </div>
           <div>
             <span data-i18n="copy27">02 / Check your dashboard</span>
-            <pre><code>npx dashtaste check dashboard.json --pack global</code></pre>
+            <pre><code>npx dashtaste check dashboard.json --taste saas-dense</code></pre>
           </div>
         </div>
       </section>

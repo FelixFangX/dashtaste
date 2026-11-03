@@ -1,7 +1,7 @@
 {
   "name": "dashtaste",
-  "version": "0.0.7",
-  "description": "Stop agents shipping rainbow ECharts dashboards.",
+  "version": "0.0.8",
+  "description": "Pick a named dashboard taste. Stop agents shipping rainbow ECharts.",
   "keywords": [
     "dashboard",
     "echarts",

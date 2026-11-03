@@ -16,10 +16,10 @@ for (const el of document.querySelectorAll('[data-i18n]')) {
   else el.innerHTML = value;
 }
 document.documentElement.lang = zh ? 'zh-CN' : 'en';
-document.title = tr('dashtaste · Give your dashboard better taste', 'dashtaste · 让看板更有品味');
+document.title = tr('dashtaste · Pick a taste', 'dashtaste · 选一种品味');
 document.querySelector('meta[name="description"]').content = tr(
-  'See dashboards before and after dashtaste. Check your ECharts options right in your browser.',
-  '看看 dashtaste 如何改善看板，在浏览器里检查你的 ECharts 配置。',
+  'Pick a named dashboard taste. Agents ship the same default rainbow ECharts look everywhere.',
+  '选一种看板品味。Agent 不该把同一套彩虹 ECharts 带到每个看板。',
 );
 const toggle = document.getElementById('language');
 const nextURL = new URL(location.href);
@@ -38,20 +38,10 @@ if (zh) {
   document.querySelector('.tabs').innerHTML =
     '<button aria-pressed="true" data-example="store">店铺</button><button aria-pressed="false" data-example="live">实时大屏</button>';
   document.querySelectorAll('.commands code')[0].textContent =
-    'npx skills add FelixFangX/dashtaste --skill dashtaste-cn';
+    'npx skills add FelixFangX/dashtaste --skill dashtaste';
   document.querySelectorAll('.commands code')[1].textContent =
-    'npx dashtaste check dashboard.json --pack cn';
+    'npx dashtaste check dashboard.json --taste cn-ecommerce';
 }
-const heroImage = document.querySelector('.dashboard img');
-heroImage.src = zh ? '/gallery/store-after.png' : '/gallery/saas-after.png';
-heroImage.alt = tr(
-  'DashTaste SaaS dashboard with restrained charts and clear hierarchy',
-  'DashTaste 店铺看板，图表克制，层次清晰',
-);
-document.querySelector('.dashboard figcaption').textContent = tr(
-  'SaaS / After dashtaste',
-  '店铺 / 使用 dashtaste 后',
-);
 const $ = (id) => document.getElementById(id);
 const sample = {
   xAxis: {
@@ -74,7 +64,7 @@ const loadSample = () => {
   $('options').value = JSON.stringify(sample, null, 2);
 };
 loadSample();
-$('pack').value = zh ? 'cn' : 'global';
+$('taste').value = zh ? 'cn-ecommerce' : 'saas-dense';
 $('reset').addEventListener('click', () => {
   loadSample();
   $('summary').textContent = tr('Ready', '就绪');
@@ -101,14 +91,135 @@ for (const button of document.querySelectorAll('[data-example]')) {
 document.querySelector('[data-example]').click();
 document.documentElement.style.visibility = '';
 try {
-  const { check, summarize } = await import('/dist/engine.js');
+  const { check, summarize, tasteNames, tastes, tasteSpecimen, rainbowColors, defaultKnobs } =
+    await import('/dist/engine.js');
+  const catalog = document.getElementById('catalog');
+  let selected = $('taste').value;
+  const knobs = {
+    series: defaultKnobs[selected].series,
+    annotations: defaultKnobs[selected].annotations,
+    charts: defaultKnobs[selected].charts,
+  };
+  const bars = (colors, count) => {
+    const row = document.createElement('span');
+    row.className = 'bars';
+    for (let i = 0; i < count; i += 1) {
+      const swatch = document.createElement('i');
+      swatch.style.background = colors[i % colors.length];
+      swatch.style.height = `${28 + ((i * 17) % 36)}px`;
+      row.append(swatch);
+    }
+    return row;
+  };
+  const renderCatalog = () => {
+    catalog.replaceChildren();
+    for (const id of tasteNames) {
+      const taste = tastes[id];
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'taste-card';
+      card.dataset.taste = id;
+      card.setAttribute('aria-pressed', String(id === selected));
+      const pair = document.createElement('span');
+      pair.className = 'pair';
+      pair.append(
+        bars(rainbowColors, 7),
+        bars(taste.tokens.categorical, taste.tokens.categorical.length),
+      );
+      const name = document.createElement('span');
+      name.className = 'taste-id';
+      name.textContent = taste.id;
+      const school = document.createElement('span');
+      school.className = 'taste-school';
+      school.textContent = taste.school;
+      const chips = document.createElement('span');
+      chips.className = 'taste-chips';
+      chips.textContent = taste.chips;
+      card.append(pair, name, school, chips);
+      card.addEventListener('click', () => select(id));
+      catalog.append(card);
+    }
+  };
+  const paint = (root, colors, count, frames, notes) => {
+    root.replaceChildren();
+    const board = document.createElement('div');
+    board.className = 'board';
+    board.style.background = colors.paper || '#fff';
+    board.style.color = colors.ink || '#1a1a18';
+    for (let chart = 0; chart < frames; chart += 1) board.append(bars(colors.series, count));
+    for (let note = 0; note < notes; note += 1) {
+      const label = document.createElement('span');
+      label.className = 'note';
+      label.textContent = `Note ${note + 1}`;
+      board.append(label);
+    }
+    root.append(board);
+  };
+  const refresh = () => {
+    const taste = tastes[selected];
+    $('study-taste').textContent = selected;
+    $('after-name').textContent = selected;
+    $('knob-series').value = String(knobs.series);
+    $('knob-notes').value = String(knobs.annotations);
+    $('knob-charts').value = String(knobs.charts);
+    $('out-series').textContent = String(knobs.series);
+    $('out-notes').textContent = String(knobs.annotations);
+    $('out-charts').textContent = String(knobs.charts);
+    paint(
+      $('before-preview'),
+      { paper: '#ffffff', ink: '#1a1a18', series: rainbowColors },
+      7,
+      1,
+      0,
+    );
+    paint(
+      $('after-preview'),
+      { paper: taste.tokens.paper, ink: taste.tokens.ink, series: taste.tokens.categorical },
+      knobs.series,
+      knobs.charts,
+      knobs.annotations,
+    );
+    const findings = check(tasteSpecimen(selected, knobs), { taste: selected });
+    const totals = summarize(findings);
+    $('score').textContent = String(totals.score);
+    $('score').dataset.low = String(totals.score < 100);
+    const list = $('study-findings');
+    list.replaceChildren();
+    for (const finding of findings.slice(0, 4)) {
+      const item = document.createElement('li');
+      item.textContent = `${finding.ruleId} ${finding.message}`;
+      list.append(item);
+    }
+  };
+  const select = (id) => {
+    selected = id;
+    $('taste').value = id;
+    knobs.series = defaultKnobs[id].series;
+    knobs.annotations = defaultKnobs[id].annotations;
+    knobs.charts = defaultKnobs[id].charts;
+    for (const card of catalog.querySelectorAll('[data-taste]'))
+      card.setAttribute('aria-pressed', String(card.dataset.taste === id));
+    refresh();
+  };
+  for (const [id, key] of [
+    ['knob-series', 'series'],
+    ['knob-notes', 'annotations'],
+    ['knob-charts', 'charts'],
+  ])
+    $(id).addEventListener('input', () => {
+      knobs[key] = Number($(id).value);
+      refresh();
+    });
+  $('taste').addEventListener('change', () => select($('taste').value));
+  renderCatalog();
+  select(selected);
   $('run').disabled = false;
   $('run').textContent = tr('Run check ↗', '开始检查 ↗');
   $('run').addEventListener('click', () => {
     $('findings').replaceChildren();
     try {
       const input = JSON.parse($('options').value);
-      const findings = check(input, { pack: $('pack').value });
+      const findings = check(input, { taste: $('taste').value });
       const totals = summarize(findings);
       $('summary').textContent = tr(
         `${totals.errors} errors · ${totals.warnings} warnings · ${totals.info} info`,
@@ -136,13 +247,12 @@ try {
         const rule = document.createElement('span');
         rule.textContent = finding.ruleId;
         top.append(severity, rule);
+        const localized = ruleCopy[Number(finding.ruleId.slice(2)) - 1];
         const message = document.createElement('p');
-        message.textContent = zh
-          ? ruleCopy[Number(finding.ruleId.slice(2)) - 1][0]
-          : finding.message;
+        message.textContent = zh && localized ? localized[0] : finding.message;
         const fix = document.createElement('p');
         fix.className = 'fix';
-        fix.textContent = `↳ ${zh ? ruleCopy[Number(finding.ruleId.slice(2)) - 1][1] : finding.fix}`;
+        fix.textContent = `↳ ${zh && localized ? localized[1] : finding.fix}`;
         const path = document.createElement('code');
         path.textContent = finding.path;
         item.append(top, message, fix, path);
