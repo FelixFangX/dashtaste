@@ -31,7 +31,7 @@ npx dashtaste apply --taste cn-ecommerce
 
 The [demo](https://dashtaste.ledring.dev) opens on the six tastes. Before is the rainbow. After uses that taste. Series, annotations, and charts are knobs. Past the cap, the score drops.
 
-![Six tastes. The ops-wall series knob is past the cap, so the score is 97.](gallery/tastes.png)
+![Six tastes. Series, annotations, and charts sit on one row with the score.](gallery/tastes.png)
 
 ## Pack aliases
 
