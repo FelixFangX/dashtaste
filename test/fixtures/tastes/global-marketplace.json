@@ -5,23 +5,38 @@
   "legend": {
     "show": false
   },
+  "grid": {
+    "left": 40,
+    "right": 48,
+    "top": 16,
+    "bottom": 22
+  },
   "xAxis": {
     "type": "category",
-    "data": ["Mon", "Tue", "Wed"]
+    "data": ["W0", "W1", "W4", "W8"],
+    "axisTick": {
+      "show": false
+    }
   },
   "yAxis": {
     "type": "value",
     "min": 0,
     "scale": false,
-    "name": "Revenue ($)"
+    "name": "USD · EUR"
   },
   "series": [
     {
       "type": "line",
-      "name": "This cohort",
-      "data": [12, 18, 14],
-      "showSymbol": false,
+      "name": "USD",
+      "data": [100, 78, 66, 58],
       "smooth": false,
+      "showSymbol": false,
+      "endLabel": {
+        "show": true,
+        "formatter": "{a}",
+        "color": "#3E6F8A",
+        "fontSize": 12
+      },
       "lineStyle": {
         "width": 2,
         "color": "#3E6F8A"
@@ -32,12 +47,18 @@
     },
     {
       "type": "line",
-      "name": "Prior cohort",
-      "data": [13, 18, 15],
-      "showSymbol": false,
+      "name": "EUR",
+      "data": [100, 74, 60, 51],
       "smooth": false,
+      "showSymbol": false,
+      "endLabel": {
+        "show": true,
+        "formatter": "{a}",
+        "color": "#1E2A32",
+        "fontSize": 12
+      },
       "lineStyle": {
-        "width": 2,
+        "width": 1.5,
         "color": "#1E2A32"
       },
       "itemStyle": {

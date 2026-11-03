@@ -5,9 +5,18 @@
   "legend": {
     "show": false
   },
+  "grid": {
+    "left": 36,
+    "right": 8,
+    "top": 12,
+    "bottom": 20
+  },
   "xAxis": {
     "type": "category",
-    "data": ["Mon", "Tue", "Wed"]
+    "data": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    "axisTick": {
+      "show": false
+    }
   },
   "yAxis": {
     "type": "value",
@@ -18,9 +27,9 @@
   "series": [
     {
       "type": "bar",
-      "name": "Series 1",
-      "data": [12, 18, 9],
-      "barMaxWidth": 16,
+      "name": "Orders",
+      "data": [18, 22, 19, 24, 21, 26, 23],
+      "barMaxWidth": 10,
       "itemStyle": {
         "color": "#B65A08"
       }

@@ -11,14 +11,14 @@ npx dashtaste check dashboard.json --taste saas-dense
 
 ## Tastes
 
-| Taste                | School              | What the check enforces                                                  |
-| -------------------- | ------------------- | ------------------------------------------------------------------------ |
-| `saas-dense`         | B2B metrics         | ≤ 8 charts, ≤ 3 series, straight lines, animation off. `--pack global`   |
-| `exec-brief`         | Board room          | 1 chart, ≤ 3 KPIs, ≤ 1 story annotation, paper ground                    |
-| `ops-wall`           | SRE / status        | Near-black ground (error if the page is light), status colours, ≤ 8 KPIs |
-| `cn-ecommerce`       | GMV and funnel      | 万/亿 ticks, ≤ 4 descending funnels, ≤ 4 series. `--pack cn`             |
-| `global-marketplace` | Cohort and currency | A currency mark on every value axis, ≤ 2 series, ≤ 4 charts              |
-| `editorial-data`     | Story charts        | At least one story annotation, ≤ 2 charts, paper ground                  |
+| Taste                | School              | Layout, then the check                                                             |
+| -------------------- | ------------------- | ---------------------------------------------------------------------------------- |
+| `saas-dense`         | B2B metrics         | Tight 7-day bar strip. ≤ 8 charts, ≤ 3 series, animation off. `--pack global`      |
+| `exec-brief`         | Board room          | One hero figure over a single chart. ≤ 3 KPIs, ≤ 1 story annotation, paper ground  |
+| `ops-wall`           | SRE / status        | Status grid on a near-black ground. Light ground is an error. ≤ 8 KPIs, motion off |
+| `cn-ecommerce`       | GMV and funnel      | Descending funnel labeled in 万. ≤ 4 funnels, ≤ 4 series. `--pack cn`              |
+| `global-marketplace` | Cohort and currency | Two calm cohort lines, USD and EUR on the axis. ≤ 2 series, ≤ 4 charts             |
+| `editorial-data`     | Story charts        | One line and a callout. At least one story annotation, ≤ 2 charts, paper ground    |
 
 ```sh
 npx dashtaste tastes
@@ -27,9 +27,9 @@ npx dashtaste example --taste ops-wall
 npx dashtaste apply --taste cn-ecommerce
 ```
 
-`tastes` lists the catalog. `tokens --taste` prints that school's colours and the rules sentence the checker uses. `example --taste` prints an option that scores 100 under that taste. `apply --taste` writes `tokens.json` and `example.json`. Each taste is tokens plus composition — chart count, series count, KPI cap, annotation range, ground, motion, units — not a color swap of the same dashboard.
+`tastes` lists the catalog. `tokens --taste` prints that school's colours and the rules sentence the checker uses. `example --taste` prints an option that scores 100 under that taste. `apply --taste` writes `tokens.json` and `example.json`. Each taste is a layout plus a cap: a 7-day strip, a hero figure, a status grid, a 万 funnel, two cohort lines, or a line with a callout. Strip the colour and the six still do not match.
 
-The [demo](https://dashtaste.ledring.dev) opens on the six tastes. Before is the rainbow. After uses that taste. Series, annotations, and charts are knobs. Past the cap, the score drops.
+The [demo](https://dashtaste.ledring.dev) opens on the six tastes. Before is the rainbow. After is that taste's layout. Series, annotations, and charts are knobs. Past the cap, the score drops.
 
 ![Six tastes. Series, annotations, and charts sit on one row with the score.](gallery/tastes.png)
 

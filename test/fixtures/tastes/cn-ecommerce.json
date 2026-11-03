@@ -1,35 +1,41 @@
 {
   "animation": false,
   "backgroundColor": "#F2F4F2",
-  "color": ["#3E6A88"],
+  "color": ["#3E6A88", "#20293A", "#C8372F"],
   "series": [
     {
       "type": "funnel",
       "sort": "descending",
+      "left": "8%",
+      "width": "54%",
+      "minSize": "18%",
+      "maxSize": "100%",
+      "gap": 4,
       "label": {
         "show": true,
-        "formatter": "{b}"
+        "formatter": "{b}",
+        "fontSize": 12
       },
       "data": [
         {
-          "name": "访问",
+          "name": "访问 12.4万",
           "value": 90,
           "itemStyle": {
             "color": "#3E6A88"
           }
         },
         {
-          "name": "下单",
+          "name": "下单 3.1万",
           "value": 60,
           "itemStyle": {
             "color": "#20293A"
           }
         },
         {
-          "name": "支付",
+          "name": "支付 1.2万",
           "value": 30,
           "itemStyle": {
-            "color": "#141414"
+            "color": "#C8372F"
           }
         }
       ]

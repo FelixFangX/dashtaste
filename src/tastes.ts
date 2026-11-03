@@ -71,7 +71,7 @@ export const tastes: Record<TasteName, Taste> = {
     title: 'SaaS dense',
     school: 'B2B metrics',
     summary: 'B2B metrics — compact, straight lines, no rainbow. Alias for --pack global.',
-    chips: '≤8 charts · ≤3 series · straight lines',
+    chips: '7-day strip · ≤8 charts · ≤3 series',
     packAlias: 'global',
     basePack: 'global',
     defaultMode: 'light',
@@ -106,7 +106,7 @@ export const tastes: Record<TasteName, Taste> = {
     title: 'Exec brief',
     school: 'Board room',
     summary: 'Board room — one chart, a handful of KPIs, almost no annotation.',
-    chips: '1 chart · ≤3 KPIs · paper',
+    chips: 'Hero figure · 1 chart · ≤3 KPIs',
     basePack: 'global',
     defaultMode: 'light',
     tokens: {
@@ -140,7 +140,7 @@ export const tastes: Record<TasteName, Taste> = {
     title: 'Ops wall',
     school: 'SRE / status',
     summary: 'SRE wall — dark ground, status colours, motion off.',
-    chips: 'Dark ground · status · no motion',
+    chips: 'Status grid · dark ground · no motion',
     basePack: 'global',
     defaultMode: 'dark',
     tokens: {
@@ -176,7 +176,7 @@ export const tastes: Record<TasteName, Taste> = {
     title: 'CN ecommerce',
     school: 'GMV and funnel',
     summary: 'Chinese commerce — 万/亿 ticks, descending funnels, red-up. Alias for --pack cn.',
-    chips: '万/亿 · descending funnel · red-up',
+    chips: 'Descending funnel · 万/亿 · red-up',
     packAlias: 'cn',
     basePack: 'cn',
     defaultMode: 'light',
@@ -211,7 +211,7 @@ export const tastes: Record<TasteName, Taste> = {
     title: 'Global marketplace',
     school: 'Cohort and currency',
     summary: 'Marketplace — currency on the axis, two series, a calm cohort line.',
-    chips: 'Currency · ≤2 series · cohort',
+    chips: 'Cohort lines · USD · EUR · ≤2 series',
     basePack: 'global',
     defaultMode: 'light',
     tokens: {
@@ -245,7 +245,7 @@ export const tastes: Record<TasteName, Taste> = {
     title: 'Editorial data',
     school: 'Story charts',
     summary: 'Story chart — one annotation at least, two charts at most, one accent hue.',
-    chips: 'Annotation first · ≤2 charts · one hue',
+    chips: 'Callout · ≤2 charts · one hue',
     basePack: 'global',
     defaultMode: 'light',
     tokens: {

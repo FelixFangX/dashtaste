@@ -606,16 +606,15 @@ header nav a {
 }
 .hero {
   display: grid;
-  grid-template-columns: 1fr;
-  padding: 3rem 0;
-  gap: 2.5rem;
+  grid-template-columns: minmax(280px, 420px) minmax(0, 1fr);
+  padding: 2.25rem 0 1.5rem;
+  gap: 3rem;
   min-height: 0;
-  align-items: center;
+  align-items: end;
 }
 .hero-copy {
-  display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  column-gap: 4rem;
+  display: block;
+  min-width: 0;
 }
 .hero .eyebrow {
   grid-column: 1/-1;
@@ -702,8 +701,11 @@ header nav a {
 }
 .cta code {
   display: inline-block;
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: nowrap;
   font:
-    500 0.8125rem/1.6 Mono,
+    500 0.75rem/1.6 Mono,
     monospace;
   background: #fff;
   border: 1px solid var(--line);
@@ -713,7 +715,7 @@ header nav a {
 .catalog {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px;
 }
 .taste-card {
   display: grid;
@@ -732,21 +734,288 @@ header nav a {
 .pair {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 6px;
+}
+.mini,
+.preview {
+  display: block;
+  min-width: 0;
+}
+.board {
+  display: grid;
+  gap: 6px;
+  min-height: 188px;
+}
+.mini .board {
+  min-height: 76px;
+  gap: 3px;
+}
+.frame {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 188px;
+  padding: 10px 10px 22px;
+  overflow: hidden;
+}
+.mini .frame {
+  min-height: 76px;
+  padding: 5px 5px 6px;
+  gap: 3px;
+}
+.legend-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 6px;
+  font:
+    500 0.625rem/1.2 Mono,
+    monospace;
+}
+.legend-row span {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.legend-row i {
+  width: 7px;
+  height: 7px;
+  border-radius: 1px;
+}
+.mini .legend-row {
+  display: none;
+}
+.hero-figure {
+  margin: 0;
+  font-size: 2.75rem;
+  font-weight: 520;
+  letter-spacing: -0.045em;
+  line-height: 0.9;
+  font-variant-numeric: tabular-nums;
+}
+.hero-figure span {
+  display: block;
+  margin-top: 4px;
+  font:
+    500 0.75rem/1 Mono,
+    monospace;
+  letter-spacing: 0;
+}
+.mini .hero-figure {
+  font-size: 1.15rem;
+}
+.mini .hero-figure span {
+  margin-top: 1px;
+  font-size: 0.55rem;
 }
 .bars {
   display: flex;
   align-items: flex-end;
-  gap: 3px;
-  min-height: 64px;
-  padding: 8px;
-  background: color-mix(in srgb, currentColor 6%, transparent);
+  gap: 4px;
+  flex: 1;
+  min-height: 96px;
+  background: transparent;
+  padding: 0;
+}
+.bars .group {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+  height: 100%;
+  min-width: 0;
 }
 .bars i {
   display: block;
   flex: 1;
-  min-width: 4px;
+  max-width: 16px;
+  min-width: 3px;
+  height: 40%;
   border-radius: 1px;
+}
+.bars.dense {
+  gap: 2px;
+}
+.bars.dense i {
+  max-width: 7px;
+}
+.frame.has-hero .bars {
+  align-self: flex-start;
+  width: min(240px, 70%);
+  flex: 0 0 72px;
+  min-height: 72px;
+}
+.frame.has-hero .bars i {
+  max-width: 18px;
+}
+.mini .bars {
+  min-height: 48px;
+}
+.mini .frame.has-hero .bars {
+  width: 78%;
+  flex-basis: 28px;
+  min-height: 28px;
+}
+.mini .frame.has-hero .bars i {
+  max-width: 5px;
+}
+.combo {
+  position: relative;
+  flex: 1;
+  min-height: 96px;
+}
+.combo .bars,
+.combo .lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+.lines {
+  display: block;
+  width: 100%;
+  height: 120px;
+  flex: 1;
+}
+.lines text {
+  font:
+    500 4.2px Mono,
+    monospace;
+}
+.mini .lines {
+  height: 48px;
+}
+.mini .lines text {
+  display: none;
+}
+.funnel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  flex: 1;
+}
+.funnel-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 8px;
+}
+.funnel-row i {
+  display: block;
+  height: 26px;
+  justify-self: center;
+  border-radius: 2px;
+}
+.funnel-row span {
+  font:
+    500 0.7rem/1 Mono,
+    monospace;
+  white-space: nowrap;
+}
+.mini .funnel {
+  gap: 3px;
+}
+.mini .funnel-row {
+  gap: 3px;
+}
+.mini .funnel-row i {
+  height: 10px;
+}
+.mini .funnel-row span {
+  font-size: 0.5rem;
+}
+.status-board {
+  display: grid;
+  gap: 4px;
+  flex: 1;
+}
+.status {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  flex: 1;
+}
+.cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 88px;
+  padding: 7px;
+  border: 1px solid color-mix(in srgb, currentColor 28%, transparent);
+}
+.cell i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.cell span {
+  font:
+    500 0.65rem/1 Mono,
+    monospace;
+}
+.mini .cell {
+  min-height: 48px;
+  padding: 4px;
+}
+.mini .cell span {
+  font-size: 0.5rem;
+}
+.mini .cell i {
+  width: 5px;
+  height: 5px;
+}
+.callouts {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  max-width: 46%;
+  display: grid;
+  gap: 4px;
+}
+.callouts p {
+  margin: 0;
+  padding-left: 6px;
+  border-left: 2px solid currentColor;
+  font:
+    500 0.75rem/1.35 Mono,
+    monospace;
+}
+.frame.has-hero .callouts {
+  top: auto;
+  right: auto;
+  bottom: 28px;
+  left: 10px;
+}
+.mini .callouts {
+  top: 4px;
+  right: 4px;
+  max-width: 58%;
+}
+.mini .callouts p {
+  width: 2px;
+  height: 22px;
+  padding: 0;
+  border-left-width: 2px;
+  font-size: 0;
+  overflow: hidden;
+}
+.mini .callouts p + p {
+  display: none;
+}
+.axis-name {
+  position: absolute;
+  left: 10px;
+  bottom: 7px;
+  font:
+    500 0.65rem/1 Mono,
+    monospace;
+  letter-spacing: 0.01em;
+}
+.mini .axis-name {
+  display: none;
 }
 .taste-id {
   font:
@@ -786,18 +1055,7 @@ header nav a {
   background: var(--line);
 }
 .preview {
-  min-height: 140px;
-}
-.board {
-  display: grid;
-  gap: 8px;
-  padding: 12px;
-  min-height: 140px;
-}
-.note {
-  font:
-    500 0.75rem/1.4 Mono,
-    monospace;
+  min-height: 188px;
 }
 .knobs {
   flex: 1;
@@ -899,11 +1157,14 @@ header nav a {
   color: #9b1745;
 }
 @media (max-width: 900px) {
-  .catalog,
+  .hero,
   .pair-live,
   .hero-copy,
   .knobs {
     grid-template-columns: 1fr;
+  }
+  .catalog {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .study-controls {
     display: grid;
@@ -917,6 +1178,13 @@ header nav a {
   }
 }
 @media (max-width: 760px) {
+  .cta code {
+    white-space: normal;
+  }
+  .mini .funnel-row span,
+  .mini .cell span {
+    display: none;
+  }
   header {
     align-items: flex-start;
     padding-block: 1rem;

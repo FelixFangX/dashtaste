@@ -5,6 +5,12 @@
   "legend": {
     "show": true
   },
+  "grid": {
+    "left": 28,
+    "right": 12,
+    "top": 36,
+    "bottom": 20
+  },
   "xAxis": {
     "type": "category",
     "data": ["Mon", "Tue", "Wed"]
@@ -22,7 +28,8 @@
         "color": "#e41a1c"
       },
       "lineStyle": {
-        "color": "#e41a1c"
+        "color": "#e41a1c",
+        "width": 2
       }
     },
     {
@@ -34,7 +41,8 @@
         "color": "#377eb8"
       },
       "lineStyle": {
-        "color": "#377eb8"
+        "color": "#377eb8",
+        "width": 2
       }
     },
     {
@@ -46,7 +54,8 @@
         "color": "#4daf4a"
       },
       "lineStyle": {
-        "color": "#4daf4a"
+        "color": "#4daf4a",
+        "width": 2
       }
     },
     {
@@ -58,7 +67,8 @@
         "color": "#984ea3"
       },
       "lineStyle": {
-        "color": "#984ea3"
+        "color": "#984ea3",
+        "width": 2
       }
     },
     {
@@ -70,7 +80,8 @@
         "color": "#ff7f00"
       },
       "lineStyle": {
-        "color": "#ff7f00"
+        "color": "#ff7f00",
+        "width": 2
       }
     },
     {
@@ -82,7 +93,8 @@
         "color": "#a65628"
       },
       "lineStyle": {
-        "color": "#a65628"
+        "color": "#a65628",
+        "width": 2
       }
     },
     {
@@ -94,7 +106,8 @@
         "color": "#f781bf"
       },
       "lineStyle": {
-        "color": "#f781bf"
+        "color": "#f781bf",
+        "width": 2
       }
     }
   ]

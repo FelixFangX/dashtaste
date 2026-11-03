@@ -91,7 +91,7 @@ for (const button of document.querySelectorAll('[data-example]')) {
 document.querySelector('[data-example]').click();
 document.documentElement.style.visibility = '';
 try {
-  const { check, summarize, tasteNames, tastes, tasteSpecimen, rainbowColors, defaultKnobs } =
+  const { check, summarize, tasteNames, tastes, tasteSpecimen, defaultKnobs } =
     await import('/dist/engine.js');
   const catalog = document.getElementById('catalog');
   let selected = $('taste').value;
@@ -100,16 +100,197 @@ try {
     annotations: defaultKnobs[selected].annotations,
     charts: defaultKnobs[selected].charts,
   };
-  const bars = (colors, count) => {
-    const row = document.createElement('span');
-    row.className = 'bars';
-    for (let i = 0; i < count; i += 1) {
-      const swatch = document.createElement('i');
-      swatch.style.background = colors[i % colors.length];
-      swatch.style.height = `${28 + ((i * 17) % 36)}px`;
-      row.append(swatch);
+  const chartsOf = (specimen) =>
+    specimen && Array.isArray(specimen.charts)
+      ? specimen.charts.map((chart) => chart.option)
+      : [specimen];
+  const numberOf = (datum) => (datum && typeof datum === 'object' ? datum.value : datum);
+  const colorOf = (series, datum) =>
+    (datum && datum.itemStyle && datum.itemStyle.color) ||
+    (series.itemStyle && series.itemStyle.color) ||
+    (series.lineStyle && series.lineStyle.color) ||
+    'currentColor';
+  const graphicTexts = (option) => {
+    const found = [];
+    const visit = (node) => {
+      if (Array.isArray(node)) node.forEach(visit);
+      else if (node && typeof node === 'object') {
+        if (node.type === 'text' && node.style && node.style.text)
+          found.push(String(node.style.text));
+        if (node.children) visit(node.children);
+        if (node.elements) visit(node.elements);
+      }
+    };
+    visit(option.graphic);
+    return found;
+  };
+  const categories = (option) => (option.xAxis && option.xAxis.data) || [];
+  const isStatus = (option) => categories(option).join('|') === 'API|DB|Queue|CDN';
+  const el = (tag, className) => {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    return node;
+  };
+  const barsEl = (option, onlyBars) => {
+    const row = el('div', 'bars');
+    const series = (option.series || []).filter((item) => !onlyBars || item.type === 'bar');
+    const cats = categories(option);
+    const cap = series[0] && series[0].barMaxWidth;
+    if ((typeof cap === 'number' && cap <= 12) || cats.length >= 7) row.classList.add('dense');
+    if (option.title && option.title.text) row.classList.add('short');
+    const peak = Math.max(1, ...series.flatMap((item) => (item.data || []).map(numberOf)));
+    for (let index = 0; index < cats.length; index += 1) {
+      const group = el('span', 'group');
+      for (const item of series) {
+        const datum = (item.data || [])[index];
+        const bar = document.createElement('i');
+        bar.style.height = `${Math.max(12, (numberOf(datum) / peak) * 100)}%`;
+        bar.style.background = colorOf(item, datum);
+        group.append(bar);
+      }
+      row.append(group);
     }
     return row;
+  };
+  const linesEl = (option) => {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 100 40');
+    svg.setAttribute('preserveAspectRatio', 'none');
+    svg.classList.add('lines');
+    const series = (option.series || []).filter((item) => item.type === 'line');
+    const cats = Math.max(1, categories(option).length);
+    const values = series.flatMap((item) => (item.data || []).map(numberOf));
+    const peak = Math.max(1, ...values);
+    const floor = Math.min(...values);
+    const base = floor > peak * 0.45 ? floor - (peak - floor) * 0.35 : 0;
+    const span = Math.max(1, peak - base);
+    const yOf = (datum) => 36 - ((numberOf(datum) - base) / span) * 32;
+    for (const item of series) {
+      const points = (item.data || [])
+        .map((datum, index) => {
+          const x = cats === 1 ? 50 : (index / (cats - 1)) * 96 + 2;
+          return `${x},${yOf(datum)}`;
+        })
+        .join(' ');
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+      path.setAttribute('points', points);
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke', colorOf(item));
+      path.setAttribute('stroke-width', String((item.lineStyle && item.lineStyle.width) || 2));
+      path.setAttribute('vector-effect', 'non-scaling-stroke');
+      svg.append(path);
+      if (item.endLabel && item.endLabel.show) {
+        const tag = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        const last = (item.data || []).length - 1;
+        const x = cats === 1 ? 50 : (last / (cats - 1)) * 96 + 2;
+        const y = yOf((item.data || [])[last]);
+        tag.setAttribute('x', String(Math.min(86, x + 1.5)));
+        tag.setAttribute('y', String(y + 1.2));
+        tag.setAttribute('fill', colorOf(item));
+        tag.textContent = item.name || '';
+        svg.append(tag);
+      }
+    }
+    return svg;
+  };
+  const funnelEl = (series) => {
+    const wrap = el('div', 'funnel');
+    const data = series.data || [];
+    const peak = Math.max(1, ...data.map((datum) => datum.value || 0));
+    for (const datum of data) {
+      const row = el('div', 'funnel-row');
+      const bar = document.createElement('i');
+      bar.style.width = `${Math.max(18, ((datum.value || 0) / peak) * 100)}%`;
+      bar.style.background = (datum.itemStyle && datum.itemStyle.color) || colorOf(series);
+      const label = document.createElement('span');
+      label.textContent = datum.name || '';
+      row.append(bar, label);
+      wrap.append(row);
+    }
+    return wrap;
+  };
+  const statusEl = (option) => {
+    const wrap = el('div', 'status-board');
+    const cats = categories(option);
+    for (const item of option.series || []) {
+      const row = el('div', 'status');
+      cats.forEach((name, index) => {
+        const datum = (item.data || [])[index];
+        const cell = el('div', 'cell');
+        const pip = document.createElement('i');
+        pip.style.background = colorOf(item, datum);
+        const label = document.createElement('span');
+        label.textContent = name;
+        cell.append(pip, label);
+        row.append(cell);
+      });
+      wrap.append(row);
+    }
+    return wrap;
+  };
+  const frameFor = (option, ink) => {
+    const frame = el('div', 'frame');
+    const series = option.series || [];
+    const types = new Set(series.map((item) => item.type));
+    frame.dataset.kind = types.has('funnel') ? 'funnel' : types.has('line') ? 'line' : 'bar';
+    frame.style.background = option.backgroundColor || '#fff';
+    frame.style.color = ink;
+    if (option.legend && option.legend.show) {
+      const legend = el('div', 'legend-row');
+      for (const item of series) {
+        const entry = document.createElement('span');
+        const swatch = document.createElement('i');
+        swatch.style.background = colorOf(item);
+        entry.append(swatch, document.createTextNode(item.name || ''));
+        legend.append(entry);
+      }
+      frame.append(legend);
+    }
+    if (option.title && option.title.text) {
+      frame.classList.add('has-hero');
+      const hero = el('p', 'hero-figure');
+      hero.append(document.createTextNode(option.title.text));
+      const sub = document.createElement('span');
+      sub.textContent = option.title.subtext || '';
+      hero.append(sub);
+      frame.append(hero);
+    }
+    if (types.has('funnel')) frame.append(funnelEl(series.find((item) => item.type === 'funnel')));
+    else if (isStatus(option)) frame.append(statusEl(option));
+    else if (types.has('line') && types.has('bar')) {
+      const combo = el('div', 'combo');
+      combo.append(barsEl(option, true), linesEl(option));
+      frame.append(combo);
+    } else if (types.has('line')) frame.append(linesEl(option));
+    else frame.append(barsEl(option, false));
+    const notes = graphicTexts(option);
+    if (notes.length) {
+      const stack = el('div', 'callouts');
+      for (const text of notes) {
+        const line = document.createElement('p');
+        line.textContent = text;
+        stack.append(line);
+      }
+      frame.append(stack);
+    }
+    const yName = option.yAxis && option.yAxis.name;
+    if (yName && !(option.title && option.title.text)) {
+      const axis = el('span', 'axis-name');
+      axis.textContent = yName;
+      frame.append(axis);
+    }
+    return frame;
+  };
+  const paintSpecimen = (root, specimen, ink) => {
+    root.replaceChildren();
+    const board = el('div', 'board');
+    const options = chartsOf(specimen);
+    board.dataset.count = String(options.length);
+    if (options.length > 1)
+      board.style.gridTemplateColumns =
+        options.length <= 4 ? 'repeat(2, minmax(0, 1fr))' : 'repeat(3, minmax(0, 1fr))';
+    for (const option of options) board.append(frameFor(option, ink));
+    root.append(board);
   };
   const renderCatalog = () => {
     catalog.replaceChildren();
@@ -122,10 +303,13 @@ try {
       card.setAttribute('aria-pressed', String(id === selected));
       const pair = document.createElement('span');
       pair.className = 'pair';
-      pair.append(
-        bars(rainbowColors, 7),
-        bars(taste.tokens.categorical, taste.tokens.categorical.length),
-      );
+      const before = document.createElement('span');
+      before.className = 'mini';
+      paintSpecimen(before, tasteSpecimen('rainbow'), '#1a1a18');
+      const after = document.createElement('span');
+      after.className = 'mini';
+      paintSpecimen(after, tasteSpecimen(id), taste.tokens.ink);
+      pair.append(before, after);
       const name = document.createElement('span');
       name.className = 'taste-id';
       name.textContent = taste.id;
@@ -139,21 +323,6 @@ try {
       card.addEventListener('click', () => select(id));
       catalog.append(card);
     }
-  };
-  const paint = (root, colors, count, frames, notes) => {
-    root.replaceChildren();
-    const board = document.createElement('div');
-    board.className = 'board';
-    board.style.background = colors.paper || '#fff';
-    board.style.color = colors.ink || '#1a1a18';
-    for (let chart = 0; chart < frames; chart += 1) board.append(bars(colors.series, count));
-    for (let note = 0; note < notes; note += 1) {
-      const label = document.createElement('span');
-      label.className = 'note';
-      label.textContent = `Note ${note + 1}`;
-      board.append(label);
-    }
-    root.append(board);
   };
   const refresh = () => {
     const taste = tastes[selected];
@@ -171,20 +340,8 @@ try {
         (Number(input.value) - Number(input.min)) / (Number(input.max) - Number(input.min));
       input.style.setProperty('--pct', `${span * 100}%`);
     }
-    paint(
-      $('before-preview'),
-      { paper: '#ffffff', ink: '#1a1a18', series: rainbowColors },
-      7,
-      1,
-      0,
-    );
-    paint(
-      $('after-preview'),
-      { paper: taste.tokens.paper, ink: taste.tokens.ink, series: taste.tokens.categorical },
-      knobs.series,
-      knobs.charts,
-      knobs.annotations,
-    );
+    paintSpecimen($('before-preview'), tasteSpecimen('rainbow'), '#1a1a18');
+    paintSpecimen($('after-preview'), tasteSpecimen(selected, knobs), taste.tokens.ink);
     const findings = check(tasteSpecimen(selected, knobs), { taste: selected });
     const totals = summarize(findings);
     $('score').textContent = String(totals.score);

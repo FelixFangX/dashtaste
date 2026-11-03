@@ -5,22 +5,38 @@
   "legend": {
     "show": false
   },
+  "grid": {
+    "left": 40,
+    "right": 132,
+    "top": 16,
+    "bottom": 22
+  },
   "xAxis": {
     "type": "category",
-    "data": ["Mon", "Tue", "Wed"]
+    "data": ["Open", "Peak", "After"],
+    "axisTick": {
+      "show": false
+    }
   },
   "yAxis": {
     "type": "value",
     "min": 0,
     "scale": false,
-    "name": "Orders"
+    "name": "Readers"
   },
   "series": [
     {
-      "type": "bar",
-      "name": "Series 1",
-      "data": [12, 18, 9],
-      "barMaxWidth": 16,
+      "type": "line",
+      "name": "Readership",
+      "data": [12, 40, 18],
+      "smooth": false,
+      "showSymbol": true,
+      "symbol": "circle",
+      "symbolSize": 5,
+      "lineStyle": {
+        "width": 2,
+        "color": "#1C1917"
+      },
       "itemStyle": {
         "color": "#1C1917"
       }
@@ -29,10 +45,10 @@
   "graphic": [
     {
       "type": "text",
-      "left": 8,
-      "top": 8,
+      "left": 228,
+      "top": 24,
       "style": {
-        "text": "Note 1",
+        "text": "The spike is the lede.",
         "fill": "#1C1917",
         "fontSize": 12
       }

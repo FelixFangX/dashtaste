@@ -153,6 +153,52 @@ describe('named tastes', () => {
     ).toBe(true);
   });
 
+  it('keeps a layout after the colour is removed', () => {
+    const optionOf = (taste: TasteName) => {
+      const style = tasteSpecimen(taste);
+      return 'charts' in style ? style.charts[0].option : style;
+    };
+    const bones = (taste: TasteName) => {
+      const option = optionOf(taste);
+      const drawn = (option.series ?? []) as {
+        type?: string;
+        name?: string;
+        barMaxWidth?: number;
+      }[];
+      const axis = option.xAxis as { data?: string[] } | undefined;
+      const value = option.yAxis as { name?: string } | undefined;
+      const title = option.title as { text?: string } | undefined;
+      return {
+        types: drawn.map((item) => item.type).join(','),
+        names: drawn.map((item) => item.name).join('|'),
+        categories: axis?.data?.join('|') ?? '',
+        unit: value?.name ?? '',
+        title: title?.text ?? '',
+        bar: drawn[0]?.barMaxWidth ?? null,
+        story: JSON.stringify(option.graphic ?? null),
+      };
+    };
+    const prints = tasteNames.map((taste) => JSON.stringify(bones(taste)));
+    expect(new Set(prints).size).toBe(tasteNames.length);
+    expect(bones('saas-dense').categories.split('|')).toHaveLength(7);
+    expect(bones('saas-dense').bar).toBe(10);
+    expect(bones('exec-brief')).toMatchObject({
+      title: '4.2',
+      types: 'bar',
+      categories: 'Q1|Q2|Q3',
+    });
+    expect(bones('ops-wall').categories).toBe('API|DB|Queue|CDN');
+    expect(bones('cn-ecommerce').types).toBe('funnel');
+    expect(JSON.stringify(optionOf('cn-ecommerce'))).toContain('万');
+    expect(bones('global-marketplace').types).toBe('line,line');
+    expect(bones('global-marketplace').unit).toMatch(/USD/);
+    expect(bones('global-marketplace').unit).toMatch(/EUR/);
+    expect(bones('editorial-data').story).toContain('The spike is the lede.');
+    const crowded = tasteSpecimen('cn-ecommerce', { series: 2 });
+    expect(check(crowded, { taste: 'cn-ecommerce' })).toEqual([]);
+    expect(JSON.stringify(crowded)).toContain('万');
+  });
+
   it('uses a stricter KPI cap on an exec brief than on an ops wall', () => {
     const kpis = {
       charts: [{ option: { backgroundColor: '#101614' } }],
