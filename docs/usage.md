@@ -11,10 +11,13 @@ npx dashtaste --help
 ## Check options
 
 ```sh
-npx dashtaste check options.json --pack global
-npx dashtaste check first.json second.json --pack cn --format json
+npx dashtaste check options.json --taste saas-dense
+npx dashtaste check first.json second.json --taste cn-ecommerce --format json
 npx dashtaste check options.json --pack cn --mode dark --max-warnings 0
 ```
+
+`--taste` selects a named school. `--pack global` is `saas-dense`. `--pack cn` is `cn-ecommerce`.
+Passing both is an error when they name different schools. With neither flag, the taste is `saas-dense`.
 
 Input may be one ECharts option, an array of options, or a page facts envelope:
 
@@ -29,7 +32,7 @@ Page facts may also contain texts, gradients, shadows, kpis, deltas, and emojis.
 An option-only input cannot test computed page typography or CSS decoration.
 See the exported types for each fact shape.
 
-Defaults are the global pack, light mode, text output, and unlimited warnings.
+Defaults are the saas-dense taste (the global pack), light mode, text output, and unlimited warnings.
 Errors always fail. `--max-warnings 0` also fails on any warning.
 Informational findings lower the score but do not fail a check.
 
@@ -73,28 +76,29 @@ The extractor inspects visible DOM text; canvas text is checked through options.
 
 ## Flags and exit codes
 
-| Flag             | Commands      | Values                         |
-| ---------------- | ------------- | ------------------------------ |
-| `--pack-file`    | all           | path to a JSON overlay         |
-| `--pack`         | all           | `global`, `cn`                 |
-| `--mode`         | check, tokens | `light`, `dark`                |
-| `--format`       | check, rules  | `text`, `json`                 |
-| `--format`       | tokens        | `json`, `css`                  |
-| `--max-warnings` | check         | non-negative integer           |
-| `--only`         | check         | comma-separated rule IDs       |
-| `--disable`      | check         | comma-separated rule IDs       |
-| `--background`   | check         | three- or six-digit hex colour |
-| `--help`         | all           | command-specific usage         |
+| Flag             | Commands      | Values                                         |
+| ---------------- | ------------- | ---------------------------------------------- |
+| `--pack-file`    | all           | path to a JSON overlay                         |
+| `--taste`        | all           | one of the six taste ids                       |
+| `--pack`         | all           | `global` (`saas-dense`), `cn` (`cn-ecommerce`) |
+| `--mode`         | check, tokens | `light`, `dark`                                |
+| `--format`       | check, rules  | `text`, `json`                                 |
+| `--format`       | tokens        | `json`, `css`                                  |
+| `--max-warnings` | check         | non-negative integer                           |
+| `--only`         | check         | comma-separated rule IDs                       |
+| `--disable`      | check         | comma-separated rule IDs                       |
+| `--background`   | check         | three- or six-digit hex colour                 |
+| `--help`         | all           | command-specific usage                         |
 
 `--disable` takes precedence over `--only`. Unknown rule IDs are input errors.
 `--background` overrides chart, page, and pack backgrounds for contrast checks.
-`tokens` requires `--pack` or `--pack-file`.
+`tokens` requires `--taste`, `--pack`, or `--pack-file`. `--taste` prints tokens plus the composition rules. `--pack` still prints that pack's colours.
 
 Exit 0 means no errors and warnings within the selected limit.
 Exit 1 means errors or too many warnings.
 Exit 2 means invalid arguments, unreadable input, or unavailable extraction.
 Set `NO_COLOR` to suppress ANSI colour in text output.
-JSON output contains version, pack, per-input findings and scores, and summary.
+JSON output contains version, pack, taste, per-input findings and scores, and summary.
 Each finding contains ruleId, severity, message, path, and fix.
 Score starts at 100: subtract 10 per error, 3 per warning, and 1 per info.
 The minimum score is zero.
@@ -102,10 +106,17 @@ The minimum score is zero.
 ## Inspect metadata and tokens
 
 ```sh
+npx dashtaste tastes
 npx dashtaste rules --pack cn --format json
+npx dashtaste tokens --taste editorial-data
 npx dashtaste tokens --pack global --mode light
 npx dashtaste tokens --pack cn --mode dark --format css
+npx dashtaste example --taste ops-wall
+npx dashtaste apply --taste saas-dense --out ./taste
+npx dashtaste mcp
 ```
+
+`mcp` starts a stdio server. It exposes `list_tastes`, `taste_tokens`, `taste_example`, `check_taste`, and `apply_taste`. Those tools call the same catalog, checker, and apply bundle as the CLI. The default taste is `saas-dense`.
 
 The cn pack includes screen composition settings for a 1920×1080 artboard.
 Screen composition uses dark tokens and `--mode dark`; it is not a third CLI mode.

@@ -1,0 +1,114 @@
+{
+  "animation": true,
+  "backgroundColor": "#ffffff",
+  "color": ["#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00", "#a65628", "#f781bf"],
+  "legend": {
+    "show": true
+  },
+  "grid": {
+    "left": 28,
+    "right": 12,
+    "top": 36,
+    "bottom": 20
+  },
+  "xAxis": {
+    "type": "category",
+    "data": ["Mon", "Tue", "Wed"]
+  },
+  "yAxis": {
+    "type": "value"
+  },
+  "series": [
+    {
+      "type": "bar",
+      "name": "Series 1",
+      "smooth": true,
+      "data": [8, 14, 11],
+      "itemStyle": {
+        "color": "#e41a1c"
+      },
+      "lineStyle": {
+        "color": "#e41a1c",
+        "width": 2
+      }
+    },
+    {
+      "type": "line",
+      "name": "Series 2",
+      "smooth": true,
+      "data": [9, 14, 12],
+      "itemStyle": {
+        "color": "#377eb8"
+      },
+      "lineStyle": {
+        "color": "#377eb8",
+        "width": 2
+      }
+    },
+    {
+      "type": "bar",
+      "name": "Series 3",
+      "smooth": true,
+      "data": [10, 14, 13],
+      "itemStyle": {
+        "color": "#4daf4a"
+      },
+      "lineStyle": {
+        "color": "#4daf4a",
+        "width": 2
+      }
+    },
+    {
+      "type": "line",
+      "name": "Series 4",
+      "smooth": true,
+      "data": [11, 14, 14],
+      "itemStyle": {
+        "color": "#984ea3"
+      },
+      "lineStyle": {
+        "color": "#984ea3",
+        "width": 2
+      }
+    },
+    {
+      "type": "bar",
+      "name": "Series 5",
+      "smooth": true,
+      "data": [12, 14, 15],
+      "itemStyle": {
+        "color": "#ff7f00"
+      },
+      "lineStyle": {
+        "color": "#ff7f00",
+        "width": 2
+      }
+    },
+    {
+      "type": "line",
+      "name": "Series 6",
+      "smooth": true,
+      "data": [13, 14, 16],
+      "itemStyle": {
+        "color": "#a65628"
+      },
+      "lineStyle": {
+        "color": "#a65628",
+        "width": 2
+      }
+    },
+    {
+      "type": "bar",
+      "name": "Series 7",
+      "smooth": true,
+      "data": [14, 14, 17],
+      "itemStyle": {
+        "color": "#f781bf"
+      },
+      "lineStyle": {
+        "color": "#f781bf",
+        "width": 2
+      }
+    }
+  ]
+}

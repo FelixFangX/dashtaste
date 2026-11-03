@@ -1,5 +1,6 @@
 import { getResolvedPack, resolvePackOverlay } from './packs/index.js';
 import { rules } from './rules/index.js';
+import { resolveTaste, tastes } from './tastes.js';
 import type { CheckOptions, Finding, PageFacts, Option } from './types.js';
 export function normalizeInput(input: unknown): PageFacts {
   const isObject = (v: unknown): v is Option => !!v && typeof v === 'object' && !Array.isArray(v);
@@ -21,13 +22,20 @@ export function normalizeInput(input: unknown): PageFacts {
 }
 export function check(input: unknown, options: CheckOptions = {}): Finding[] {
   const facts = normalizeInput(input);
+  const requestedPack = options.packOverlay?.extends ?? options.pack;
+  const taste = resolveTaste({
+    ...(requestedPack ? { pack: requestedPack } : {}),
+    ...(options.taste ? { taste: options.taste } : {}),
+  });
+  const pack = requestedPack ?? tastes[taste].basePack;
   const settings = {
     ...options,
-    pack: options.packOverlay?.extends ?? options.pack ?? 'global',
-    mode: options.mode ?? 'light',
+    taste,
+    pack,
+    mode: options.mode ?? tastes[taste].defaultMode,
     resolvedPack: options.packOverlay
       ? resolvePackOverlay(options.packOverlay)
-      : getResolvedPack(options),
+      : getResolvedPack({ ...options, pack }),
     disable: [...new Set([...(options.disable ?? []), ...(options.packOverlay?.disable ?? [])])],
   };
   return rules
@@ -54,3 +62,15 @@ export function summarize(findings: Finding[]) {
     score: score(findings),
   };
 }
+
+export {
+  tastes,
+  tasteNames,
+  packAlias,
+  resolveTaste,
+  tasteCatalog,
+  tasteRules,
+  signatureRamp,
+  isTaste,
+} from './tastes.js';
+export { tasteSpecimen, defaultKnobs, knobsFor, rainbowColors } from './specimens.js';

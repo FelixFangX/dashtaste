@@ -521,7 +521,7 @@ Severity: warn. Packs: global, cn.
 
 Why: Too many primary values weaken priority.
 
-Triggers: More than 6 global or 8 cn KPI tiles weakens priority.
+Triggers: More KPI tiles than the selected taste allows weakens priority.
 
 Fix: keep only primary KPIs in the first view.
 
@@ -749,6 +749,96 @@ Minimal failing input:
   ]
 }
 ```
+
+## DT030 taste-rainbow
+
+Severity: error. Packs: global, cn. Every taste.
+
+Why: A rainbow palette hides order. It is an error in every school, not a warning a pack can waive.
+
+Triggers: A rainbow palette is an error in every taste: more than 6 colours or more than 5 saturated hue buckets.
+
+Fix: use this taste's categorical colours and group the tail as Other
+
+## DT031 taste-chart-cap
+
+Severity: warn. Packs: global, cn.
+
+Why: Each taste caps how many charts belong on one page. Exec brief allows one. SaaS dense allows eight.
+
+Triggers: More charts than this taste allows crowds the page.
+
+Fix: remove charts until the page is within this taste's chart cap
+
+## DT032 taste-series-cap
+
+Severity: warn. Packs: global, cn.
+
+Why: Series count is composition. Marketplace allows two. CN ecommerce allows four.
+
+Triggers: More series on one chart than this taste allows.
+
+Fix: split series into small multiples or drop them under this taste's series cap
+
+## DT033 taste-annotation
+
+Severity: warn. Packs: global, cn.
+
+Why: Editorial data is annotation-first. A bare chart is not that school. Extra notes past the cap are noise.
+
+Triggers: Story annotations are outside this taste's minimum or maximum.
+
+Fix: add or remove graphic labels, mark lines, and named points until the count is inside the taste's range
+
+## DT034 taste-motion
+
+Severity: warn. Packs: global, cn.
+
+Why: These tastes keep marks still. Animation draws attention the number did not earn.
+
+Triggers: Chart animation is on, and this taste keeps motion off.
+
+Fix: set animation: false
+
+## DT035 taste-ground
+
+Severity: warn. Packs: global, cn. Dark grounds fail as an error.
+
+Why: Ops wall is a night ground. Editorial, exec, and marketplace sit on paper. SaaS dense and CN ecommerce allow either.
+
+Triggers: Background luminance disagrees with the taste ground. Dark grounds fail as an error; paper grounds warn.
+
+Fix: use this taste's paper colour, or switch to a taste whose ground matches the page
+
+## DT036 taste-currency
+
+Severity: warn. Packs: global, cn. Runs for global-marketplace.
+
+Why: A marketplace chart that never names a currency is not multi-currency.
+
+Triggers: A value axis is missing a currency mark, and this taste is multi-currency.
+
+Fix: name the axis with a currency symbol or code, such as $, €, £, or ¥
+
+## DT037 taste-funnel
+
+Severity: warn. Packs: global, cn.
+
+Why: CN ecommerce uses a descending GMV funnel. Exec brief does not use a funnel.
+
+Triggers: A funnel breaks this taste's funnel rule: too many funnels, or a stage order that is not descending.
+
+Fix: keep funnel count within the cap and sort stages descending
+
+## DT038 taste-palette
+
+Severity: warn. Packs: global, cn.
+
+Why: The colour cap is the taste's own number. It can be tighter than the rainbow floor.
+
+Triggers: More categorical colours or saturated hue buckets than this taste allows.
+
+Fix: stay inside this taste's colour cap; group the tail as Other
 
 ## Pack defaults
 

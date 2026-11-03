@@ -69,8 +69,8 @@ it('browser error explains CHROME_PATH', () => {
 it('rules lists every id', () => {
   const r = cli('rules');
   expect(r.status).toBe(0);
-  for (let i = 1; i <= 29; i++) expect(r.stdout).toContain(`DT${String(i).padStart(3, '0')}`);
-  expect(JSON.parse(cli('rules', '--format', 'json').stdout)).toHaveLength(29);
+  for (let i = 1; i <= 38; i++) expect(r.stdout).toContain(`DT${String(i).padStart(3, '0')}`);
+  expect(JSON.parse(cli('rules', '--format', 'json').stdout)).toHaveLength(38);
 });
 it('tokens output', () => {
   expect(JSON.parse(cli('tokens', '--pack', 'cn', '--mode', 'dark').stdout).bg).toBe('#121212');
@@ -93,7 +93,7 @@ it('local package executable', () => {
   expect(r.stdout).toContain('DT023');
 });
 
-for (const command of ['check', 'rules', 'tokens']) {
+for (const command of ['check', 'rules', 'tokens', 'tastes', 'example', 'apply', 'mcp']) {
   it(`prints help for ${command} without requiring input`, () => {
     const result = cli(command, '--help');
     expect(result.status).toBe(0);
@@ -102,6 +102,45 @@ for (const command of ['check', 'rules', 'tokens']) {
 }
 it('prints top-level help', () => {
   expect(cli('--help').status).toBe(0);
+});
+
+it('lists tastes and prints a passing example', () => {
+  const listed = cli('tastes');
+  expect(listed.status, listed.stderr).toBe(0);
+  for (const name of [
+    'saas-dense',
+    'exec-brief',
+    'ops-wall',
+    'cn-ecommerce',
+    'global-marketplace',
+    'editorial-data',
+  ])
+    expect(listed.stdout).toContain(name);
+  const tokens = cli('tokens', '--taste', 'editorial-data', '--format', 'json');
+  expect(tokens.status, tokens.stderr).toBe(0);
+  expect(JSON.parse(tokens.stdout).id).toBe('editorial-data');
+  expect(JSON.parse(tokens.stdout).rules).toContain('story annotations');
+  const example = cli('example', '--taste', 'ops-wall');
+  expect(example.status, example.stderr).toBe(0);
+  expect(JSON.parse(example.stdout).backgroundColor).toBe('#101614');
+  const checked = cli(
+    'check',
+    'test/fixtures/tastes/editorial-data.json',
+    '--taste',
+    'editorial-data',
+    '--format',
+    'json',
+  );
+  expect(checked.status, checked.stderr).toBe(0);
+  expect(JSON.parse(checked.stdout).summary.score).toBe(100);
+  expect(JSON.parse(checked.stdout).taste).toBe('editorial-data');
+  expect(cli('check', 'test/fixtures/tastes/rainbow.json', '--taste', 'exec-brief').status).toBe(1);
+  expect(
+    cli('check', 'test/fixtures/good.json', '--pack', 'global', '--taste', 'ops-wall').status,
+  ).toBe(2);
+  expect(cli('example').status).toBe(2);
+  expect(cli('check', 'test/fixtures/good.json', '--taste', 'nope').status).toBe(2);
+  expect(cli('mcp', '--extra').status).toBe(2);
 });
 
 it('pluralises each summary count independently', () => {

@@ -1,0 +1,57 @@
+{
+  "animation": false,
+  "backgroundColor": "#F6F1E8",
+  "color": ["#1C1917"],
+  "legend": {
+    "show": false
+  },
+  "grid": {
+    "left": 40,
+    "right": 132,
+    "top": 16,
+    "bottom": 22
+  },
+  "xAxis": {
+    "type": "category",
+    "data": ["Open", "Peak", "After"],
+    "axisTick": {
+      "show": false
+    }
+  },
+  "yAxis": {
+    "type": "value",
+    "min": 0,
+    "scale": false,
+    "name": "Readers"
+  },
+  "series": [
+    {
+      "type": "line",
+      "name": "Readership",
+      "data": [12, 40, 18],
+      "smooth": false,
+      "showSymbol": true,
+      "symbol": "circle",
+      "symbolSize": 5,
+      "lineStyle": {
+        "width": 2,
+        "color": "#1C1917"
+      },
+      "itemStyle": {
+        "color": "#1C1917"
+      }
+    }
+  ],
+  "graphic": [
+    {
+      "type": "text",
+      "left": 228,
+      "top": 24,
+      "style": {
+        "text": "The spike is the lede.",
+        "fill": "#1C1917",
+        "fontSize": 12
+      }
+    }
+  ]
+}

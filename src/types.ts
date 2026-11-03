@@ -1,4 +1,5 @@
 import type { PackName, Mode, DeltaColors, Polarity, PackOverlay, Pack } from './packs/index.js';
+import type { TasteName } from './tastes.js';
 /** JSON-compatible ECharts options; unknown extension fields are retained. */
 export interface ChartStyle {
   type?: string;
@@ -99,6 +100,7 @@ export interface CheckOptions {
   packOverlay?: PackOverlay;
   resolvedPack?: Pack;
   pack?: PackName;
+  taste?: TasteName;
   mode?: Mode;
   background?: string;
   disable?: string[];
@@ -121,6 +123,6 @@ export interface Rule {
   fix: string;
   check: (
     facts: PageFacts,
-    options: Required<Pick<CheckOptions, 'pack' | 'mode'>> & CheckOptions,
+    options: Required<Pick<CheckOptions, 'pack' | 'mode' | 'taste'>> & CheckOptions,
   ) => Finding[];
 }

@@ -1,7 +1,7 @@
 {
   "name": "dashtaste",
-  "version": "0.0.7",
-  "description": "Stop agents shipping rainbow ECharts dashboards.",
+  "version": "0.0.8",
+  "description": "Pick a named dashboard taste. Stop agents shipping rainbow ECharts.",
   "keywords": [
     "dashboard",
     "echarts",
@@ -14,6 +14,7 @@
     "agent-skills",
     "skills",
     "ai-agents",
+    "mcp",
     "cli"
   ],
   "author": "Felix Fang (https://github.com/FelixFangX)",
@@ -28,7 +29,8 @@
   "license": "MIT",
   "type": "module",
   "bin": {
-    "dashtaste": "dist/cli.js"
+    "dashtaste": "dist/cli.js",
+    "dashtaste-mcp": "dist/mcp/server.js"
   },
   "files": [
     "dist",
@@ -73,5 +75,8 @@
   },
   "optionalDependencies": {
     "playwright-core": "^1.56.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2"
   }
 }

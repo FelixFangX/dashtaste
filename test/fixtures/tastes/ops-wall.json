@@ -1,0 +1,61 @@
+{
+  "animation": false,
+  "backgroundColor": "#101614",
+  "color": ["#3DDC97", "#FF5D73"],
+  "legend": {
+    "show": false
+  },
+  "grid": {
+    "left": 8,
+    "right": 8,
+    "top": 12,
+    "bottom": 20
+  },
+  "xAxis": {
+    "type": "category",
+    "data": ["API", "DB", "Queue", "CDN"],
+    "axisTick": {
+      "show": false
+    }
+  },
+  "yAxis": {
+    "type": "value",
+    "min": 0,
+    "max": 1,
+    "scale": false,
+    "name": "Checks"
+  },
+  "series": [
+    {
+      "type": "bar",
+      "name": "Health",
+      "barMaxWidth": 14,
+      "data": [
+        {
+          "value": 1,
+          "itemStyle": {
+            "color": "#3DDC97"
+          }
+        },
+        {
+          "value": 1,
+          "itemStyle": {
+            "color": "#3DDC97"
+          }
+        },
+        {
+          "value": 0.35,
+          "itemStyle": {
+            "color": "#FF5D73"
+          }
+        },
+        {
+          "value": 1,
+          "itemStyle": {
+            "color": "#3DDC97"
+          }
+        }
+      ]
+    }
+  ]
+}
