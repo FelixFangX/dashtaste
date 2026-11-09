@@ -24,7 +24,7 @@ const help: Record<string, string> = {
   check:
     'Usage: dashtaste check <file|url...> [--taste saas-dense|exec-brief|ops-wall|cn-ecommerce|global-marketplace|editorial-data] [--pack global|cn] [--pack-file path.json] [--mode light|dark] [--format text|json] [--max-warnings N] [--disable DT001,...] [--only DT001,...] [--background #hex]\nCheck options, option arrays, or page facts. --pack global aliases saas-dense. --pack cn aliases cn-ecommerce. With neither flag, the taste is saas-dense. Exit: 0 pass, 1 findings exceed limit, 2 invalid input. Set NO_COLOR to disable ANSI colour; CHROME_PATH selects the browser.',
   rules:
-    'Usage: dashtaste rules [--taste <name>] [--pack global|cn] [--pack-file path.json] [--format text|json]\nList rule metadata in rule order.',
+    'Usage: dashtaste rules [--taste <name>] [--pack global|cn] [--pack-file path.json] [--format text|json]\nList rule metadata in rule order. --taste, --pack, and --pack-file list only the rules check runs for that pack.',
   tokens:
     'Usage: dashtaste tokens [--taste <name>] [--pack global|cn] [--pack-file path.json] [--mode light|dark] [--format json|css]\nPrint a taste (tokens plus composition) or, with --pack, the pack colours.',
   example:
@@ -193,7 +193,8 @@ async function main() {
     return;
   }
   if (command === 'rules') {
-    const selected = rules.filter((r) => (!flags.pack && !packOverlay) || r.packs.includes(pack));
+    const scoped = Boolean(flags.pack || flags.taste || packOverlay);
+    const selected = rules.filter((r) => !scoped || r.packs.includes(pack));
     console.log(
       format === 'json'
         ? JSON.stringify(

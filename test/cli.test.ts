@@ -72,6 +72,58 @@ it('rules lists every id', () => {
   for (let i = 1; i <= 38; i++) expect(r.stdout).toContain(`DT${String(i).padStart(3, '0')}`);
   expect(JSON.parse(cli('rules', '--format', 'json').stdout)).toHaveLength(38);
 });
+it('scopes rules --taste to the pack check will run', () => {
+  const globalRules = cli('rules', '--pack', 'global', '--format', 'json');
+  const cnRules = cli('rules', '--pack', 'cn', '--format', 'json');
+  expect(globalRules.status).toBe(0);
+  expect(cnRules.status).toBe(0);
+  for (const taste of [
+    'saas-dense',
+    'exec-brief',
+    'ops-wall',
+    'global-marketplace',
+    'editorial-data',
+  ])
+    expect(cli('rules', '--taste', taste, '--format', 'json').stdout, taste).toBe(
+      globalRules.stdout,
+    );
+  expect(cli('rules', '--taste', 'cn-ecommerce', '--format', 'json').stdout).toBe(cnRules.stdout);
+  expect(cli('rules', '--taste', 'saas-dense').stdout).not.toContain('DT022');
+  expect(cli('rules').stdout).toContain('DT022');
+
+  const dir = mkdtempSync(join(tmpdir(), 'dashtaste-rules-'));
+  try {
+    const page = join(dir, 'cjk.json');
+    writeFileSync(
+      page,
+      JSON.stringify({
+        charts: [{ option: {} }],
+        texts: [
+          {
+            selector: '.label',
+            text: '销量',
+            color: '#111111',
+            background: '#ffffff',
+            fontSize: 11,
+            fontWeight: 400,
+          },
+        ],
+      }),
+    );
+    const global = JSON.parse(
+      cli('check', page, '--taste', 'saas-dense', '--only', 'DT022', '--format', 'json').stdout,
+    );
+    const cn = JSON.parse(
+      cli('check', page, '--taste', 'cn-ecommerce', '--only', 'DT022', '--format', 'json').stdout,
+    );
+    expect(global.inputs[0].findings).toEqual([]);
+    expect(cn.inputs[0].findings.map((finding: { ruleId: string }) => finding.ruleId)).toEqual([
+      'DT022',
+    ]);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
 it('tokens output', () => {
   expect(JSON.parse(cli('tokens', '--pack', 'cn', '--mode', 'dark').stdout).bg).toBe('#121212');
   expect(cli('tokens', '--pack', 'global', '--format', 'css').stdout).toContain(
