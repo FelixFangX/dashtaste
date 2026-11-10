@@ -10,10 +10,19 @@ import {
 } from '../taste-metrics.js';
 import { rule, series } from './helpers.js';
 
+const tasteRule = (
+  number: Parameters<typeof rule>[0],
+  name: Parameters<typeof rule>[1],
+  severity: Parameters<typeof rule>[2],
+  description: Parameters<typeof rule>[3],
+  fix: Parameters<typeof rule>[4],
+  run: Parameters<typeof rule>[5],
+) => rule(number, name, severity, description, fix, run);
+
 const tasteOf = (context: { taste?: TasteName }) => tasteByName(context.taste ?? 'saas-dense');
 
 /** Rainbow is an error in every taste, not a warning that a pack can waive. */
-export const dt030: Rule = rule(
+export const dt030: Rule = tasteRule(
   30,
   'taste-rainbow',
   'error',
@@ -26,7 +35,7 @@ export const dt030: Rule = rule(
   },
 );
 
-export const dt031: Rule = rule(
+export const dt031: Rule = tasteRule(
   31,
   'taste-chart-cap',
   'warn',
@@ -42,7 +51,7 @@ export const dt031: Rule = rule(
   },
 );
 
-export const dt032: Rule = rule(
+export const dt032: Rule = tasteRule(
   32,
   'taste-series-cap',
   'warn',
@@ -61,7 +70,7 @@ export const dt032: Rule = rule(
   },
 );
 
-export const dt033: Rule = rule(
+export const dt033: Rule = tasteRule(
   33,
   'taste-annotation',
   'warn',
@@ -78,7 +87,7 @@ export const dt033: Rule = rule(
   },
 );
 
-export const dt034: Rule = rule(
+export const dt034: Rule = tasteRule(
   34,
   'taste-motion',
   'warn',
@@ -92,7 +101,7 @@ export const dt034: Rule = rule(
   },
 );
 
-export const dt035: Rule = rule(
+export const dt035: Rule = tasteRule(
   35,
   'taste-ground',
   'warn',
@@ -125,7 +134,7 @@ export const dt035: Rule = rule(
   },
 );
 
-export const dt036: Rule = rule(
+export const dt036: Rule = tasteRule(
   36,
   'taste-currency',
   'warn',
@@ -140,7 +149,7 @@ export const dt036: Rule = rule(
   },
 );
 
-export const dt037: Rule = rule(
+export const dt037: Rule = tasteRule(
   37,
   'taste-funnel',
   'warn',
@@ -161,7 +170,7 @@ export const dt037: Rule = rule(
   },
 );
 
-export const dt038: Rule = rule(
+export const dt038: Rule = tasteRule(
   38,
   'taste-palette',
   'warn',

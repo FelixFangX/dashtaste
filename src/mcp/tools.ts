@@ -1,4 +1,4 @@
-import { check, score, summarize } from '../engine.js';
+import { review } from '../engine.js';
 import { tasteSpecimen } from '../specimens.js';
 import { applyBundle, tasteDocument, writeApply } from '../taste-install.js';
 import {
@@ -44,7 +44,7 @@ export const mcpTools = [
   {
     name: 'check_taste',
     description:
-      'Check an ECharts option, option array, or page-facts envelope against one taste. Defaults to saas-dense. `--pack global` is saas-dense; `--pack cn` is cn-ecommerce. A rainbow palette is an error in every taste.',
+      'Check an ECharts option, option array, or page-facts envelope against one taste. Defaults to saas-dense. `--pack global` is saas-dense; `--pack cn` is cn-ecommerce. disable and only use the same rule ids as the CLI. An unknown id is named in the error. The result includes ruleset, ran, chartsReviewed, and findings with name and basis (constraint, heuristic, or taste). Basis does not change severity. An empty chart list can still score 100; that score is not a quality verdict. A rainbow palette is an error in every taste.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -53,6 +53,8 @@ export const mcpTools = [
         taste: { type: 'string', enum: tasteEnum },
         pack: { type: 'string', enum: ['global', 'cn'] },
         mode: { type: 'string', enum: ['light', 'dark'] },
+        disable: { type: 'array', items: { type: 'string' } },
+        only: { type: 'array', items: { type: 'string' } },
       },
       additionalProperties: false,
     },
@@ -76,6 +78,13 @@ export const mcpTools = [
 function requireTaste(value: unknown, label = 'taste'): TasteName {
   if (typeof value !== 'string' || !isTaste(value))
     throw new Error(value === undefined ? `missing ${label}` : `Unknown taste: ${String(value)}`);
+  return value;
+}
+
+function ruleList(value: unknown, label: string): string[] | undefined {
+  if (value === undefined) return undefined;
+  if (!Array.isArray(value) || value.some((id) => typeof id !== 'string' || id.length === 0))
+    throw new Error(`${label} must be an array of rule IDs`);
   return value;
 }
 
@@ -104,18 +113,13 @@ export async function callTool(name: string, args: Record<string, unknown> = {})
         ...(pack ? { pack } : {}),
         ...(tasteArg ? { taste: tasteArg } : {}),
       });
-      const findings = check(optionFrom(args), {
+      return review(optionFrom(args), {
         ...(pack ? { pack } : {}),
         taste,
         ...(args.mode === 'light' || args.mode === 'dark' ? { mode: args.mode } : {}),
+        disable: ruleList(args.disable, 'disable'),
+        only: ruleList(args.only, 'only'),
       });
-      return {
-        taste,
-        pack: pack ?? tastes[taste].basePack,
-        findings,
-        summary: summarize(findings),
-        score: score(findings),
-      };
     }
     case 'apply_taste': {
       const taste = requireTaste(args.taste);

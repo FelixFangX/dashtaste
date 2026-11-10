@@ -25,6 +25,8 @@ it('json has inputs, score, summary', () => {
   expect(r.status).toBe(1);
   expect(out.version).toBe(JSON.parse(readFileSync('package.json', 'utf8')).version);
   expect(out.inputs[0].score).toBeLessThan(100);
+  expect(out.inputs[0].chartsReviewed).toBeGreaterThan(0);
+  expect(out.inputs[0].note).toBeUndefined();
   expect(out.summary.errors).toBeGreaterThan(0);
 });
 it('only and disable', () => {
@@ -45,6 +47,31 @@ it('only and disable', () => {
     ).status,
   ).toBe(0);
 });
+it('names the unknown rule id', () => {
+  const unknown = cli('check', 'test/fixtures/good.json', '--only', 'DT099,NOPE');
+  expect(unknown.status).toBe(2);
+  expect(unknown.stderr).toContain('unknown rule in only: DT099, NOPE');
+});
+
+it('does not treat an empty chart list as a certified 100', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'dashtaste-empty-'));
+  try {
+    const file = join(dir, 'empty.json');
+    writeFileSync(file, '[]');
+    const json = cli('check', file, '--format', 'json');
+    expect(json.status).toBe(0);
+    const body = JSON.parse(json.stdout);
+    expect(body.summary.score).toBe(100);
+    expect(body.inputs[0].chartsReviewed).toBe(0);
+    expect(body.inputs[0].note).toBe('No charts reviewed. The score is not a quality verdict.');
+    expect(cli('check', file).stdout).toContain(
+      'No charts reviewed. The score is not a quality verdict.',
+    );
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 it('usage and unreadable input exit two', () => {
   for (const args of [
     [],
@@ -71,6 +98,58 @@ it('rules lists every id', () => {
   expect(r.status).toBe(0);
   for (let i = 1; i <= 38; i++) expect(r.stdout).toContain(`DT${String(i).padStart(3, '0')}`);
   expect(JSON.parse(cli('rules', '--format', 'json').stdout)).toHaveLength(38);
+});
+it('scopes rules --taste to the pack check will run', () => {
+  const globalRules = cli('rules', '--pack', 'global', '--format', 'json');
+  const cnRules = cli('rules', '--pack', 'cn', '--format', 'json');
+  expect(globalRules.status).toBe(0);
+  expect(cnRules.status).toBe(0);
+  for (const taste of [
+    'saas-dense',
+    'exec-brief',
+    'ops-wall',
+    'global-marketplace',
+    'editorial-data',
+  ])
+    expect(cli('rules', '--taste', taste, '--format', 'json').stdout, taste).toBe(
+      globalRules.stdout,
+    );
+  expect(cli('rules', '--taste', 'cn-ecommerce', '--format', 'json').stdout).toBe(cnRules.stdout);
+  expect(cli('rules', '--taste', 'saas-dense').stdout).not.toContain('DT022');
+  expect(cli('rules').stdout).toContain('DT022');
+
+  const dir = mkdtempSync(join(tmpdir(), 'dashtaste-rules-'));
+  try {
+    const page = join(dir, 'cjk.json');
+    writeFileSync(
+      page,
+      JSON.stringify({
+        charts: [{ option: {} }],
+        texts: [
+          {
+            selector: '.label',
+            text: '销量',
+            color: '#111111',
+            background: '#ffffff',
+            fontSize: 11,
+            fontWeight: 400,
+          },
+        ],
+      }),
+    );
+    const global = JSON.parse(
+      cli('check', page, '--taste', 'saas-dense', '--only', 'DT022', '--format', 'json').stdout,
+    );
+    const cn = JSON.parse(
+      cli('check', page, '--taste', 'cn-ecommerce', '--only', 'DT022', '--format', 'json').stdout,
+    );
+    expect(global.inputs[0].findings).toEqual([]);
+    expect(cn.inputs[0].findings.map((finding: { ruleId: string }) => finding.ruleId)).toEqual([
+      'DT022',
+    ]);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 });
 it('tokens output', () => {
   expect(JSON.parse(cli('tokens', '--pack', 'cn', '--mode', 'dark').stdout).bg).toBe('#121212');
@@ -134,6 +213,21 @@ it('lists tastes and prints a passing example', () => {
   expect(checked.status, checked.stderr).toBe(0);
   expect(JSON.parse(checked.stdout).summary.score).toBe(100);
   expect(JSON.parse(checked.stdout).taste).toBe('editorial-data');
+  const rainbow = JSON.parse(
+    cli('check', 'test/fixtures/tastes/rainbow.json', '--taste', 'saas-dense', '--format', 'json')
+      .stdout,
+  );
+  expect(rainbow.ruleset).toBe('dt-2026.2');
+  expect(rainbow.ruleset).not.toBe(rainbow.version);
+  expect(rainbow.mode).toBe('light');
+  expect(rainbow.ran).not.toContain('DT022');
+  expect(
+    rainbow.inputs[0].findings.find((finding: { ruleId: string }) => finding.ruleId === 'DT030'),
+  ).toMatchObject({
+    name: 'taste-rainbow',
+    basis: 'taste',
+    path: 'charts[0]',
+  });
   expect(cli('check', 'test/fixtures/tastes/rainbow.json', '--taste', 'exec-brief').status).toBe(1);
   expect(
     cli('check', 'test/fixtures/good.json', '--pack', 'global', '--taste', 'ops-wall').status,
@@ -200,7 +294,11 @@ it('invalid pack files exit two with useful stderr', () => {
         '{"id":"x","extends":"cn","tokens":{"light":{"categorical":[]}}}',
         'categorical',
       ],
-      ['disable.json', '{"id":"x","extends":"cn","disable":["DT999"]}', 'unknown rule'],
+      [
+        'disable.json',
+        '{"id":"x","extends":"cn","disable":["DT999"]}',
+        'unknown rule in disable: DT999',
+      ],
     ] as const) {
       const path = join(dir, name);
       if (content !== undefined) writeFileSync(path, content);

@@ -30,6 +30,13 @@ import { dt022 } from './dt022-cjk-min-size.js';
 import { dt023 } from './dt023-legend-single-series.js';
 import { dt030, dt031, dt032, dt033, dt034, dt035, dt036, dt037, dt038 } from './dt030-taste.js';
 
+/**
+ * Rule behavior version. Independent of the npm package version.
+ * dt-2026.1 is not retained as a runnable engine.
+ * A behavior change needs a new id and a new file in test/fixtures/ruleset/.
+ */
+export const ruleset = 'dt-2026.2';
+
 export const rules: Rule[] = [
   dt001,
   dt002,

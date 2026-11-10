@@ -1,0 +1,1419 @@
+{
+  "ruleset": "dt-2026.2",
+  "synthetic": true,
+  "guards": "Live review() JSON for these cases, and id, name, basis, rationale, severity, and packs for every rule. The comparison is the reports, not a hash of the source.",
+  "doesNotGuard": [
+    "Older ruleset ids are not executable.",
+    "Cases are representative synthetic inputs, not every branch and not captured customer dashboards.",
+    "A score is not a quality certificate.",
+    "Browser copy and rendered pixels are outside this file.",
+    "Editing this file in place under the same ruleset id would hide a behavior change. Replace it only together with a new ruleset id."
+  ],
+  "rules": [
+    {
+      "id": "DT001",
+      "name": "default-palette",
+      "basis": "heuristic",
+      "rationale": "ECharts default colours are a theme. Using them does not make the series false.",
+      "severity": "error",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT002",
+      "name": "rainbow-palette",
+      "basis": "heuristic",
+      "rationale": "Many hues are harder to separate. The chart can still encode the categories.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT003",
+      "name": "smooth-line",
+      "basis": "heuristic",
+      "rationale": "Smoothing can be a legitimate interpolation. A hit is not proof the chart invented data.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT004",
+      "name": "symbols-everywhere",
+      "basis": "heuristic",
+      "rationale": "Point markers are a density choice. A marked series can still be the right chart.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT005",
+      "name": "pie-slices",
+      "basis": "heuristic",
+      "rationale": "A slice cap is a reading aid, not a ban on pies.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT006",
+      "name": "pie-overuse",
+      "basis": "heuristic",
+      "rationale": "Preferring bars is a recommendation. One pie can be the right comparison.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT007",
+      "name": "three-d",
+      "basis": "heuristic",
+      "rationale": "A 3D mark often distorts a 2D comparison, and it is valid for some spatial data. Severity stays error.",
+      "severity": "error",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT008",
+      "name": "dual-axis",
+      "basis": "heuristic",
+      "rationale": "Two value axes can be the right pair of units.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT009",
+      "name": "missing-unit",
+      "basis": "heuristic",
+      "rationale": "A unitless index is a valid axis. Naming the unit is advice.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT010",
+      "name": "bar-baseline",
+      "basis": "constraint",
+      "rationale": "A bar encodes amount by length from zero. A positive min or scale:true changes that ratio.",
+      "severity": "error",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT011",
+      "name": "raw-large-numbers",
+      "basis": "heuristic",
+      "rationale": "Compact formatting is easier to read. The raw values are still the data.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT012",
+      "name": "unit-system",
+      "basis": "heuristic",
+      "rationale": "万/亿 versus K/M is the selected pack convention, not a universal unit.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT013",
+      "name": "delta-convention",
+      "basis": "heuristic",
+      "rationale": "Up and down colours follow a pack or page convention, not a physical fact. Severity stays error.",
+      "severity": "error",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT014",
+      "name": "delta-colour-only",
+      "basis": "constraint",
+      "rationale": "The extracted delta uses hue alone, with no arrow or sign.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT015",
+      "name": "low-contrast-text",
+      "basis": "constraint",
+      "rationale": "Text contrast is below 4.5:1, or below 3:1 for large or bold text, against the colour this rule compares.",
+      "severity": "error",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT016",
+      "name": "thin-line-contrast",
+      "basis": "constraint",
+      "rationale": "The line colour is below 3:1 against the chart background.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT017",
+      "name": "gradient-decoration",
+      "basis": "heuristic",
+      "rationale": "A gradient is decoration, not a broken encoding.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT018",
+      "name": "glow",
+      "basis": "heuristic",
+      "rationale": "Glow is decoration.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT019",
+      "name": "kpi-overload",
+      "basis": "taste",
+      "rationale": "The cap is the selected taste's max KPIs, or a tighter overlay. It is not a universal limit.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT020",
+      "name": "kpi-rainbow",
+      "basis": "heuristic",
+      "rationale": "Several accent colours compete. They do not make a number false.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT021",
+      "name": "emoji-icons",
+      "basis": "heuristic",
+      "rationale": "Emoji are inconsistent iconography, not invalid text.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT022",
+      "name": "cjk-min-size",
+      "basis": "heuristic",
+      "rationale": "12px is this pack's CJK floor, not a universal type minimum.",
+      "severity": "warn",
+      "packs": [
+        "cn"
+      ]
+    },
+    {
+      "id": "DT023",
+      "name": "legend-single-series",
+      "basis": "heuristic",
+      "rationale": "A one-series legend repeats the title. It is still a valid legend.",
+      "severity": "info",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT024",
+      "name": "bar-width",
+      "basis": "heuristic",
+      "rationale": "The pixel cap is a layout preference.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT025",
+      "name": "legend-not-direct-label",
+      "basis": "heuristic",
+      "rationale": "Direct labels are a recommendation for two to four lines.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT026",
+      "name": "line-weight",
+      "basis": "heuristic",
+      "rationale": "Widths outside 1–3px are a house range.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT027",
+      "name": "tabular-numerals",
+      "basis": "heuristic",
+      "rationale": "Tabular figures help alignment. Proportional figures are still the numbers.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT028",
+      "name": "hero-metric",
+      "basis": "heuristic",
+      "rationale": "A size hierarchy is advice about emphasis.",
+      "severity": "info",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT029",
+      "name": "helper-captions",
+      "basis": "heuristic",
+      "rationale": "A narrating caption is redundant here. It is not a false statement.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT030",
+      "name": "taste-rainbow",
+      "basis": "taste",
+      "rationale": "Every named taste treats a rainbow palette as an error for that school.",
+      "severity": "error",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT031",
+      "name": "taste-chart-cap",
+      "basis": "taste",
+      "rationale": "Chart count is compared with the selected taste's cap.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT032",
+      "name": "taste-series-cap",
+      "basis": "taste",
+      "rationale": "Series count is compared with the selected taste's cap.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT033",
+      "name": "taste-annotation",
+      "basis": "taste",
+      "rationale": "Annotation count is compared with the selected taste's range.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT034",
+      "name": "taste-motion",
+      "basis": "taste",
+      "rationale": "Motion on or off follows the selected taste.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT035",
+      "name": "taste-ground",
+      "basis": "taste",
+      "rationale": "Background luminance is compared with the selected taste's ground.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT036",
+      "name": "taste-currency",
+      "basis": "taste",
+      "rationale": "A currency mark is required only by tastes that ask for one.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT037",
+      "name": "taste-funnel",
+      "basis": "taste",
+      "rationale": "Funnel count and stage order follow the selected taste.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    },
+    {
+      "id": "DT038",
+      "name": "taste-palette",
+      "basis": "taste",
+      "rationale": "Colour and hue caps are the selected taste's, and can be tighter than DT002.",
+      "severity": "warn",
+      "packs": [
+        "global",
+        "cn"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "name": "quiet-saas-dense",
+      "synthetic": true,
+      "input": {
+        "animation": false,
+        "backgroundColor": "#ffffff",
+        "legend": {
+          "show": false
+        },
+        "yAxis": {
+          "type": "value",
+          "min": 0,
+          "scale": false,
+          "name": "Orders"
+        },
+        "xAxis": {
+          "type": "category",
+          "data": [
+            "Mon",
+            "Tue"
+          ]
+        },
+        "series": [
+          {
+            "type": "bar",
+            "name": "Orders",
+            "data": [
+              12,
+              18
+            ],
+            "barMaxWidth": 16,
+            "itemStyle": {
+              "color": "#B65A08"
+            }
+          },
+          {
+            "type": "line",
+            "name": "Target",
+            "data": [
+              10,
+              14
+            ],
+            "showSymbol": false,
+            "smooth": false,
+            "lineStyle": {
+              "width": 2,
+              "color": "#243635"
+            },
+            "itemStyle": {
+              "color": "#243635"
+            }
+          }
+        ]
+      },
+      "options": {
+        "taste": "saas-dense",
+        "mode": "light"
+      },
+      "report": {
+        "ruleset": "dt-2026.2",
+        "taste": "saas-dense",
+        "pack": "global",
+        "mode": "light",
+        "ran": [
+          "DT001",
+          "DT002",
+          "DT003",
+          "DT004",
+          "DT005",
+          "DT006",
+          "DT007",
+          "DT008",
+          "DT009",
+          "DT010",
+          "DT011",
+          "DT012",
+          "DT013",
+          "DT014",
+          "DT015",
+          "DT016",
+          "DT017",
+          "DT018",
+          "DT019",
+          "DT020",
+          "DT021",
+          "DT023",
+          "DT024",
+          "DT025",
+          "DT026",
+          "DT027",
+          "DT028",
+          "DT029",
+          "DT030",
+          "DT031",
+          "DT032",
+          "DT033",
+          "DT034",
+          "DT035",
+          "DT036",
+          "DT037",
+          "DT038"
+        ],
+        "chartsReviewed": 1,
+        "findings": [],
+        "summary": {
+          "errors": 0,
+          "warnings": 0,
+          "info": 0,
+          "score": 100
+        },
+        "score": 100
+      }
+    },
+    {
+      "name": "smooth-line",
+      "synthetic": true,
+      "input": {
+        "backgroundColor": "#ffffff",
+        "legend": {
+          "show": false
+        },
+        "yAxis": {
+          "type": "value",
+          "min": 0,
+          "scale": false,
+          "name": "Orders"
+        },
+        "xAxis": {
+          "type": "category",
+          "data": [
+            "Mon",
+            "Tue"
+          ]
+        },
+        "series": [
+          {
+            "type": "line",
+            "name": "Orders",
+            "data": [
+              12,
+              18
+            ],
+            "showSymbol": false,
+            "smooth": true,
+            "lineStyle": {
+              "width": 2,
+              "color": "#243635"
+            },
+            "itemStyle": {
+              "color": "#243635"
+            }
+          }
+        ]
+      },
+      "options": {
+        "taste": "saas-dense",
+        "only": [
+          "DT003"
+        ]
+      },
+      "report": {
+        "ruleset": "dt-2026.2",
+        "taste": "saas-dense",
+        "pack": "global",
+        "mode": "light",
+        "ran": [
+          "DT003"
+        ],
+        "chartsReviewed": 1,
+        "findings": [
+          {
+            "ruleId": "DT003",
+            "name": "smooth-line",
+            "basis": "heuristic",
+            "severity": "warn",
+            "message": "smooth line",
+            "path": "charts[0].series[0]",
+            "fix": "use straight segments: smooth: false"
+          }
+        ],
+        "summary": {
+          "errors": 0,
+          "warnings": 1,
+          "info": 0,
+          "score": 97
+        },
+        "score": 97
+      }
+    },
+    {
+      "name": "straight-line",
+      "synthetic": true,
+      "input": {
+        "backgroundColor": "#ffffff",
+        "legend": {
+          "show": false
+        },
+        "yAxis": {
+          "type": "value",
+          "min": 0,
+          "scale": false,
+          "name": "Orders"
+        },
+        "xAxis": {
+          "type": "category",
+          "data": [
+            "Mon",
+            "Tue"
+          ]
+        },
+        "series": [
+          {
+            "type": "line",
+            "name": "Orders",
+            "data": [
+              12,
+              18
+            ],
+            "showSymbol": false,
+            "smooth": false,
+            "lineStyle": {
+              "width": 2,
+              "color": "#243635"
+            },
+            "itemStyle": {
+              "color": "#243635"
+            }
+          }
+        ]
+      },
+      "options": {
+        "taste": "saas-dense",
+        "only": [
+          "DT003"
+        ]
+      },
+      "report": {
+        "ruleset": "dt-2026.2",
+        "taste": "saas-dense",
+        "pack": "global",
+        "mode": "light",
+        "ran": [
+          "DT003"
+        ],
+        "chartsReviewed": 1,
+        "findings": [],
+        "summary": {
+          "errors": 0,
+          "warnings": 0,
+          "info": 0,
+          "score": 100
+        },
+        "score": 100
+      }
+    },
+    {
+      "name": "symbols",
+      "synthetic": true,
+      "input": {
+        "series": [
+          {
+            "type": "line",
+            "data": [
+              1,
+              2,
+              3,
+              4
+            ]
+          }
+        ]
+      },
+      "options": {
+        "taste": "saas-dense",
+        "only": [
+          "DT004"
+        ]
+      },
+      "report": {
+        "ruleset": "dt-2026.2",
+        "taste": "saas-dense",
+        "pack": "global",
+        "mode": "light",
+        "ran": [
+          "DT004"
+        ],
+        "chartsReviewed": 1,
+        "findings": [
+          {
+            "ruleId": "DT004",
+            "name": "symbols-everywhere",
+            "basis": "heuristic",
+            "severity": "warn",
+            "message": "symbols everywhere",
+            "path": "charts[0].series[0]",
+            "fix": "use dots at most 5px on at most 31 points, or set showSymbol: false"
+          }
+        ],
+        "summary": {
+          "errors": 0,
+          "warnings": 1,
+          "info": 0,
+          "score": 97
+        },
+        "score": 97
+      }
+    },
+    {
+      "name": "symbols-off",
+      "synthetic": true,
+      "input": {
+        "series": [
+          {
+            "type": "line",
+            "data": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "showSymbol": false
+          }
+        ]
+      },
+      "options": {
+        "taste": "saas-dense",
+        "only": [
+          "DT004"
+        ]
+      },
+      "report": {
+        "ruleset": "dt-2026.2",
+        "taste": "saas-dense",
+        "pack": "global",
+        "mode": "light",
+        "ran": [
+          "DT004"
+        ],
+        "chartsReviewed": 1,
+        "findings": [],
+        "summary": {
+          "errors": 0,
+          "warnings": 0,
+          "info": 0,
+          "score": 100
+        },
+        "score": 100
+      }
+    },
+    {
+      "name": "bar-baseline",
+      "synthetic": true,
+      "input": {
+        "yAxis": {
+          "type": "value",
+          "min": 10
+        },
+        "xAxis": {
+          "type": "category",
+          "data": [
+            "a"
+          ]
+        },
+        "series": [
+          {
+            "type": "bar",
+            "data": [
+              12
+            ]
+          }
+        ]
+      },
+      "options": {
+        "taste": "saas-dense",
+        "only": [
+          "DT010"
+        ]
+      },
+      "report": {
+        "ruleset": "dt-2026.2",
+        "taste": "saas-dense",
+        "pack": "global",
+        "mode": "light",
+        "ran": [
+          "DT010"
+        ],
+        "chartsReviewed": 1,
+        "findings": [
+          {
+            "ruleId": "DT010",
+            "name": "bar-baseline",
+            "basis": "constraint",
+            "severity": "error",
+            "message": "bar baseline",
+            "path": "charts[0].yAxis[0]",
+            "fix": "set min: 0 and scale: false"
+          }
+        ],
+        "summary": {
+          "errors": 1,
+          "warnings": 0,
+          "info": 0,
+          "score": 90
+        },
+        "score": 90
+      }
+    },
+    {
+      "name": "text-contrast",
+      "synthetic": true,
+      "input": {
+        "charts": [
+          {
+            "option": {
+              "series": []
+            }
+          }
+        ],
+        "texts": [
+          {
+            "selector": "#kpi",
+            "text": "Label",
+            "color": "#eeeeee",
+            "background": "#ffffff",
+            "fontSize": 14,
+            "fontWeight": 400
+          }
+        ]
+      },
+      "options": {
+        "taste": "saas-dense",
+        "mode": "light",
+        "only": [
+          "DT015"
+        ]
+      },
+      "report": {
+        "ruleset": "dt-2026.2",
+        "taste": "saas-dense",
+        "pack": "global",
+        "mode": "light",
+        "ran": [
+          "DT015"
+        ],
+        "chartsReviewed": 1,
+        "findings": [
+          {
+            "ruleId": "DT015",
+            "name": "low-contrast-text",
+            "basis": "constraint",
+            "severity": "error",
+            "message": "low contrast text",
+            "path": "#kpi",
+            "fix": "increase text contrast against its background"
+          }
+        ],
+        "summary": {
+          "errors": 1,
+          "warnings": 0,
+          "info": 0,
+          "score": 90
+        },
+        "score": 90
+      }
+    },
+    {
+      "name": "cjk-size",
+      "synthetic": true,
+      "input": {
+        "charts": [
+          {
+            "option": {
+              "title": {
+                "text": "销售"
+              }
+            }
+          }
+        ],
+        "texts": [
+          {
+            "selector": "#label",
+            "text": "销售",
+            "color": "#111111",
+            "background": "#ffffff",
+            "fontSize": 11,
+            "fontWeight": 400
+          }
+        ]
+      },
+      "options": {
+        "taste": "cn-ecommerce",
+        "only": [
+          "DT022"
+        ]
+      },
+      "report": {
+        "ruleset": "dt-2026.2",
+        "taste": "cn-ecommerce",
+        "pack": "cn",
+        "mode": "light",
+        "ran": [
+          "DT022"
+        ],
+        "chartsReviewed": 1,
+        "findings": [
+          {
+            "ruleId": "DT022",
+            "name": "cjk-min-size",
+            "basis": "heuristic",
+            "severity": "warn",
+            "message": "cjk min size",
+            "path": "#label",
+            "fix": "set CJK text to at least 12px"
+          }
+        ],
+        "summary": {
+          "errors": 0,
+          "warnings": 1,
+          "info": 0,
+          "score": 97
+        },
+        "score": 97
+      }
+    },
+    {
+      "name": "ops-wall-dark",
+      "synthetic": true,
+      "input": {
+        "backgroundColor": "#ffffff",
+        "series": [
+          {
+            "type": "line",
+            "data": [
+              1,
+              2
+            ],
+            "smooth": false,
+            "showSymbol": false
+          }
+        ]
+      },
+      "options": {
+        "taste": "ops-wall",
+        "only": [
+          "DT035"
+        ]
+      },
+      "report": {
+        "ruleset": "dt-2026.2",
+        "taste": "ops-wall",
+        "pack": "global",
+        "mode": "dark",
+        "ran": [
+          "DT035"
+        ],
+        "chartsReviewed": 1,
+        "findings": [
+          {
+            "ruleId": "DT035",
+            "name": "taste-ground",
+            "basis": "taste",
+            "severity": "error",
+            "message": "ops-wall ground is dark; background luminance is 1.00",
+            "path": "charts[0]",
+            "fix": "use this taste's paper colour, or switch to a taste whose ground matches the page"
+          }
+        ],
+        "summary": {
+          "errors": 1,
+          "warnings": 0,
+          "info": 0,
+          "score": 90
+        },
+        "score": 90
+      }
+    },
+    {
+      "name": "series-cap",
+      "synthetic": true,
+      "input": {
+        "series": [
+          {
+            "type": "line",
+            "data": [
+              1,
+              2
+            ]
+          },
+          {
+            "type": "line",
+            "data": [
+              2,
+              3
+            ]
+          }
+        ]
+      },
+      "options": {
+        "taste": "exec-brief",
+        "mode": "light",
+        "only": [
+          "DT032"
+        ]
+      },
+      "report": {
+        "ruleset": "dt-2026.2",
+        "taste": "exec-brief",
+        "pack": "global",
+        "mode": "light",
+        "ran": [
+          "DT032"
+        ],
+        "chartsReviewed": 1,
+        "findings": [
+          {
+            "ruleId": "DT032",
+            "name": "taste-series-cap",
+            "basis": "taste",
+            "severity": "warn",
+            "message": "exec-brief allows 1 series on a chart; this chart has 2",
+            "path": "charts[0]",
+            "fix": "split series into small multiples or drop them under this taste's series cap"
+          }
+        ],
+        "summary": {
+          "errors": 0,
+          "warnings": 1,
+          "info": 0,
+          "score": 97
+        },
+        "score": 97
+      }
+    },
+    {
+      "name": "currency",
+      "synthetic": true,
+      "input": {
+        "yAxis": {
+          "type": "value",
+          "name": "Orders"
+        },
+        "series": [
+          {
+            "type": "line",
+            "data": [
+              1,
+              2
+            ]
+          }
+        ]
+      },
+      "options": {
+        "taste": "global-marketplace",
+        "only": [
+          "DT036"
+        ]
+      },
+      "report": {
+        "ruleset": "dt-2026.2",
+        "taste": "global-marketplace",
+        "pack": "global",
+        "mode": "light",
+        "ran": [
+          "DT036"
+        ],
+        "chartsReviewed": 1,
+        "findings": [
+          {
+            "ruleId": "DT036",
+            "name": "taste-currency",
+            "basis": "taste",
+            "severity": "warn",
+            "message": "value axis has no currency mark",
+            "path": "charts[0]",
+            "fix": "name the axis with a currency symbol or code, such as $, €, £, or ¥"
+          }
+        ],
+        "summary": {
+          "errors": 0,
+          "warnings": 1,
+          "info": 0,
+          "score": 97
+        },
+        "score": 97
+      }
+    },
+    {
+      "name": "only-and-disable",
+      "synthetic": true,
+      "input": {
+        "animation": true,
+        "backgroundColor": "#ffffff",
+        "legend": {
+          "show": false
+        },
+        "yAxis": {
+          "type": "value",
+          "min": 0,
+          "scale": false,
+          "name": "Orders"
+        },
+        "xAxis": {
+          "type": "category",
+          "data": [
+            "Mon",
+            "Tue"
+          ]
+        },
+        "series": [
+          {
+            "type": "line",
+            "name": "Orders",
+            "data": [
+              12,
+              18
+            ],
+            "showSymbol": false,
+            "smooth": true,
+            "lineStyle": {
+              "width": 2,
+              "color": "#243635"
+            },
+            "itemStyle": {
+              "color": "#243635"
+            }
+          }
+        ]
+      },
+      "options": {
+        "taste": "saas-dense",
+        "only": [
+          "DT003",
+          "DT034"
+        ],
+        "disable": [
+          "DT003"
+        ]
+      },
+      "report": {
+        "ruleset": "dt-2026.2",
+        "taste": "saas-dense",
+        "pack": "global",
+        "mode": "light",
+        "ran": [
+          "DT034"
+        ],
+        "chartsReviewed": 1,
+        "findings": [
+          {
+            "ruleId": "DT034",
+            "name": "taste-motion",
+            "basis": "taste",
+            "severity": "warn",
+            "message": "animation is on",
+            "path": "charts[0]",
+            "fix": "set animation: false"
+          }
+        ],
+        "summary": {
+          "errors": 0,
+          "warnings": 1,
+          "info": 0,
+          "score": 97
+        },
+        "score": 97
+      }
+    },
+    {
+      "name": "outside-pack",
+      "synthetic": true,
+      "input": {
+        "backgroundColor": "#ffffff",
+        "legend": {
+          "show": false
+        },
+        "yAxis": {
+          "type": "value",
+          "min": 0,
+          "scale": false,
+          "name": "Orders"
+        },
+        "xAxis": {
+          "type": "category",
+          "data": [
+            "Mon",
+            "Tue"
+          ]
+        },
+        "series": [
+          {
+            "type": "line",
+            "name": "Orders",
+            "data": [
+              12,
+              18
+            ],
+            "showSymbol": false,
+            "smooth": false,
+            "lineStyle": {
+              "width": 2,
+              "color": "#243635"
+            },
+            "itemStyle": {
+              "color": "#243635"
+            }
+          }
+        ]
+      },
+      "options": {
+        "taste": "saas-dense",
+        "only": [
+          "DT022"
+        ]
+      },
+      "report": {
+        "ruleset": "dt-2026.2",
+        "taste": "saas-dense",
+        "pack": "global",
+        "mode": "light",
+        "ran": [],
+        "chartsReviewed": 1,
+        "findings": [],
+        "summary": {
+          "errors": 0,
+          "warnings": 0,
+          "info": 0,
+          "score": 100
+        },
+        "score": 100
+      }
+    },
+    {
+      "name": "empty-charts",
+      "synthetic": true,
+      "input": [],
+      "options": {
+        "taste": "saas-dense"
+      },
+      "report": {
+        "ruleset": "dt-2026.2",
+        "taste": "saas-dense",
+        "pack": "global",
+        "mode": "light",
+        "ran": [
+          "DT001",
+          "DT002",
+          "DT003",
+          "DT004",
+          "DT005",
+          "DT006",
+          "DT007",
+          "DT008",
+          "DT009",
+          "DT010",
+          "DT011",
+          "DT012",
+          "DT013",
+          "DT014",
+          "DT015",
+          "DT016",
+          "DT017",
+          "DT018",
+          "DT019",
+          "DT020",
+          "DT021",
+          "DT023",
+          "DT024",
+          "DT025",
+          "DT026",
+          "DT027",
+          "DT028",
+          "DT029",
+          "DT030",
+          "DT031",
+          "DT032",
+          "DT033",
+          "DT034",
+          "DT035",
+          "DT036",
+          "DT037",
+          "DT038"
+        ],
+        "chartsReviewed": 0,
+        "findings": [],
+        "summary": {
+          "errors": 0,
+          "warnings": 0,
+          "info": 0,
+          "score": 100
+        },
+        "score": 100,
+        "note": "No charts reviewed. The score is not a quality verdict."
+      }
+    },
+    {
+      "name": "three-d",
+      "synthetic": true,
+      "input": {
+        "series": [
+          {
+            "type": "bar3D"
+          }
+        ]
+      },
+      "options": {
+        "taste": "saas-dense",
+        "only": [
+          "DT007"
+        ]
+      },
+      "report": {
+        "ruleset": "dt-2026.2",
+        "taste": "saas-dense",
+        "pack": "global",
+        "mode": "light",
+        "ran": [
+          "DT007"
+        ],
+        "chartsReviewed": 1,
+        "findings": [
+          {
+            "ruleId": "DT007",
+            "name": "three-d",
+            "basis": "heuristic",
+            "severity": "error",
+            "message": "three d",
+            "path": "charts[0]",
+            "fix": "use flat 2D charts"
+          }
+        ],
+        "summary": {
+          "errors": 1,
+          "warnings": 0,
+          "info": 0,
+          "score": 90
+        },
+        "score": 90
+      }
+    },
+    {
+      "name": "delta-convention",
+      "synthetic": true,
+      "input": {
+        "charts": [],
+        "deltas": [
+          {
+            "selector": "#delta",
+            "text": "▲ 3%",
+            "color": "#B4413A"
+          }
+        ]
+      },
+      "options": {
+        "taste": "saas-dense",
+        "only": [
+          "DT013"
+        ]
+      },
+      "report": {
+        "ruleset": "dt-2026.2",
+        "taste": "saas-dense",
+        "pack": "global",
+        "mode": "light",
+        "ran": [
+          "DT013"
+        ],
+        "chartsReviewed": 0,
+        "findings": [
+          {
+            "ruleId": "DT013",
+            "name": "delta-convention",
+            "basis": "heuristic",
+            "severity": "error",
+            "message": "delta convention",
+            "path": "#delta",
+            "fix": "apply one deltaColors convention to the whole page"
+          }
+        ],
+        "summary": {
+          "errors": 1,
+          "warnings": 0,
+          "info": 0,
+          "score": 90
+        },
+        "score": 90
+      }
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { readFile } from 'node:fs/promises';
-import { check, summarize, score } from './engine.js';
+import { assertKnownRules, review, summarize } from './engine.js';
 import { rules } from './rules/index.js';
 import {
   getResolvedPack,
@@ -22,9 +22,9 @@ const help: Record<string, string> = {
   tastes:
     'Usage: dashtaste tastes [--format text|json]\nList the six named tastes, their schools, and the rules the checker enforces.',
   check:
-    'Usage: dashtaste check <file|url...> [--taste saas-dense|exec-brief|ops-wall|cn-ecommerce|global-marketplace|editorial-data] [--pack global|cn] [--pack-file path.json] [--mode light|dark] [--format text|json] [--max-warnings N] [--disable DT001,...] [--only DT001,...] [--background #hex]\nCheck options, option arrays, or page facts. --pack global aliases saas-dense. --pack cn aliases cn-ecommerce. With neither flag, the taste is saas-dense. Exit: 0 pass, 1 findings exceed limit, 2 invalid input. Set NO_COLOR to disable ANSI colour; CHROME_PATH selects the browser.',
+    'Usage: dashtaste check <file|url...> [--taste saas-dense|exec-brief|ops-wall|cn-ecommerce|global-marketplace|editorial-data] [--pack global|cn] [--pack-file path.json] [--mode light|dark] [--format text|json] [--max-warnings N] [--disable DT001,...] [--only DT001,...] [--background #hex]\nCheck options, option arrays, or page facts. --pack global aliases saas-dense. --pack cn aliases cn-ecommerce. With neither flag, the taste is saas-dense. Exit: 0 pass, 1 findings exceed limit, 2 invalid input. JSON adds ruleset, mode, ran, and chartsReviewed. A finding adds name and basis (constraint, heuristic, or taste). Basis does not change the exit code. An unknown rule id is named in the error. An empty chart list still scores from the findings and says that no charts were reviewed. Set NO_COLOR to disable ANSI colour; CHROME_PATH selects the browser.',
   rules:
-    'Usage: dashtaste rules [--taste <name>] [--pack global|cn] [--pack-file path.json] [--format text|json]\nList rule metadata in rule order.',
+    'Usage: dashtaste rules [--taste <name>] [--pack global|cn] [--pack-file path.json] [--format text|json]\nList rule metadata in rule order. --taste, --pack, and --pack-file list only the rules check runs for that pack.',
   tokens:
     'Usage: dashtaste tokens [--taste <name>] [--pack global|cn] [--pack-file path.json] [--mode light|dark] [--format json|css]\nPrint a taste (tokens plus composition) or, with --pack, the pack colours.',
   example:
@@ -132,8 +132,7 @@ async function main() {
     ? await (async () => {
         try {
           const overlay = parsePackOverlay(JSON.parse(await readFile(flags['pack-file'], 'utf8')));
-          if (overlay.disable?.some((id) => !rules.some((rule) => rule.id === id)))
-            throw new Error('unknown rule in disable');
+          assertKnownRules(overlay.disable, 'disable');
           return overlay;
         } catch (error) {
           throw new Error(
@@ -193,7 +192,8 @@ async function main() {
     return;
   }
   if (command === 'rules') {
-    const selected = rules.filter((r) => (!flags.pack && !packOverlay) || r.packs.includes(pack));
+    const scoped = Boolean(flags.pack || flags.taste || packOverlay);
+    const selected = rules.filter((r) => !scoped || r.packs.includes(pack));
     console.log(
       format === 'json'
         ? JSON.stringify(
@@ -201,7 +201,9 @@ async function main() {
             null,
             2,
           )
-        : selected.map((r) => `${r.id}  ${r.severity}  ${r.name}  ${r.description}`).join('\n'),
+        : selected
+            .map((r) => `${r.id}  ${r.severity}  ${r.name}  ${r.basis}  ${r.description}`)
+            .join('\n'),
     );
     return;
   }
@@ -212,8 +214,7 @@ async function main() {
   const ids = (key: string) => {
     if (!flags[key]) return undefined;
     const values = flags[key].split(',');
-    if (values.some((id) => !rules.some((r) => r.id === id)))
-      throw new Error(`unknown rule in --${key}`);
+    assertKnownRules(values, key);
     return values;
   };
   const disable = ids('disable'),
@@ -224,7 +225,11 @@ async function main() {
     input: string;
     findings: Finding[];
     score: number;
+    chartsReviewed: number;
+    note?: string;
   }[] = [];
+  let ruleset = '';
+  let ran: string[] = [];
   for (const input of inputs) {
     let data: unknown;
     if (/^https?:\/\//i.test(input) || /\.html?$/i.test(input)) data = await extractPage(input);
@@ -235,7 +240,7 @@ async function main() {
         throw new Error(`cannot read JSON input ${input}: ${(error as Error).message}`);
       }
     }
-    const findings = check(data, {
+    const report = review(data, {
       ...(requestedPack ? { pack: requestedPack } : {}),
       taste,
       packOverlay,
@@ -244,7 +249,15 @@ async function main() {
       only,
       background: flags.background,
     });
-    results.push({ input, findings, score: score(findings) });
+    ruleset = report.ruleset;
+    ran = report.ran;
+    results.push({
+      input,
+      findings: report.findings,
+      score: report.score,
+      chartsReviewed: report.chartsReviewed,
+      ...(report.note ? { note: report.note } : {}),
+    });
   }
   const summary = summarize(results.flatMap((r) => r.findings));
   if (format === 'json')
@@ -252,8 +265,11 @@ async function main() {
       JSON.stringify(
         {
           version,
+          ruleset,
           pack,
           taste,
+          mode,
+          ran,
           ...(packOverlay ? { packFile: packOverlay.id } : {}),
           inputs: results,
           summary,
@@ -266,12 +282,13 @@ async function main() {
     const tty = process.stdout.isTTY && process.env.NO_COLOR === undefined;
     for (const result of results) {
       console.log(result.input);
+      if (result.note) console.log(`  ${result.note}`);
       for (const f of result.findings) {
         const label = tty
           ? `\x1b[${f.severity === 'error' ? 31 : f.severity === 'warn' ? 33 : 36}m${f.severity}\x1b[0m`
           : f.severity;
         console.log(
-          `  ${label}  ${f.ruleId}  ${f.path}  ${f.message}  → ${f.fix.replace('<pack>', pack)}`,
+          `  ${label}  ${f.ruleId}  ${f.name}  ${f.basis}  ${f.path}  ${f.message}  → ${f.fix.replace('<pack>', pack)}`,
         );
       }
     }

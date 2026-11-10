@@ -1,12 +1,12 @@
 import type { Rule } from '../types.js';
 import { asArray, series, rule, charts } from './helpers.js';
 
-/** Use small explicit dots only on short series; avoid default symbols everywhere. */
+/** Default markers are flagged. A marked series can still be the right chart. */
 export const dt004: Rule = rule(
   4,
   'symbols-everywhere',
   'warn',
-  'Use small explicit dots only on short series; avoid default symbols everywhere.',
+  'Default point markers are flagged. A marked series can still be the right chart.',
   'use dots at most 5px on at most 31 points, or set showSymbol: false',
   function check(facts, context, emit) {
     charts(facts, (option, path) =>

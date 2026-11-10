@@ -107,8 +107,17 @@ export interface CheckOptions {
   only?: string[];
 }
 export type Severity = 'error' | 'warn' | 'info';
+/**
+ * constraint: a measured encoding or contrast failure.
+ * heuristic: presentation advice. A hit is not proof the chart is invalid.
+ * taste: the selected named school would compose the page differently.
+ * Basis does not change severity or the process exit code.
+ */
+export type RuleBasis = 'constraint' | 'heuristic' | 'taste';
 export interface Finding {
   ruleId: string;
+  name: string;
+  basis: RuleBasis;
   severity: Severity;
   message: string;
   path: string;
@@ -117,6 +126,8 @@ export interface Finding {
 export interface Rule {
   id: string;
   name: string;
+  basis: RuleBasis;
+  rationale: string;
   severity: Severity;
   packs: PackName[];
   description: string;

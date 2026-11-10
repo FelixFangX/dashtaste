@@ -90,7 +90,7 @@ The extractor inspects visible DOM text; canvas text is checked through options.
 | `--background`   | check         | three- or six-digit hex colour                 |
 | `--help`         | all           | command-specific usage                         |
 
-`--disable` takes precedence over `--only`. Unknown rule IDs are input errors.
+`--disable` takes precedence over `--only`. Unknown rule IDs are input errors, and the message names each unknown id.
 `--background` overrides chart, page, and pack backgrounds for contrast checks.
 `tokens` requires `--taste`, `--pack`, or `--pack-file`. `--taste` prints tokens plus the composition rules. `--pack` still prints that pack's colours.
 
@@ -98,10 +98,14 @@ Exit 0 means no errors and warnings within the selected limit.
 Exit 1 means errors or too many warnings.
 Exit 2 means invalid arguments, unreadable input, or unavailable extraction.
 Set `NO_COLOR` to suppress ANSI colour in text output.
-JSON output contains version, pack, taste, per-input findings and scores, and summary.
-Each finding contains ruleId, severity, message, path, and fix.
+JSON output contains version, ruleset, pack, taste, mode, ran, per-input findings, chartsReviewed, and summary.
+`ruleset` (`dt-2026.2`) versions rule behavior. It does not change when the npm package version changes, and a package bump does not by itself change it. `dt-2026.1` is not a runnable engine.
+`test/fixtures/ruleset/dt-2026.2.json` is the reviewed baseline. The test runs `review()` on those synthetic cases and compares the JSON, and it compares every rule's id, name, basis, rationale, severity, and packs. It does not hash the source. It fails when the live result differs. Accepting a difference means a new ruleset id and a new file. The file does not cover every branch, captured customer dashboards, browser pixels, or older ruleset ids.
+`ran` lists the rule ids that executed, in registry order, after pack, `--disable`, and `--only`. A known id outside the selected pack is skipped. An unknown id is an input error and the message names that id, for example `unknown rule in only: DT099`.
+Each finding contains ruleId, name, basis (`constraint`, `heuristic`, or `taste`), severity, message, path, and fix. The rationale lives on the rule, from `dashtaste rules`, not on every finding.
+`constraint` is a measured encoding or contrast failure: bar length from a non-zero baseline (DT010), direction by colour alone (DT014), text contrast (DT015), and line contrast (DT016). `heuristic` is presentation advice. A smooth line (DT003) and point markers (DT004) are heuristic: they can be legitimate charts. `taste` is the selected named school, including the KPI cap (DT019) and DT030–DT038. Basis does not change severity or the exit code. The checker does not rewrite series or data.
 Score starts at 100: subtract 10 per error, 3 per warning, and 1 per info.
-The minimum score is zero.
+The minimum score is zero. An empty chart list still scores 100, because the score counts findings, and the result adds `chartsReviewed: 0` and `No charts reviewed. The score is not a quality verdict.` A score of 100 with charts reviewed means no findings, not a usability study.
 
 ## Inspect metadata and tokens
 
@@ -116,7 +120,7 @@ npx dashtaste apply --taste saas-dense --out ./taste
 npx dashtaste mcp
 ```
 
-`mcp` starts a stdio server. It exposes `list_tastes`, `taste_tokens`, `taste_example`, `check_taste`, and `apply_taste`. Those tools call the same catalog, checker, and apply bundle as the CLI. The default taste is `saas-dense`.
+`mcp` starts a stdio server. It exposes `list_tastes`, `taste_tokens`, `taste_example`, `check_taste`, and `apply_taste`. Those tools call the same catalog, checker, and apply bundle as the CLI. The default taste is `saas-dense`. `check_taste` accepts `disable` and `only` as arrays of rule ids.
 
 The cn pack includes screen composition settings for a 1920×1080 artboard.
 Screen composition uses dark tokens and `--mode dark`; it is not a third CLI mode.
