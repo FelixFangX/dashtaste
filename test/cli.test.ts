@@ -25,6 +25,8 @@ it('json has inputs, score, summary', () => {
   expect(r.status).toBe(1);
   expect(out.version).toBe(JSON.parse(readFileSync('package.json', 'utf8')).version);
   expect(out.inputs[0].score).toBeLessThan(100);
+  expect(out.inputs[0].chartsReviewed).toBeGreaterThan(0);
+  expect(out.inputs[0].note).toBeUndefined();
   expect(out.summary.errors).toBeGreaterThan(0);
 });
 it('only and disable', () => {
@@ -45,6 +47,31 @@ it('only and disable', () => {
     ).status,
   ).toBe(0);
 });
+it('names the unknown rule id', () => {
+  const unknown = cli('check', 'test/fixtures/good.json', '--only', 'DT099,NOPE');
+  expect(unknown.status).toBe(2);
+  expect(unknown.stderr).toContain('unknown rule in only: DT099, NOPE');
+});
+
+it('does not treat an empty chart list as a certified 100', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'dashtaste-empty-'));
+  try {
+    const file = join(dir, 'empty.json');
+    writeFileSync(file, '[]');
+    const json = cli('check', file, '--format', 'json');
+    expect(json.status).toBe(0);
+    const body = JSON.parse(json.stdout);
+    expect(body.summary.score).toBe(100);
+    expect(body.inputs[0].chartsReviewed).toBe(0);
+    expect(body.inputs[0].note).toBe('No charts reviewed. The score is not a quality verdict.');
+    expect(cli('check', file).stdout).toContain(
+      'No charts reviewed. The score is not a quality verdict.',
+    );
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 it('usage and unreadable input exit two', () => {
   for (const args of [
     [],
@@ -190,7 +217,7 @@ it('lists tastes and prints a passing example', () => {
     cli('check', 'test/fixtures/tastes/rainbow.json', '--taste', 'saas-dense', '--format', 'json')
       .stdout,
   );
-  expect(rainbow.ruleset).toBe('dt-2026.1');
+  expect(rainbow.ruleset).toBe('dt-2026.2');
   expect(rainbow.ruleset).not.toBe(rainbow.version);
   expect(rainbow.mode).toBe('light');
   expect(rainbow.ran).not.toContain('DT022');
@@ -267,7 +294,11 @@ it('invalid pack files exit two with useful stderr', () => {
         '{"id":"x","extends":"cn","tokens":{"light":{"categorical":[]}}}',
         'categorical',
       ],
-      ['disable.json', '{"id":"x","extends":"cn","disable":["DT999"]}', 'unknown rule'],
+      [
+        'disable.json',
+        '{"id":"x","extends":"cn","disable":["DT999"]}',
+        'unknown rule in disable: DT999',
+      ],
     ] as const) {
       const path = join(dir, name);
       if (content !== undefined) writeFileSync(path, content);

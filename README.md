@@ -66,20 +66,20 @@ That fixture prints:
 
 ```text
 test/fixtures/bad.json
-  error  DT001  charts[0]  default ECharts palette  → set option.color to the pack palette (dashtaste tokens --pack global)
-  warn  DT003  charts[0].series[1]  smooth line  → use straight segments: smooth: false
-  warn  DT004  charts[0].series[1]  symbols everywhere  → use dots at most 5px on at most 31 points, or set showSymbol: false
-  warn  DT009  charts[0].yAxis[0]  missing unit  → put units in axis names, rendered ticks, or formatter metadata
-  error  DT010  charts[0].yAxis[0]  bar baseline  → set min: 0 and scale: false
-  warn  DT011  charts[0].yAxis[0].axisLabel  raw large numbers  → format compact units: cn 万/亿; global K/M
-  warn  DT011  charts[0].tooltip  raw large numbers  → format compact units: cn 万/亿; global K/M
-  warn  DT024  charts[0].series[0]  bar width  → set barMaxWidth to 24 or less; use 32 or less on screens
+  error  DT001  default-palette  heuristic  charts[0]  default ECharts palette  → set option.color to the pack palette (dashtaste tokens --pack global)
+  warn  DT003  smooth-line  heuristic  charts[0].series[1]  smooth line  → use straight segments: smooth: false
+  warn  DT004  symbols-everywhere  heuristic  charts[0].series[1]  symbols everywhere  → use dots at most 5px on at most 31 points, or set showSymbol: false
+  warn  DT009  missing-unit  heuristic  charts[0].yAxis[0]  missing unit  → put units in axis names, rendered ticks, or formatter metadata
+  error  DT010  bar-baseline  constraint  charts[0].yAxis[0]  bar baseline  → set min: 0 and scale: false
+  warn  DT011  raw-large-numbers  heuristic  charts[0].yAxis[0].axisLabel  raw large numbers  → format compact units: cn 万/亿; global K/M
+  warn  DT011  raw-large-numbers  heuristic  charts[0].tooltip  raw large numbers  → format compact units: cn 万/亿; global K/M
+  warn  DT024  bar-width  heuristic  charts[0].series[0]  bar width  → set barMaxWidth to 24 or less; use 32 or less on screens
 2 errors, 6 warnings · score 62/100 · saas-dense
 ```
 
-Exit 0 when there are no errors and warnings are within `--max-warnings` (no limit by default). Exit 1 when any finding is an error, or warnings exceed that limit. Exit 2 when the file or the flags are invalid. Info findings change the score and leave the exit code at 0. `--format json` prints `{ version, ruleset, pack, taste, mode, ran, inputs, summary }`. `ruleset` is the rule behavior version and is not the npm version. `ran` is the rule ids that executed, in registry order. Each finding has `ruleId`, `name`, `basis` (`constraint` or `taste`), `severity`, `message`, `path`, and `fix`. Any rule can be skipped with `--disable`.
+Exit 0 when there are no errors and warnings are within `--max-warnings` (no limit by default). Exit 1 when any finding is an error, or warnings exceed that limit. Exit 2 when the file or the flags are invalid. Info findings change the score and leave the exit code at 0. `--format json` prints `{ version, ruleset, pack, taste, mode, ran, inputs, summary }`. `ruleset` (`dt-2026.2`) is the rule behavior version and is not the npm version. `dt-2026.1` is not a runnable engine. `ran` is the rule ids that executed, in registry order. Each finding has `ruleId`, `name`, `basis` (`constraint`, `heuristic`, or `taste`), `severity`, `message`, `path`, and `fix`. `constraint` is a measured encoding or contrast failure. A smooth line is `heuristic`: interpolation can be legitimate. `taste` follows the selected school. Basis does not change severity or the exit code. An unknown rule id is named in the error. Any rule can be skipped with `--disable`.
 
-The score starts at 100. Each error subtracts 10, each warning 3, each info 1, with a floor of 0.
+The score starts at 100. Each error subtracts 10, each warning 3, each info 1, with a floor of 0. An empty chart list still scores 100 and says that no charts were reviewed. That score is not a quality verdict.
 
 ```ts
 import { check } from 'dashtaste';

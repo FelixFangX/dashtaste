@@ -1,4 +1,4 @@
-import { copy, ruleCopy } from './locale.js';
+import { basisCopy, copy, emptyChartsNote, zhFix, zhMessage } from './locale.js';
 const requested = new URLSearchParams(location.search).get('lang');
 let saved;
 try {
@@ -91,7 +91,7 @@ for (const button of document.querySelectorAll('[data-example]')) {
 document.querySelector('[data-example]').click();
 document.documentElement.style.visibility = '';
 try {
-  const { check, summarize, tasteNames, tastes, tasteSpecimen, defaultKnobs } =
+  const { check, review, summarize, tasteNames, tastes, tasteSpecimen, defaultKnobs } =
     await import('/dist/engine.js');
   const catalog = document.getElementById('catalog');
   let selected = $('taste').value;
@@ -375,13 +375,18 @@ try {
     $('findings').replaceChildren();
     try {
       const input = JSON.parse($('options').value);
-      const findings = check(input, { taste: $('taste').value });
-      const totals = summarize(findings);
+      const report = review(input, { taste: $('taste').value });
+      const totals = report.summary;
       $('summary').textContent = tr(
         `${totals.errors} errors · ${totals.warnings} warnings · ${totals.info} info`,
         `${totals.errors} 项错误 · ${totals.warnings} 项警告 · ${totals.info} 项提示`,
       );
-      if (!findings.length) {
+      if (report.note) {
+        const p = document.createElement('p');
+        p.className = 'muted';
+        p.textContent = report.note === emptyChartsNote[0] ? tr(...emptyChartsNote) : report.note;
+        $('findings').append(p);
+      } else if (!report.findings.length) {
         const p = document.createElement('p');
         p.className = 'muted';
         p.textContent = tr(
@@ -390,7 +395,7 @@ try {
         );
         $('findings').append(p);
       }
-      for (const finding of findings) {
+      for (const finding of report.findings) {
         const item = document.createElement('article');
         item.className = 'finding';
         const top = document.createElement('div');
@@ -405,15 +410,14 @@ try {
         top.append(severity, rule);
         if (finding.basis) {
           const basis = document.createElement('span');
-          basis.textContent = finding.basis;
+          basis.textContent = zh ? (basisCopy[finding.basis] ?? finding.basis) : finding.basis;
           top.append(basis);
         }
-        const localized = ruleCopy[Number(finding.ruleId.slice(2)) - 1];
         const message = document.createElement('p');
-        message.textContent = zh && localized ? localized[0] : finding.message;
+        message.textContent = zh ? zhMessage(finding) : finding.message;
         const fix = document.createElement('p');
         fix.className = 'fix';
-        fix.textContent = `↳ ${zh && localized ? localized[1] : finding.fix}`;
+        fix.textContent = `↳ ${zh ? zhFix(finding) : finding.fix}`;
         const path = document.createElement('code');
         path.textContent = finding.path;
         item.append(top, message, fix, path);

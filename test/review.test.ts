@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { check, review, ruleset } from '../src/engine.js';
+import { check, emptyChartsNote, review, ruleset } from '../src/engine.js';
 import type { Option } from '../src/types.js';
 
 /** Synthetic bar and line. Not a captured customer dashboard. */
@@ -39,7 +39,9 @@ describe('review', () => {
     const report = review(option, { taste: 'saas-dense' });
     expect(JSON.stringify(option)).toBe(before);
     expect(report.ruleset).toBe(ruleset);
-    expect(report.ruleset).toBe('dt-2026.1');
+    expect(report.ruleset).toBe('dt-2026.2');
+    expect(report.chartsReviewed).toBe(1);
+    expect(report.note).toBeUndefined();
     expect(report.ruleset).not.toBe(JSON.parse(readFileSync('package.json', 'utf8')).version);
     expect(report.taste).toBe('saas-dense');
     expect(report.pack).toBe('global');
@@ -53,7 +55,7 @@ describe('review', () => {
     expect(check(option, { taste: 'saas-dense' })).toEqual(report.findings);
   });
 
-  it('separates a constraint from a taste finding on one chart', () => {
+  it('treats a smooth line as advice and keeps the taste finding separate', () => {
     const option = mixed();
     option.animation = true;
     const line = (option.series as Option[])[1];
@@ -61,7 +63,7 @@ describe('review', () => {
     const report = review(option, { taste: 'saas-dense' });
     expect(report.findings.find((finding) => finding.ruleId === 'DT003')).toMatchObject({
       name: 'smooth-line',
-      basis: 'constraint',
+      basis: 'heuristic',
       severity: 'warn',
       path: 'charts[0].series[1]',
       message: 'smooth line',
@@ -74,9 +76,10 @@ describe('review', () => {
       message: 'animation is on',
       fix: 'set animation: false',
     });
-    expect(
-      report.findings.filter((finding) => finding.basis === 'constraint').map((f) => f.ruleId),
-    ).toEqual(['DT003']);
+    expect(report.findings.some((finding) => finding.basis === 'constraint')).toBe(false);
+    expect(report.score).toBe(
+      100 - 3 * report.findings.filter((f) => f.severity === 'warn').length,
+    );
     for (const finding of report.findings) {
       expect(finding.path.length).toBeGreaterThan(0);
       expect(finding.fix.length).toBeGreaterThan(0);
@@ -92,8 +95,10 @@ describe('review', () => {
     ).not.toContain('DT003');
     expect(review(option, { taste: 'saas-dense', only: ['DT003'] }).ran).toEqual(['DT003']);
     expect(review(option, { taste: 'saas-dense', only: ['DT022'] }).ran).toEqual([]);
-    expect(() => check(option, { only: ['DT099'] })).toThrow(/unknown rule in only/);
-    expect(() => review(option, { disable: ['NOPE'] })).toThrow(/unknown rule in disable/);
+    expect(() => check(option, { only: ['DT099', 'NOPE', 'DT099'] })).toThrow(
+      'unknown rule in only: DT099, NOPE',
+    );
+    expect(() => review(option, { disable: ['NOPE'] })).toThrow('unknown rule in disable: NOPE');
   });
 
   it('does not call formatter functions or overflow on a cyclic option', () => {
@@ -116,5 +121,14 @@ describe('review', () => {
     const cyclic = mixed();
     (cyclic.series as Option[])[0].loop = cyclic;
     expect(() => check(cyclic, { only: ['DT007'] })).not.toThrow();
+  });
+
+  it('keeps a score of 100 for an empty list and says no charts were reviewed', () => {
+    const report = review([], { taste: 'saas-dense' });
+    expect(report.score).toBe(100);
+    expect(report.findings).toEqual([]);
+    expect(report.chartsReviewed).toBe(0);
+    expect(report.note).toBe(emptyChartsNote);
+    expect(report.summary.score).toBe(100);
   });
 });

@@ -1,14 +1,7 @@
 import { rgb } from '../color.js';
 import { getResolvedPack } from '../packs/index.js';
-import type {
-  Rule,
-  Option,
-  PageFacts,
-  CheckOptions,
-  Finding,
-  Severity,
-  RuleBasis,
-} from '../types.js';
+import type { Rule, Option, PageFacts, CheckOptions, Finding, Severity } from '../types.js';
+import { ruleBasis } from './basis.js';
 
 export function asArray<T>(value: T | T[] | null | undefined): T[] {
   if (value == null) return [];
@@ -134,7 +127,7 @@ export const defaultColors = new Set([
 export type Context = Required<Pick<CheckOptions, 'pack' | 'mode' | 'taste'>> & CheckOptions;
 export type Emit = (path: string, message?: string, severity?: Severity) => void;
 
-/** Keep finding metadata and default messages consistent across all rule checks. */
+/** Keep finding metadata and default messages consistent across all rule checks. Basis comes only from ruleBasis. */
 export function rule(
   number: number,
   name: string,
@@ -143,13 +136,16 @@ export function rule(
   fix: string,
   run: (facts: PageFacts, context: Context, emit: Emit) => void,
   cnOnly = false,
-  basis: RuleBasis = 'constraint',
 ): Rule {
   const id = `DT${String(number).padStart(3, '0')}`;
+  const classified = ruleBasis[id];
+  if (!classified) throw new Error(`missing basis for ${id}`);
+  const { basis, rationale } = classified;
   return {
     id,
     name,
     basis,
+    rationale,
     severity,
     packs: cnOnly ? ['cn'] : ['global', 'cn'],
     description,

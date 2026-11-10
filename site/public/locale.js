@@ -74,4 +74,52 @@ export const ruleCopy = [
   ['指标数字宽度不一致', '设置 font-variant-numeric: tabular-nums。'],
   ['主要指标不够突出', '主要指标字号至少为其他指标中位数的 1.6 倍。'],
   ['说明文字重复了图表已有信息', '删去重复说明，只保留指标名称和数值。'],
+  ['彩虹配色', '改用这一品味的分类色，把多余分类并成「其他」。'],
+  ['图表数量超过这一品味的上限', '删到不超过这一品味的图表数量。'],
+  ['系列数量超过这一品味的上限', '拆成小图，或减到这一品味允许的系列数。'],
+  ['标注数量不在这一品味的范围内', '增删标注，使数量落在这一品味的范围内。'],
+  ['开了动画', '设置 animation: false。'],
+  ['背景亮度与这一品味的底色不符', '改用这一品味的纸色，或换一个底色匹配的品味。'],
+  ['数值轴没有货币标记', '在轴名称里写上货币符号或代码，例如 $、€、£、¥。'],
+  ['漏斗数量或顺序不符合这一品味', '漏斗数量不超过上限，阶段从高到低排列。'],
+  ['颜色数量超过这一品味的上限', '颜色数量留在这一品味的上限内，多余分类并成「其他」。'],
 ];
+
+/** English is the stable identifier. Chinese is display copy. Rule ids and names stay as-is. */
+export const basisCopy = {
+  constraint: '约束',
+  heuristic: '建议',
+  taste: '品味',
+};
+
+export const emptyChartsNote = [
+  'No charts reviewed. The score is not a quality verdict.',
+  '未检查任何图表。100 分不是质量结论。',
+];
+
+const groundCopy = { dark: '深色', paper: '纸色' };
+
+/** Keep taste ids and numbers. Fall back to the static row when the English message is the short form. */
+export function zhMessage(finding) {
+  const message = finding.message;
+  let match = message.match(/^([\w-]+) allows (\d+) charts?; this page has (\d+)$/);
+  if (match) return `${match[1]} 最多 ${match[2]} 张图，这一页有 ${match[3]} 张`;
+  match = message.match(/^([\w-]+) allows (\d+) series on a chart; this chart has (\d+)$/);
+  if (match) return `${match[1]} 单图最多 ${match[2]} 条系列，这一图有 ${match[3]} 条`;
+  match = message.match(/^([\w-]+) allows (\d+)[–-](\d+) story annotations; this page has (\d+)$/);
+  if (match) return `${match[1]} 允许 ${match[2]}–${match[3]} 处标注，这一页有 ${match[4]} 处`;
+  match = message.match(/^([\w-]+) ground is (\w+); background luminance is ([\d.]+)$/);
+  if (match)
+    return `${match[1]} 的底色是 ${groundCopy[match[2]] ?? match[2]}，背景亮度是 ${match[3]}`;
+  match = message.match(/^([\w-]+) allows (\d+) funnels; this page has (\d+)$/);
+  if (match) return `${match[1]} 最多 ${match[2]} 个漏斗，这一页有 ${match[3]} 个`;
+  match = message.match(/^([\w-]+) allows (\d+) colours and (\d+) hue buckets$/);
+  if (match) return `${match[1]} 最多 ${match[2]} 种颜色、${match[3]} 个色相段`;
+  const row = ruleCopy[Number(String(finding.ruleId).slice(2)) - 1];
+  return row ? row[0] : message;
+}
+
+export function zhFix(finding) {
+  const row = ruleCopy[Number(String(finding.ruleId).slice(2)) - 1];
+  return row ? row[1] : finding.fix;
+}

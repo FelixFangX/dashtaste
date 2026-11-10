@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { readFile } from 'node:fs/promises';
-import { review, summarize } from './engine.js';
+import { assertKnownRules, review, summarize } from './engine.js';
 import { rules } from './rules/index.js';
 import {
   getResolvedPack,
@@ -22,7 +22,7 @@ const help: Record<string, string> = {
   tastes:
     'Usage: dashtaste tastes [--format text|json]\nList the six named tastes, their schools, and the rules the checker enforces.',
   check:
-    'Usage: dashtaste check <file|url...> [--taste saas-dense|exec-brief|ops-wall|cn-ecommerce|global-marketplace|editorial-data] [--pack global|cn] [--pack-file path.json] [--mode light|dark] [--format text|json] [--max-warnings N] [--disable DT001,...] [--only DT001,...] [--background #hex]\nCheck options, option arrays, or page facts. --pack global aliases saas-dense. --pack cn aliases cn-ecommerce. With neither flag, the taste is saas-dense. Exit: 0 pass, 1 findings exceed limit, 2 invalid input. JSON adds ruleset, mode, and ran. A finding adds name and basis (constraint or taste). Set NO_COLOR to disable ANSI colour; CHROME_PATH selects the browser.',
+    'Usage: dashtaste check <file|url...> [--taste saas-dense|exec-brief|ops-wall|cn-ecommerce|global-marketplace|editorial-data] [--pack global|cn] [--pack-file path.json] [--mode light|dark] [--format text|json] [--max-warnings N] [--disable DT001,...] [--only DT001,...] [--background #hex]\nCheck options, option arrays, or page facts. --pack global aliases saas-dense. --pack cn aliases cn-ecommerce. With neither flag, the taste is saas-dense. Exit: 0 pass, 1 findings exceed limit, 2 invalid input. JSON adds ruleset, mode, ran, and chartsReviewed. A finding adds name and basis (constraint, heuristic, or taste). Basis does not change the exit code. An unknown rule id is named in the error. An empty chart list still scores from the findings and says that no charts were reviewed. Set NO_COLOR to disable ANSI colour; CHROME_PATH selects the browser.',
   rules:
     'Usage: dashtaste rules [--taste <name>] [--pack global|cn] [--pack-file path.json] [--format text|json]\nList rule metadata in rule order. --taste, --pack, and --pack-file list only the rules check runs for that pack.',
   tokens:
@@ -132,8 +132,7 @@ async function main() {
     ? await (async () => {
         try {
           const overlay = parsePackOverlay(JSON.parse(await readFile(flags['pack-file'], 'utf8')));
-          if (overlay.disable?.some((id) => !rules.some((rule) => rule.id === id)))
-            throw new Error('unknown rule in disable');
+          assertKnownRules(overlay.disable, 'disable');
           return overlay;
         } catch (error) {
           throw new Error(
@@ -215,8 +214,7 @@ async function main() {
   const ids = (key: string) => {
     if (!flags[key]) return undefined;
     const values = flags[key].split(',');
-    if (values.some((id) => !rules.some((r) => r.id === id)))
-      throw new Error(`unknown rule in --${key}`);
+    assertKnownRules(values, key);
     return values;
   };
   const disable = ids('disable'),
@@ -227,6 +225,8 @@ async function main() {
     input: string;
     findings: Finding[];
     score: number;
+    chartsReviewed: number;
+    note?: string;
   }[] = [];
   let ruleset = '';
   let ran: string[] = [];
@@ -251,7 +251,13 @@ async function main() {
     });
     ruleset = report.ruleset;
     ran = report.ran;
-    results.push({ input, findings: report.findings, score: report.score });
+    results.push({
+      input,
+      findings: report.findings,
+      score: report.score,
+      chartsReviewed: report.chartsReviewed,
+      ...(report.note ? { note: report.note } : {}),
+    });
   }
   const summary = summarize(results.flatMap((r) => r.findings));
   if (format === 'json')
@@ -276,6 +282,7 @@ async function main() {
     const tty = process.stdout.isTTY && process.env.NO_COLOR === undefined;
     for (const result of results) {
       console.log(result.input);
+      if (result.note) console.log(`  ${result.note}`);
       for (const f of result.findings) {
         const label = tty
           ? `\x1b[${f.severity === 'error' ? 31 : f.severity === 'warn' ? 33 : 36}m${f.severity}\x1b[0m`

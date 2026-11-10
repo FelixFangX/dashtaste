@@ -2,6 +2,7 @@
 
 Run checks with the intended pack and mode. Page-only rules require extracted page facts.
 Errors reduce score by 10, warnings by 3, and information by 1; the minimum score is zero.
+Basis is separate from severity. `constraint` is a measured encoding or contrast failure. `heuristic` is presentation advice, including a smooth line or point markers. `taste` is the selected named school. An error can still be advice. `dashtaste rules --format json` prints the basis and the rationale.
 
 ## DT001 default-palette
 
@@ -62,9 +63,9 @@ Minimal failing input:
 
 Severity: warn. Packs: global, cn.
 
-Why: Curves can imply observations that were never measured.
+Why: A smooth segment is an interpolation. It can be legitimate, and it is still flagged.
 
-Triggers: Line smoothing greater than zero draws values that do not exist.
+Triggers: A smooth line is flagged. Interpolation can be legitimate; a hit is not proof the chart invented data.
 
 Fix: use straight segments: smooth: false.
 
@@ -91,9 +92,9 @@ Minimal failing input:
 
 Severity: warn. Packs: global, cn.
 
-Why: Repeated symbols obscure the line on longer time series.
+Why: Default markers add ink. A marked series can still be the right chart.
 
-Triggers: Use small explicit dots only on short series; avoid default symbols everywhere.
+Triggers: Default point markers are flagged. A marked series can still be the right chart.
 
 Fix: use dots at most 5px on at most 31 points, or set showSymbol: false.
 

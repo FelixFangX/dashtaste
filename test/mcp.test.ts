@@ -113,13 +113,14 @@ describe('MCP tools', () => {
     })) as {
       ruleset: string;
       ran: string[];
-      findings: { ruleId: string; basis: string; name: string; path: string }[];
+      findings: { ruleId: string; basis: string; name: string; path: string; severity: string }[];
     };
-    expect(report.ruleset).toBe('dt-2026.1');
+    expect(report.ruleset).toBe('dt-2026.2');
     expect(report.ran).not.toContain('DT022');
     expect(report.findings.find((finding) => finding.ruleId === 'DT003')).toMatchObject({
       name: 'smooth-line',
-      basis: 'constraint',
+      basis: 'heuristic',
+      severity: 'warn',
       path: 'charts[0].series[0]',
     });
     expect(report.findings.find((finding) => finding.ruleId === 'DT034')?.basis).toBe('taste');
@@ -138,7 +139,7 @@ describe('MCP tools', () => {
     })) as { ran: string[] };
     expect(only.ran).toEqual(['DT003']);
     await expect(callTool('check_taste', { option: smooth, only: ['DT099'] })).rejects.toThrow(
-      /unknown rule in only/,
+      'unknown rule in only: DT099',
     );
     await expect(callTool('check_taste', { option: smooth, disable: 'DT003' })).rejects.toThrow(
       /disable must be an array/,

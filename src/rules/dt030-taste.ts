@@ -17,7 +17,7 @@ const tasteRule = (
   description: Parameters<typeof rule>[3],
   fix: Parameters<typeof rule>[4],
   run: Parameters<typeof rule>[5],
-) => rule(number, name, severity, description, fix, run, false, 'taste');
+) => rule(number, name, severity, description, fix, run);
 
 const tasteOf = (context: { taste?: TasteName }) => tasteByName(context.taste ?? 'saas-dense');
 

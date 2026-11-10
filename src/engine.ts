@@ -23,9 +23,16 @@ export function normalizeInput(input: unknown): PageFacts {
 export function assertKnownRules(ids: readonly string[] | undefined, label: string): void {
   if (!ids?.length) return;
   const known = new Set(rules.map((rule) => rule.id));
-  const unknown = ids.filter((id) => !known.has(id));
-  if (unknown.length) throw new Error(`unknown rule in ${label}`);
+  const unknown: string[] = [];
+  for (const id of ids) if (!known.has(id) && !unknown.includes(id)) unknown.push(id);
+  if (unknown.length)
+    throw new Error(
+      `unknown rule in ${label}: ${unknown.map((id) => (id === '' ? '""' : id)).join(', ')}`,
+    );
 }
+
+/** Shown when the input contains no chart and no finding. The score is still the finding formula. */
+export const emptyChartsNote = 'No charts reviewed. The score is not a quality verdict.';
 
 function prepare(input: unknown, options: CheckOptions) {
   assertKnownRules(options.disable, 'disable');
@@ -67,9 +74,11 @@ export interface Review {
   pack: PackName;
   mode: Mode;
   ran: string[];
+  chartsReviewed: number;
   findings: Finding[];
   summary: ReturnType<typeof summarize>;
   score: number;
+  note?: string;
 }
 
 /** Same selection and findings as check, plus the ruleset and the rule ids that ran. */
@@ -77,15 +86,18 @@ export function review(input: unknown, options: CheckOptions = {}): Review {
   const { facts, settings, selected } = prepare(input, options);
   const findings = selected.flatMap((rule) => rule.check(facts, settings));
   const summary = summarize(findings);
+  const chartsReviewed = facts.charts.length;
   return {
     ruleset,
     taste: settings.taste,
     pack: settings.pack,
     mode: settings.mode,
     ran: selected.map((rule) => rule.id),
+    chartsReviewed,
     findings,
     summary,
     score: summary.score,
+    ...(chartsReviewed === 0 && findings.length === 0 ? { note: emptyChartsNote } : {}),
   };
 }
 /** Score = 100 - 10 * errors - 3 * warnings - info, floored at zero. */

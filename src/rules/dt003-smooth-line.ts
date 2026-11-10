@@ -1,12 +1,12 @@
 import type { Rule } from '../types.js';
 import { series, rule, charts } from './helpers.js';
 
-/** Line smoothing greater than zero draws values that do not exist. */
+/** Smoothing is flagged. Interpolation can still be legitimate. */
 export const dt003: Rule = rule(
   3,
   'smooth-line',
   'warn',
-  'Line smoothing greater than zero draws values that do not exist.',
+  'A smooth line is flagged. Interpolation can be legitimate; a hit is not proof the chart invented data.',
   'use straight segments: smooth: false',
   function check(facts, context, emit) {
     charts(facts, (option, path) =>

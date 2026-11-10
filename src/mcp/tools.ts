@@ -44,7 +44,7 @@ export const mcpTools = [
   {
     name: 'check_taste',
     description:
-      'Check an ECharts option, option array, or page-facts envelope against one taste. Defaults to saas-dense. `--pack global` is saas-dense; `--pack cn` is cn-ecommerce. disable and only use the same rule ids as the CLI. The result includes ruleset, ran, and findings with name and basis. A rainbow palette is an error in every taste.',
+      'Check an ECharts option, option array, or page-facts envelope against one taste. Defaults to saas-dense. `--pack global` is saas-dense; `--pack cn` is cn-ecommerce. disable and only use the same rule ids as the CLI. An unknown id is named in the error. The result includes ruleset, ran, chartsReviewed, and findings with name and basis (constraint, heuristic, or taste). Basis does not change severity. An empty chart list can still score 100; that score is not a quality verdict. A rainbow palette is an error in every taste.',
     inputSchema: {
       type: 'object',
       properties: {
