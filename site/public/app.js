@@ -401,8 +401,13 @@ try {
           ? { error: '错误', warn: '警告', info: '提示' }[finding.severity]
           : finding.severity;
         const rule = document.createElement('span');
-        rule.textContent = finding.ruleId;
+        rule.textContent = finding.name ? `${finding.ruleId} ${finding.name}` : finding.ruleId;
         top.append(severity, rule);
+        if (finding.basis) {
+          const basis = document.createElement('span');
+          basis.textContent = finding.basis;
+          top.append(basis);
+        }
         const localized = ruleCopy[Number(finding.ruleId.slice(2)) - 1];
         const message = document.createElement('p');
         message.textContent = zh && localized ? localized[0] : finding.message;

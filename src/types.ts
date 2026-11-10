@@ -107,8 +107,12 @@ export interface CheckOptions {
   only?: string[];
 }
 export type Severity = 'error' | 'warn' | 'info';
+/** constraint: the chart is misleading or unreadable. taste: a named school would compose it differently. */
+export type RuleBasis = 'constraint' | 'taste';
 export interface Finding {
   ruleId: string;
+  name: string;
+  basis: RuleBasis;
   severity: Severity;
   message: string;
   path: string;
@@ -117,6 +121,7 @@ export interface Finding {
 export interface Rule {
   id: string;
   name: string;
+  basis: RuleBasis;
   severity: Severity;
   packs: PackName[];
   description: string;

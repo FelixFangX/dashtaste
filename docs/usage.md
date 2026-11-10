@@ -98,8 +98,11 @@ Exit 0 means no errors and warnings within the selected limit.
 Exit 1 means errors or too many warnings.
 Exit 2 means invalid arguments, unreadable input, or unavailable extraction.
 Set `NO_COLOR` to suppress ANSI colour in text output.
-JSON output contains version, pack, taste, per-input findings and scores, and summary.
-Each finding contains ruleId, severity, message, path, and fix.
+JSON output contains version, ruleset, pack, taste, mode, ran, per-input findings and scores, and summary.
+`ruleset` (`dt-2026.1`) versions rule behavior. It does not change when the npm package version changes, and a package bump does not by itself change it.
+`ran` lists the rule ids that executed, in registry order, after pack, `--disable`, and `--only`. A known id outside the selected pack is skipped. An unknown id is an input error.
+Each finding contains ruleId, name, basis (`constraint` or `taste`), severity, message, path, and fix.
+`constraint` means the chart is misleading or hard to read. `taste` means the named school would compose it differently. DT030–DT038 are taste rules. The checker does not rewrite series or data.
 Score starts at 100: subtract 10 per error, 3 per warning, and 1 per info.
 The minimum score is zero.
 
@@ -116,7 +119,7 @@ npx dashtaste apply --taste saas-dense --out ./taste
 npx dashtaste mcp
 ```
 
-`mcp` starts a stdio server. It exposes `list_tastes`, `taste_tokens`, `taste_example`, `check_taste`, and `apply_taste`. Those tools call the same catalog, checker, and apply bundle as the CLI. The default taste is `saas-dense`.
+`mcp` starts a stdio server. It exposes `list_tastes`, `taste_tokens`, `taste_example`, `check_taste`, and `apply_taste`. Those tools call the same catalog, checker, and apply bundle as the CLI. The default taste is `saas-dense`. `check_taste` accepts `disable` and `only` as arrays of rule ids.
 
 The cn pack includes screen composition settings for a 1920×1080 artboard.
 Screen composition uses dark tokens and `--mode dark`; it is not a third CLI mode.

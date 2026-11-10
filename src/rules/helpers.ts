@@ -1,6 +1,14 @@
 import { rgb } from '../color.js';
 import { getResolvedPack } from '../packs/index.js';
-import type { Rule, Option, PageFacts, CheckOptions, Finding, Severity } from '../types.js';
+import type {
+  Rule,
+  Option,
+  PageFacts,
+  CheckOptions,
+  Finding,
+  Severity,
+  RuleBasis,
+} from '../types.js';
 
 export function asArray<T>(value: T | T[] | null | undefined): T[] {
   if (value == null) return [];
@@ -64,11 +72,18 @@ export function allColors(option: Option): string[] {
   return colors.filter((color): color is string => typeof color === 'string');
 }
 
-export function walk(value: unknown, visit: (key: string, value: unknown) => void): void {
+/** Visit each object once. A cyclic option cannot overflow, and a shared child is seen on its first path. */
+export function walk(
+  value: unknown,
+  visit: (key: string, value: unknown) => void,
+  seen: WeakSet<object> = new WeakSet(),
+): void {
   if (!value || typeof value !== 'object') return;
+  if (seen.has(value)) return;
+  seen.add(value);
   for (const [key, child] of Object.entries(value)) {
     visit(key, child);
-    walk(child, visit);
+    walk(child, visit, seen);
   }
 }
 
@@ -128,11 +143,13 @@ export function rule(
   fix: string,
   run: (facts: PageFacts, context: Context, emit: Emit) => void,
   cnOnly = false,
+  basis: RuleBasis = 'constraint',
 ): Rule {
   const id = `DT${String(number).padStart(3, '0')}`;
   return {
     id,
     name,
+    basis,
     severity,
     packs: cnOnly ? ['cn'] : ['global', 'cn'],
     description,
@@ -140,7 +157,7 @@ export function rule(
     check(facts, context) {
       const findings: Finding[] = [];
       const emit: Emit = (path, message = name.replaceAll('-', ' '), level = severity) => {
-        findings.push({ ruleId: id, severity: level, message, path, fix });
+        findings.push({ ruleId: id, name, basis, severity: level, message, path, fix });
       };
       run(facts, context, emit);
       return findings;

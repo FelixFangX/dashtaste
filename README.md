@@ -77,7 +77,7 @@ test/fixtures/bad.json
 2 errors, 6 warnings · score 62/100 · saas-dense
 ```
 
-Exit 0 when there are no errors and warnings are within `--max-warnings` (no limit by default). Exit 1 when any finding is an error, or warnings exceed that limit. Exit 2 when the file or the flags are invalid. Info findings change the score and leave the exit code at 0. `--format json` prints `{ version, pack, taste, inputs, summary }`. Each finding has `ruleId`, `severity`, `message`, `path`, and `fix`. Any rule can be skipped with `--disable`.
+Exit 0 when there are no errors and warnings are within `--max-warnings` (no limit by default). Exit 1 when any finding is an error, or warnings exceed that limit. Exit 2 when the file or the flags are invalid. Info findings change the score and leave the exit code at 0. `--format json` prints `{ version, ruleset, pack, taste, mode, ran, inputs, summary }`. `ruleset` is the rule behavior version and is not the npm version. `ran` is the rule ids that executed, in registry order. Each finding has `ruleId`, `name`, `basis` (`constraint` or `taste`), `severity`, `message`, `path`, and `fix`. Any rule can be skipped with `--disable`.
 
 The score starts at 100. Each error subtracts 10, each warning 3, each info 1, with a floor of 0.
 

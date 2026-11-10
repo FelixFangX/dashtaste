@@ -186,6 +186,21 @@ it('lists tastes and prints a passing example', () => {
   expect(checked.status, checked.stderr).toBe(0);
   expect(JSON.parse(checked.stdout).summary.score).toBe(100);
   expect(JSON.parse(checked.stdout).taste).toBe('editorial-data');
+  const rainbow = JSON.parse(
+    cli('check', 'test/fixtures/tastes/rainbow.json', '--taste', 'saas-dense', '--format', 'json')
+      .stdout,
+  );
+  expect(rainbow.ruleset).toBe('dt-2026.1');
+  expect(rainbow.ruleset).not.toBe(rainbow.version);
+  expect(rainbow.mode).toBe('light');
+  expect(rainbow.ran).not.toContain('DT022');
+  expect(
+    rainbow.inputs[0].findings.find((finding: { ruleId: string }) => finding.ruleId === 'DT030'),
+  ).toMatchObject({
+    name: 'taste-rainbow',
+    basis: 'taste',
+    path: 'charts[0]',
+  });
   expect(cli('check', 'test/fixtures/tastes/rainbow.json', '--taste', 'exec-brief').status).toBe(1);
   expect(
     cli('check', 'test/fixtures/good.json', '--pack', 'global', '--taste', 'ops-wall').status,

@@ -89,6 +89,62 @@ describe('MCP tools', () => {
     }
   });
 
+  it('filters check_taste the same way as the CLI and names the basis', async () => {
+    const smooth = {
+      animation: true,
+      backgroundColor: '#ffffff',
+      legend: { show: false },
+      yAxis: { type: 'value', min: 0, scale: false, name: 'Orders' },
+      xAxis: { type: 'category', data: ['Mon', 'Tue'] },
+      series: [
+        {
+          type: 'line',
+          data: [1, 2],
+          smooth: true,
+          showSymbol: false,
+          lineStyle: { width: 2, color: '#243635' },
+          itemStyle: { color: '#243635' },
+        },
+      ],
+    };
+    const report = (await callTool('check_taste', {
+      taste: 'saas-dense',
+      option: smooth,
+    })) as {
+      ruleset: string;
+      ran: string[];
+      findings: { ruleId: string; basis: string; name: string; path: string }[];
+    };
+    expect(report.ruleset).toBe('dt-2026.1');
+    expect(report.ran).not.toContain('DT022');
+    expect(report.findings.find((finding) => finding.ruleId === 'DT003')).toMatchObject({
+      name: 'smooth-line',
+      basis: 'constraint',
+      path: 'charts[0].series[0]',
+    });
+    expect(report.findings.find((finding) => finding.ruleId === 'DT034')?.basis).toBe('taste');
+    const disabled = (await callTool('check_taste', {
+      taste: 'saas-dense',
+      option: smooth,
+      disable: ['DT003', 'DT034'],
+    })) as { findings: { ruleId: string }[] };
+    expect(disabled.findings.map((finding) => finding.ruleId)).not.toEqual(
+      expect.arrayContaining(['DT003', 'DT034']),
+    );
+    const only = (await callTool('check_taste', {
+      taste: 'saas-dense',
+      option: smooth,
+      only: ['DT003'],
+    })) as { ran: string[] };
+    expect(only.ran).toEqual(['DT003']);
+    await expect(callTool('check_taste', { option: smooth, only: ['DT099'] })).rejects.toThrow(
+      /unknown rule in only/,
+    );
+    await expect(callTool('check_taste', { option: smooth, disable: 'DT003' })).rejects.toThrow(
+      /disable must be an array/,
+    );
+  });
+
   it('rejects an unknown tool and a disagreeing pack', async () => {
     await expect(callTool('preview_place')).rejects.toThrow(/Unknown tool/);
     await expect(

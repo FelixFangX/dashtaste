@@ -343,6 +343,7 @@ select {
 }
 .finding-top {
   display: flex;
+  flex-wrap: wrap;
   gap: 9px;
   font:
     10px Mono,
