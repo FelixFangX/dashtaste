@@ -1,5 +1,5 @@
-Coding agents scaffold dashboards in minutes. The look often repeats: rainbow pies, smooth lines with a dot on every point, bar axes that don't start at 0, emoji KPI rows.
+Coding agents ship the same default rainbow ECharts look everywhere: smooth lines with dots on every point, truncated bar axes, rainbow pies, emoji KPI rows.
 
-Dashtaste turns taste into a checkable loop — style skills first, then `npx dashtaste check`.
+Dashtaste lets you pick a named taste and check against 38 rules.
 
-https://github.com/FelixFangX/dashtaste
+https://dashtaste.ledring.dev

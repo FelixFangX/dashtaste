@@ -1,1 +1,1 @@
-Show HN: Dashtaste – agent skills + a linter so AI dashboards stop looking default
+Show HN: Dashtaste – named dashboard tastes + a linter for agent-built ECharts
