@@ -1,17 +1,18 @@
-Hi HN. Coding agents can scaffold a dashboard quickly, but the look tends to repeat: default or rainbow palettes, smoothed lines with markers on every point, many-slice pies, gradients/glows, a legend for a single series, a row of coloured KPI cards with emoji. None of that fails tests, so nothing pushes back.
+Hi HN. Coding agents can scaffold an ECharts dashboard in minutes, but they ship the same default rainbow look everywhere: default palettes, smoothed lines with dots on every point, many-slice pies, gradients/glows, a legend for a single series, a row of coloured KPI cards with emoji. None of that fails tests, so nothing pushes back.
 
-Dashtaste makes taste a checkable loop on the same conventions:
+Dashtaste turns dashboard taste into a checkable loop instead of one shared palette:
 
-1. Style-pack skills (`dashtaste-global` / `dashtaste-cn`) the agent loads before building — palette, type, spacing, number formatting, chart defaults.
-2. `npx dashtaste check` — lints an ECharts JSON config or a rendered page (local Chromium + optional `playwright-core`) against 28 rules. Findings include config path + suggested fix, a 0–100 score (−10 error / −3 warning / −1 info), and JSON output for agent/CI loops. Any rule can be `--disable`d.
+1. Six named tastes (`saas-dense`, `exec-brief`, `ops-wall`, `cn-ecommerce`, `global-marketplace`, `editorial-data`). Each taste is a layout plus explicit caps (chart/series limits, ground tone, motion, currency/unit rules, annotations). Locale matters too: `saas-dense` (`--pack global`) uses green-up and K/M/B; `cn-ecommerce` (`--pack cn`) uses red-up, 万/亿, and 1920×1080 screen rules. Custom teams can extend a pack with `--pack-file`.
+2. `npx dashtaste check dashboard.json --taste saas-dense` — lints an ECharts JSON option, option array, or rendered page (local Chromium + optional `playwright-core`) against 38 rules (`DT001`–`DT038`, ruleset `dt-2026.2`). Every finding carries a config path, suggested fix, and a `basis` (`constraint`, `heuristic`, or `taste`) so hard encoding/contrast errors stay distinct from stylistic heuristics and school rules. Scores start at 100 (−10 error / −3 warning / −1 info), with JSON output and `--disable` / `--only` for agent/CI loops.
+3. Agent integration: install the selector skill (`npx skills add FelixFangX/dashtaste --skill dashtaste`) or connect the stdio MCP server (`npx -y dashtaste mcp` — tools: `list_tastes`, `taste_tokens`, `taste_example`, `check_taste`, `apply_taste`).
 
-Locale packs matter: Western green-up/red-down and K/M/B vs Chinese red-up/green-down and 万/亿, plus 1920×1080 “big screen” composition on the cn side. Same rule IDs; the pack changes what “correct” means.
+The live demo (https://dashtaste.ledring.dev) opens on all six tastes with interactive knobs (series, annotations, charts) plus four worked before/after dashboards on fictional seeded data. Clean after scores show rule consistency, not a UX study — judge the screenshots yourself.
 
-The repo gallery has four before/after boards on the same fictional data. After pages are written to the same rules the linter checks, so clean scores are a consistency check — judge the images yourself.
+Part of a small taste family alongside maptaste (https://github.com/FelixFangX/maptaste) for web maps.
 
-Limitations: ECharts only (Vega-Lite / Recharts planned), layout still needs a human, v0.0.7 so rules may move.
+Limitations: ECharts only for now, page layout still needs human judgment, and it is v0.0.8 so rules can still move in 0.x releases.
 
 npm: https://www.npmjs.com/package/dashtaste
-Site: https://ledring.dev/
+Demo: https://dashtaste.ledring.dev
 
-I'd like feedback on rules that feel wrong, smells it misses, and which libraries to support next.
+I'd appreciate feedback on rules that feel wrong, smells it misses, or tastes/chart libraries you'd want next.

@@ -1,10 +1,11 @@
-Agent 做看板 3 分钟，默认却像模板：彩虹饼、满点折线、柱轴不从 0、emoji KPI。
+Agent 做 ECharts 看板 3 分钟，默认却到处都是彩虹模板：满点平滑线、柱轴不从 0、彩虹饼、emoji KPI。
 
-Dashtaste = Skill 先教怎么画 + `dashtaste check` 再验收（28 条，能打分）。
+Dashtaste = 6 种命名看板流派 + 38 条规则验收（`DT001`–`DT038`，区分硬约束 / 启发式 / 流派规则，支持 Skill、CLI 和 `npx -y dashtaste mcp`）。
 
-两套包：全球 / 国内（红涨绿跌、万亿、大屏不是换皮）。
+6 种流派不是换皮：SaaS 密排、高管简报、暗黑运维大屏、中文电商（红涨绿跌、万/亿、1920 大屏）、跨境留存、叙事图表。
 
-同数据 before/after 自己看图。
-MIT · npm dashtaste · github.com/FelixFangX/dashtaste
+同数据 before/after 与交互 Demo 自己看图：dashtaste.ledring.dev
+同系列做地图的是 maptaste（maptaste.ledring.dev）
+MIT · npm dashtaste · v0.0.8 · github.com/FelixFangX/dashtaste
 
-[配图：gallery/compare/store-wide.png]
+[配图：gallery/compare/saas-wide.png 或 gallery/compare/store-wide.png]

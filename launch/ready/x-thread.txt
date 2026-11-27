@@ -1,23 +1,24 @@
 1/
-Coding agents scaffold dashboards in minutes. The look often repeats: rainbow pies, smooth lines with a dot on every point, bar axes that don't start at 0, emoji KPI rows.
+Coding agents ship the same default rainbow ECharts look everywhere: smooth lines with dots on every point, truncated bar axes, rainbow pies, emoji KPI rows.
 
-Dashtaste turns taste into a checkable loop — style skills first, then `npx dashtaste check`.
+Dashtaste lets you pick a named taste and check against 38 rules.
 
-https://github.com/FelixFangX/dashtaste
+https://dashtaste.ledring.dev
 
 2/
-Skill teaches the agent how to build. `dashtaste check` accepts the result: ECharts JSON or a rendered page, 28 rules (DT001–DT028), path + fix, score from 100, JSON for agent/CI loops.
+Six named tastes — not one shared palette: saas-dense, exec-brief, ops-wall, cn-ecommerce, global-marketplace, editorial-data.
 
-Install: `npx skills add FelixFangX/dashtaste --skill dashtaste-global` (or `dashtaste-cn`)
+`npx dashtaste check` runs 38 rules (DT001–DT038), tagging each finding as `constraint`, `heuristic`, or `taste` with path + fix.
 
 3/
-global vs cn is not a skin. Green-up/red-down and K/M/B vs red-up/green-down and 万/亿. KPI strip vs PoP/YoY cards. cn also covers 1920×1080 big-screen boards.
+Works in agent loops via skills (`npx skills add FelixFangX/dashtaste --skill dashtaste`) or stdio MCP (`npx -y dashtaste mcp`).
 
-Same rule IDs; the pack changes what “correct” means.
+Locale packs stay distinct: global green-up + K/M/B vs cn red-up + 万/亿 + 1920×1080 screens. Custom overlays via `--pack-file`.
 
 4/
-Before/after gallery (saas, finance, store, live) on the same fictional data. After boards are clean under the linter — consistency with the rules, not a claim that the style is “better”. Judge the images yourself.
+Gallery uses fictional data — clean scores show rule consistency, not a UX study. Judge the images yourself.
 
-MIT · npm `dashtaste` · 0.0.7 · ECharts only for now.
+MIT · npm `dashtaste` · v0.0.8 · ECharts only for now.
+Web maps sibling: https://maptaste.ledring.dev
 
-https://ledring.dev/
+https://github.com/FelixFangX/dashtaste

@@ -9,6 +9,8 @@ npx dashtaste check dashboard.json --taste saas-dense
 [![npm](https://img.shields.io/npm/v/dashtaste)](https://www.npmjs.com/package/dashtaste)
 [![demo](https://img.shields.io/badge/demo-dashtaste.ledring.dev-555555)](https://dashtaste.ledring.dev)
 
+![Before and after, SaaS, saas-dense taste](gallery/compare/saas-wide.png)
+
 ## Tastes
 
 | Taste                | School              | Layout, then the check                                                             |
@@ -41,8 +43,6 @@ The [demo](https://dashtaste.ledring.dev) opens on the six tastes. Before is the
 | `cn`     | `cn-ecommerce` |
 
 `--pack` still works. `--taste` and `--pack` together are an error when they name different schools. With neither flag, the check is `saas-dense`.
-
-![Before and after, SaaS, global pack](gallery/compare/saas-wide.png)
 
 ## Check
 
@@ -211,6 +211,8 @@ From a checkout: `pnpm install && pnpm build`, then `node dist/cli.js mcp` or `n
 - `apply_taste` takes `{ "taste": "cn-ecommerce" }` and returns the `tokens.json` and `example.json` bodies. `out` also writes those files.
 
 0.0.8. Rules can change in any 0.x release.
+
+Taste family: dashboards with `dashtaste` · web maps with [maptaste](https://github.com/FelixFangX/maptaste) ([maptaste.ledring.dev](https://maptaste.ledring.dev)).
 
 ## License
 

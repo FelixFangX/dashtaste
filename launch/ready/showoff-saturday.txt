@@ -1,17 +1,21 @@
 Title:
-[Showoff Saturday] Agent skills + a chart linter so AI dashboards stop looking identical
+[Showoff Saturday] Six named dashboard tastes + a 38-rule ECharts linter for coding agents
 
 Body:
-Agents can spin up a dashboard in minutes. The output often shares the same look: rainbow pies, smooth lines with a symbol on every point, bar axes that don't start at 0, six KPI cards with emoji, a legend for one series. None of that fails tests.
+Coding agents can spin up an ECharts dashboard in minutes, and it almost always lands on the same default rainbow look: multi-colour pies, smooth lines with a dot on every point, truncated bar axes, six emoji KPI cards, a legend for one series. None of that fails unit tests.
 
-Dashtaste turns that into a checkable loop:
+Dashtaste makes dashboard taste a checkable loop instead of one shared palette:
 
-- Skills first: `dashtaste-global` / `dashtaste-cn` (delta colours, units, KPI layout, and screen packs differ on purpose — not a skin)
-- Then `npx dashtaste check dashboard.json --pack global` — 28 rules, path + fix, 0–100 score, JSON for agents/CI; also checks rendered URLs/HTML with local Chromium
+- Six named tastes: `saas-dense`, `exec-brief`, `ops-wall`, `cn-ecommerce`, `global-marketplace`, and `editorial-data` (each pairs tokens with layout caps; `global` and `cn` packs differ on delta colour conventions, K/M/B vs 万/亿, and 1920×1080 screens).
+- `npx dashtaste check dashboard.json --taste saas-dense` checks ECharts JSON or rendered pages (local Chromium + optional `playwright-core`) against 38 rules (`DT001`–`DT038`), tagging each finding as `constraint`, `heuristic`, or `taste`, with path, fix, 0–100 score, and JSON output for CI/agents.
+- Agent-ready via skills (`npx skills add FelixFangX/dashtaste --skill dashtaste`) or stdio MCP (`npx -y dashtaste mcp`).
 
-Gallery in the README is before/after on the same fictional data (style consistency, not a UX study). MIT, npm `dashtaste`, 0.0.7, ECharts-only for now.
+Live 6-taste demo + interactive browser checker: https://dashtaste.ledring.dev
+Gallery pairs share fictional seeded data (rule consistency, not a UX study). Sibling project for web maps: maptaste (https://maptaste.ledring.dev).
+
+MIT · npm `dashtaste` · v0.0.8 · ECharts-only for now.
 
 Repo: https://github.com/FelixFangX/dashtaste
 npm: https://www.npmjs.com/package/dashtaste
 
-Happy to talk about which rules are too strict or which chart libs you'd want next.
+Happy to hear which rules feel too strict or which chart libraries you'd want next.
